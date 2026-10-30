@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Caveat:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================
+   CSS Custom Properties — Brand Design Tokens
+   ================================================ */
+:root {
+  --color-primary: #D4768A;
+  --color-primary-dark: #B85C71;
+  --color-primary-light: #FBE9ED;
+  --color-sage: #8FA98B;
+  --color-butter: #F4D58D;
+  --color-cocoa: #3B2A2F;
+  --color-warmgray: #7A6A6D;
+  --color-oatmeal: #F6EFE7;
+  --color-cream: #FFFAF5;
+  --color-border: #EADFD6;
+  --color-error: #C8553D;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 2px 16px rgba(59, 42, 47, 0.08);
+  --shadow-card-hover: 0 8px 32px rgba(59, 42, 47, 0.14);
+  --shadow-rose: 0 4px 24px -4px rgba(212, 118, 138, 0.25);
+
+  --transition-base: 200ms ease;
+  --transition-medium: 300ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* ================================================
+   Base styles
+   ================================================ */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    @apply bg-cream text-cocoa font-body antialiased;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.625;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-cocoa;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.25;
+    font-weight: 600;
+  }
+
+  a {
+    @apply text-cocoa no-underline;
+  }
+
+  img {
+    @apply block max-w-full;
+  }
+
+  button {
+    @apply cursor-pointer;
+    touch-action: manipulation;
+  }
+
+  input, textarea, select {
+    @apply font-body;
+    font-size: 16px; /* Prevent iOS auto-zoom */
+  }
+
+  /* Focus styles for keyboard navigation */
+  :focus-visible {
+    @apply outline-2 outline-primary outline-offset-2;
+    outline-style: solid;
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--color-primary-light);
+    color: var(--color-cocoa);
+  }
+}
+
+/* ================================================
+   Component layer — reusable UI primitives
+   ================================================ */
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           font-body font-semibold text-sm
+           rounded-full px-6 py-3
+           transition-all duration-200
+           select-none whitespace-nowrap;
+    min-height: 44px;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white
+           hover:bg-primary-dark hover:shadow-rose
+           active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary/50;
+    box-shadow: 0 2px 12px rgba(212, 118, 138, 0.3);
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-primary border-2 border-primary
+           hover:bg-primary-light hover:shadow-rose
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-cocoa
+           hover:bg-oatmeal active:scale-[0.98];
+  }
+
+  .btn-sm {
+    @apply text-xs px-4 py-2;
+    min-height: 36px;
+  }
+
+  .btn-lg {
+    @apply text-base px-8 py-4;
+    min-height: 52px;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-3xl overflow-hidden;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Glass effect — used for navbar and overlays */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/40;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl
+           border border-border bg-white
+           text-cocoa placeholder:text-warmgray/60
+           transition-all duration-200
+           focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20;
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .input-error {
+    @apply border-error focus:border-error focus:ring-error/20;
+  }
+
+  /* Label */
+  .label {
+    @apply block text-sm font-semibold text-cocoa mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-semibold
+           rounded-full px-2.5 py-1;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-light text-primary-dark;
+  }
+
+  .badge-sage {
+    @apply badge bg-sage/20 text-sage-dark;
+  }
+
+  .badge-butter {
+    @apply badge bg-butter/30 text-cocoa;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-error;
+  }
+
+  /* Section headings */
+  .section-title {
+    @apply font-heading text-fluid-3xl text-cocoa font-bold;
+  }
+
+  .section-subtitle {
+    @apply text-warmgray text-fluid-base mt-3 max-w-xl;
+  }
+
+  /* Stitch divider — decorative dashed line */
+  .stitch-divider {
+    @apply border-0 border-t-2 border-dashed border-border my-8;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply rounded-lg bg-gradient-to-r from-oatmeal via-cream to-oatmeal;
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* Animated underline nav link */
+  .nav-link {
+    @apply relative text-warmgray font-medium text-sm transition-colors duration-200 hover:text-primary;
+  }
+
+  .nav-link::after {
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary rounded-full;
+    content: "";
+    transition: width 0.25s ease;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
+  }
+
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  /* Product card image zoom container */
+  .img-zoom-container {
+    @apply overflow-hidden;
+  }
+
+  .img-zoom-container img {
+    @apply transition-transform duration-500;
+  }
+
+  .img-zoom-container:hover img {
+    @apply scale-105;
+  }
+
+  /* Price formatting */
+  .price {
+    @apply font-heading font-bold text-cocoa;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-compare {
+    @apply line-through text-warmgray/60 font-normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Scroll area with hidden scrollbar */
+  .scroll-snap-x {
+    @apply flex gap-4 overflow-x-auto pb-4;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scroll-snap-x::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scroll-snap-x > * {
+    scroll-snap-align: start;
+  }
+
+  /* Yarn/woven texture overlay */
+  .yarn-texture {
+    position: relative;
+  }
+
+  .yarn-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23D4768A' fill-opacity='0.06'/%3E%3Ccircle cx='0' cy='0' r='1' fill='%23D4768A' fill-opacity='0.06'/%3E%3Ccircle cx='40' cy='0' r='1' fill='%23D4768A' fill-opacity='0.06'/%3E%3Ccircle cx='0' cy='40' r='1' fill='%23D4768A' fill-opacity='0.06'/%3E%3Ccircle cx='40' cy='40' r='1' fill='%23D4768A' fill-opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* ================================================
+   Utility layer — misc helpers
+   ================================================ */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .perspective {
+    perspective: 1000px;
+  }
+
+  /* Aspect ratios for product images */
+  .aspect-product {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-hero {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Safe area insets for mobile */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* ================================================
+   Reduced motion
+   ================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================
+   Mobile-only styles
+   ================================================ */
+@media (max-width: 768px) {
+  .animate-blob-slow,
+  .animate-blob-medium,
+  .animate-blob-fast {
+    animation-duration: 12s;
+  }
+}

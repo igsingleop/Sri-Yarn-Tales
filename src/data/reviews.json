@@ -1,0 +1,90 @@
+[
+  {
+    "id": "r1",
+    "productId": "1",
+    "author": "Priya Krishnamurthy",
+    "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "The Pastel Bunny is absolutely gorgeous! So much more beautiful in person. My daughter is obsessed with it. The stitching is incredibly neat and the yarn is so soft. Will definitely order again!",
+    "date": "2026-09-15",
+    "verified": true,
+    "helpful": 12
+  },
+  {
+    "id": "r2",
+    "productId": "3",
+    "author": "Ananya Sharma",
+    "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "Ordered the Bohemian Market Tote as a birthday gift and everyone asked where I got it. Super sturdy, holds so much weight, and looks even better in real life. Love that it's eco-friendly too!",
+    "date": "2026-09-20",
+    "verified": true,
+    "helpful": 8
+  },
+  {
+    "id": "r3",
+    "productId": "7",
+    "author": "Meera Iyer",
+    "avatar": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "The Chunky Wool Scarf in Dusty Rose is STUNNING. Perfect for Bangalore winters. The color is exactly as shown. Fast delivery and beautifully packaged too. 10/10 would recommend!",
+    "date": "2026-09-28",
+    "verified": true,
+    "helpful": 15
+  },
+  {
+    "id": "r4",
+    "productId": "10",
+    "author": "Kavitha Nair",
+    "avatar": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "Bought the baby booties for my newborn niece. She looked like a little angel in them! The quality is incredible — so soft and well made. The gift box packaging made it extra special. Thank you Sri Yarn!",
+    "date": "2026-10-01",
+    "verified": true,
+    "helpful": 21
+  },
+  {
+    "id": "r5",
+    "productId": "5",
+    "author": "Rohan Mehta",
+    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop&crop=faces",
+    "rating": 4,
+    "text": "The wall hanging looks beautiful in our living room. Great craftsmanship. Only took off one star because it was slightly smaller than expected, but overall very happy with the purchase.",
+    "date": "2026-10-03",
+    "verified": true,
+    "helpful": 6
+  },
+  {
+    "id": "r6",
+    "productId": "12",
+    "author": "Deepa Venkataraman",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "These little yarn ball keychains are the cutest things! Bought 5 as gifts and everyone loved them. They're well made and super squishy. Great quality for the price!",
+    "date": "2026-10-05",
+    "verified": true,
+    "helpful": 9
+  },
+  {
+    "id": "r7",
+    "productId": "4",
+    "author": "Shalini Reddy",
+    "avatar": "https://images.unsplash.com/photo-1546961342-ea5f62d5a27b?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "The Mini Crossbody bag is PERFECT. Got it in Sage Green and it matches everything. The stitching is tight and the magnetic closure is satisfying. Gets compliments everywhere I take it!",
+    "date": "2026-10-08",
+    "verified": true,
+    "helpful": 18
+  },
+  {
+    "id": "r8",
+    "productId": "24",
+    "author": "Lakshmi Patel",
+    "avatar": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=60&h=60&fit=crop&crop=faces",
+    "rating": 5,
+    "text": "Ordered a personalised name keychain for my best friend's birthday — she cried happy tears! It says 'SHREYA' and looks absolutely adorable. Each letter is so neatly crocheted. A truly one-of-a-kind gift!",
+    "date": "2026-10-10",
+    "verified": true,
+    "helpful": 24
+  }
+]

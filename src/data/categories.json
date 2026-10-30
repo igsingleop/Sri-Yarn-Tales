@@ -1,0 +1,56 @@
+[
+  {
+    "id": "cat-amigurumi",
+    "slug": "amigurumi",
+    "name": "Amigurumi Toys",
+    "description": "Handcrafted plushie toys and figurines — perfect for gifting and collecting.",
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
+    "count": 4,
+    "emoji": "🧸"
+  },
+  {
+    "id": "cat-bags",
+    "slug": "bags",
+    "name": "Bags & Totes",
+    "description": "Eco-friendly handmade bags for every occasion — from market runs to beach days.",
+    "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=600&fit=crop",
+    "count": 3,
+    "emoji": "👜"
+  },
+  {
+    "id": "cat-home-decor",
+    "slug": "home-decor",
+    "name": "Home Decor",
+    "description": "Beautify your space with handcrafted wall hangings, cushions, and table runners.",
+    "image": "https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=600&h=600&fit=crop",
+    "count": 4,
+    "emoji": "🏡"
+  },
+  {
+    "id": "cat-wearables",
+    "slug": "wearables",
+    "name": "Wearables",
+    "description": "Cosy scarves, beanies, bucket hats, and boho tops — handmade to wear with love.",
+    "image": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=600&fit=crop",
+    "count": 4,
+    "emoji": "🧣"
+  },
+  {
+    "id": "cat-baby",
+    "slug": "baby",
+    "name": "Baby Items",
+    "description": "Safe, soft, and sweet. Handmade treasures for the tiniest members of your family.",
+    "image": "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&h=600&fit=crop",
+    "count": 4,
+    "emoji": "👶"
+  },
+  {
+    "id": "cat-accessories",
+    "slug": "accessories",
+    "name": "Accessories",
+    "description": "Keychains, earrings, phone pouches, scrunchies — tiny handmade joys.",
+    "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=600&fit=crop",
+    "count": 5,
+    "emoji": "✨"
+  }
+]
