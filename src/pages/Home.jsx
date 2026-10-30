@@ -818,25 +818,25 @@ function PromoBannerSection() {
 // ---- Main Home Page ----
 export default function Home() {
   const storeProducts = useProductStore((s) => s.products);
-  const [bestsellers, setBestsellers] = useState([]);
-  const [newArrivals, setNewArrivals] = useState([]);
+  const [bestsellers, setBestsellers] = useState(() =>
+    storeProducts.filter((p) => p.isBestseller).slice(0, 4)
+  );
+  const [newArrivals, setNewArrivals] = useState(() =>
+    storeProducts.filter((p) => p.isNew).slice(0, 4)
+  );
   const [categories, setCategories] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      getBestsellers(4),
-      getNewArrivals(4),
-      getCategories(),
-      getAllReviews(),
-    ]).then(([bs, na, cats, revs]) => {
-      setBestsellers(bs);
-      setNewArrivals(na);
-      setCategories(cats);
-      setReviews(revs);
-      setLoading(false);
-    });
+    const bs = storeProducts.filter((p) => p.isBestseller).slice(0, 4);
+    const na = storeProducts.filter((p) => p.isNew).slice(0, 4);
+    setBestsellers(bs);
+    setNewArrivals(na);
+
+    getCategories().then(setCategories);
+    getAllReviews().then(setReviews);
+    setLoading(false);
   }, [storeProducts]);
 
   return (

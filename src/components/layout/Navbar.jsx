@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, Heart, ShoppingBag, Menu, User, ChevronDown, ShieldCheck
+  Search, Heart, ShoppingBag, Menu, User, ChevronDown
 } from "lucide-react";
 import Logo from "../ui/Logo";
 import {
@@ -168,17 +168,6 @@ export default function Navbar() {
 
             {/* Right icons */}
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Quick Admin Dashboard Link if logged in as admin */}
-              {user?.role === "admin" && (
-                <Link
-                  to="/admin"
-                  className="inline-flex items-center gap-1.5 bg-cocoa text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-primary transition-all shadow-xs"
-                  title="Open Admin Dashboard"
-                >
-                  <ShieldCheck size={13} className="text-butter" /> Admin Panel
-                </Link>
-              )}
-
               {/* Search */}
               <button
                 onClick={openSearch}

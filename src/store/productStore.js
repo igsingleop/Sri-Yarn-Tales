@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import defaultProducts from "../data/products.json";
+import { broadcastSync } from "./sync";
 
 function slugify(text) {
   return text
@@ -49,29 +50,78 @@ export const useProductStore = create(
           createdAt: Date.now(),
         };
 
-        set((state) => ({
-          products: [newProduct, ...state.products],
-        }));
+        const updatedProducts = [newProduct, ...get().products];
+        set({ products: updatedProducts });
+        broadcastSync("SYNC_PRODUCTS", updatedProducts);
 
         return newProduct;
       },
 
       updateProduct: (id, updatedFields) => {
-        set((state) => ({
-          products: state.products.map((item) =>
-            item.id === id ? { ...item, ...updatedFields } : item
-          ),
-        }));
+        const updatedProducts = get().products.map((item) =>
+          item.id === id ? { ...item, ...updatedFields } : item
+        );
+        set({ products: updatedProducts });
+        broadcastSync("SYNC_PRODUCTS", updatedProducts);
       },
 
       deleteProduct: (id) => {
-        set((state) => ({
-          products: state.products.filter((item) => item.id !== id),
-        }));
+        const updatedProducts = get().products.filter((item) => item.id !== id);
+        set({ products: updatedProducts });
+        broadcastSync("SYNC_PRODUCTS", updatedProducts);
+      },
+
+      deleteMultipleProducts: (ids) => {
+        const idSet = new Set(ids);
+        const updatedProducts = get().products.filter((item) => !idSet.has(item.id));
+        set({ products: updatedProducts });
+        broadcastSync("SYNC_PRODUCTS", updatedProducts);
+      },
+
+      addMultipleProducts: (productsList) => {
+        const newItems = productsList.map((p, index) => {
+          const id = `p-${Date.now()}-${index}`;
+          const baseSlug = slugify(p.name || `bulk-item-${index}`);
+          const slug = `${baseSlug}-${id.slice(-6)}`;
+          return {
+            id,
+            slug,
+            name: p.name || "Untitled Product",
+            category: p.category || "amigurumi",
+            price: Number(p.price) || 499,
+            comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
+            images: Array.isArray(p.images) && p.images.length > 0
+              ? p.images
+              : [p.imageUrl || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"],
+            colors: p.colors || ["#D4768A", "#F4D58D", "#8FA98B"],
+            colorNames: p.colorNames || ["Rose Pink", "Butter Yellow", "Sage Green"],
+            sizes: p.sizes || ["Standard"],
+            rating: p.rating ? Number(p.rating) : 5.0,
+            reviewCount: p.reviewCount ? Number(p.reviewCount) : 0,
+            stock: p.stock !== undefined ? Number(p.stock) : 10,
+            tags: Array.isArray(p.tags)
+              ? p.tags
+              : (typeof p.tags === "string" ? p.tags.split(";").map(t => t.trim()) : ["handmade", "crochet"]),
+            isCustomizable: Boolean(p.isCustomizable),
+            isBestseller: Boolean(p.isBestseller),
+            isNew: p.isNew !== undefined ? Boolean(p.isNew) : true,
+            description: p.description || "Handcrafted with premium soft yarn, made with love and precision.",
+            materials: p.materials || "100% premium cotton yarn, hypoallergenic fiberfill",
+            care: p.care || "Gentle hand wash in cold water. Reshape and air dry flat.",
+            deliveryDays: p.deliveryDays || "3-5",
+            createdAt: Date.now() + index,
+          };
+        });
+
+        const updatedProducts = [...newItems, ...get().products];
+        set({ products: updatedProducts });
+        broadcastSync("SYNC_PRODUCTS", updatedProducts);
+        return newItems;
       },
 
       resetProducts: () => {
         set({ products: defaultProducts });
+        broadcastSync("SYNC_PRODUCTS", defaultProducts);
       },
     }),
     {

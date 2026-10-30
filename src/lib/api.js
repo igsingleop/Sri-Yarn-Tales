@@ -3,8 +3,9 @@ import reviewsData from "../data/reviews.json";
 import categoriesData from "../data/categories.json";
 import { useProductStore } from "../store/productStore";
 
-// Simulate network latency
-const delay = (ms = 200) => new Promise((res) => setTimeout(res, ms));
+// Instant resolver for client state, with optional delay for operations that simulate network checkout
+const delay = (ms = 0) =>
+  ms > 0 ? new Promise((res) => setTimeout(res, ms)) : Promise.resolve();
 
 // Get current live products (from persistent store or fallback to JSON)
 export const getCurrentProducts = () => {
@@ -21,7 +22,7 @@ export const getCurrentProducts = () => {
 
 // ---- Products ----
 export const getProducts = async (filters = {}) => {
-  await delay();
+  await delay(0);
   let products = getCurrentProducts();
 
   if (filters.category) {
@@ -89,34 +90,34 @@ export const getProducts = async (filters = {}) => {
 };
 
 export const getProductBySlug = async (slug) => {
-  await delay();
+  await delay(0);
   return getCurrentProducts().find((p) => p.slug === slug) || null;
 };
 
 export const getProductById = async (id) => {
-  await delay(100);
+  await delay(0);
   return getCurrentProducts().find((p) => p.id === id) || null;
 };
 
 export const getBestsellers = async (limit = 8) => {
-  await delay();
+  await delay(0);
   return getCurrentProducts().filter((p) => p.isBestseller).slice(0, limit);
 };
 
 export const getNewArrivals = async (limit = 8) => {
-  await delay();
+  await delay(0);
   return getCurrentProducts().filter((p) => p.isNew).slice(0, limit);
 };
 
 export const getRelatedProducts = async (productId, category, limit = 4) => {
-  await delay(100);
+  await delay(0);
   return getCurrentProducts()
     .filter((p) => p.category === category && p.id !== productId)
     .slice(0, limit);
 };
 
 export const searchProducts = async (query) => {
-  await delay(150);
+  await delay(0);
   if (!query || query.length < 2) return [];
   const q = query.toLowerCase();
   return getCurrentProducts()
@@ -131,7 +132,7 @@ export const searchProducts = async (query) => {
 
 // ---- Categories ----
 export const getCategories = async () => {
-  await delay(50);
+  await delay(0);
   const products = getCurrentProducts();
   return categoriesData.map((cat) => ({
     ...cat,
@@ -141,18 +142,18 @@ export const getCategories = async () => {
 
 // ---- Reviews ----
 export const getReviewsByProduct = async (productId) => {
-  await delay();
+  await delay(0);
   return reviewsData.filter((r) => r.productId === productId);
 };
 
 export const getAllReviews = async () => {
-  await delay();
+  await delay(0);
   return reviewsData;
 };
 
 // ---- Checkout (mock) ----
 export const createOrder = async (orderData) => {
-  await delay(1500);
+  await delay(1200);
   const { generateOrderId } = await import("./utils.js");
   return {
     success: true,
@@ -174,7 +175,7 @@ const pinData = {
 };
 
 export const checkPincode = async (pin) => {
-  await delay(800);
+  await delay(400);
   const info = pinData[pin];
   if (info) {
     return { available: true, ...info };
@@ -187,7 +188,7 @@ export const checkPincode = async (pin) => {
 
 // ---- Coupon validation ----
 export const validateCoupon = async (code, subtotal) => {
-  await delay(600);
+  await delay(300);
   const coupons = {
     WELCOME10: { discount: 10, type: "percent", minOrder: 0, label: "10% off" },
     FLAT200: { discount: 200, type: "flat", minOrder: 999, label: "₹200 off" },

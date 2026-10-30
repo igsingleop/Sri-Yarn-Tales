@@ -214,19 +214,27 @@ export default function Shop() {
 
   const storeProducts = useProductStore((s) => s.products);
 
-  // Fetch products
-  const fetchProducts = useCallback(
-    debounce(async () => {
-      setLoading(true);
-      const data = await getProducts({ ...filters, sort });
-      setProducts(data);
-      setLoading(false);
-    }, 300),
-    [filters, sort]
-  );
-
+  // Fetch products immediately on storeProducts or filter change
   useEffect(() => {
-    fetchProducts();
+    let isCurrent = true;
+    const executeFetch = async () => {
+      const data = await getProducts({ ...filters, sort });
+      if (isCurrent) {
+        setProducts(data);
+        setLoading(false);
+      }
+    };
+
+    if (filters.search) {
+      setLoading(true);
+      const timer = setTimeout(executeFetch, 200);
+      return () => {
+        isCurrent = false;
+        clearTimeout(timer);
+      };
+    } else {
+      executeFetch();
+    }
   }, [filters, sort, storeProducts]);
 
   useEffect(() => {

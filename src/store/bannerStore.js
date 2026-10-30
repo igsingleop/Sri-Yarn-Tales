@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { broadcastSync } from "./sync";
 
 const DEFAULT_BANNER_STATE = {
   topAnnouncement: {
@@ -39,25 +40,36 @@ const DEFAULT_BANNER_STATE = {
 
 export const useBannerStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...DEFAULT_BANNER_STATE,
 
-      updateTopAnnouncement: (data) =>
-        set((state) => ({
-          topAnnouncement: { ...state.topAnnouncement, ...data },
-        })),
+      updateTopAnnouncement: (data) => {
+        const nextTop = { ...get().topAnnouncement, ...data };
+        set({ topAnnouncement: nextTop });
+        broadcastSync("SYNC_BANNERS", { ...get(), topAnnouncement: nextTop });
+      },
 
-      updateHeroBanner: (data) =>
-        set((state) => ({
-          heroBanner: { ...state.heroBanner, ...data },
-        })),
+      updateHeroBanner: (data) => {
+        const nextHero = { ...get().heroBanner, ...data };
+        set({ heroBanner: nextHero });
+        broadcastSync("SYNC_BANNERS", { ...get(), heroBanner: nextHero });
+      },
 
-      updatePromoBanner: (data) =>
-        set((state) => ({
-          promoBanner: { ...state.promoBanner, ...data },
-        })),
+      updatePromoBanner: (data) => {
+        const nextPromo = { ...get().promoBanner, ...data };
+        set({ promoBanner: nextPromo });
+        broadcastSync("SYNC_BANNERS", { ...get(), promoBanner: nextPromo });
+      },
 
-      resetBanners: () => set(DEFAULT_BANNER_STATE),
+      setAllBanners: (allBanners) => {
+        set(allBanners);
+        broadcastSync("SYNC_BANNERS", allBanners);
+      },
+
+      resetBanners: () => {
+        set(DEFAULT_BANNER_STATE);
+        broadcastSync("SYNC_BANNERS", DEFAULT_BANNER_STATE);
+      },
     }),
     {
       name: "syt-custom-banners",

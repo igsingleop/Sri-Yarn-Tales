@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
 import { getProductBySlug, getReviewsByProduct, getRelatedProducts, checkPincode } from "../lib/api";
-import { useCartStore, useWishlistStore } from "../store";
+import { useCartStore, useWishlistStore, useProductStore } from "../store";
 import { formatINR, getDiscountPercent } from "../lib/utils";
 import { brand } from "../config/brand";
 
@@ -76,32 +76,48 @@ export default function ProductDetail() {
   const [pincodeResult, setPincodeResult] = useState(null);
   const [pincodeLoading, setPincodeLoading] = useState(false);
 
+  const storeProducts = useProductStore((s) => s.products);
   const addItem = useCartStore((s) => s.addItem);
   const openCart = () => useUIStore?.getState?.()?.openCart?.();
   const { toggle, isWishlisted } = useWishlistStore();
   const wishlisted = product ? isWishlisted(product.id) : false;
 
   useEffect(() => {
-    setLoading(true);
     setActiveImg(0);
-    getProductBySlug(slug).then((p) => {
+    const p = storeProducts.find((item) => item.slug === slug);
+    if (p) {
       setProduct(p);
-      if (p) {
-        setSelectedColor(p.colorNames[0]);
-        setSelectedSize(p.sizes[0]);
-        Promise.all([
-          getReviewsByProduct(p.id),
-          getRelatedProducts(p.id, p.category),
-        ]).then(([revs, rel]) => {
-          setReviews(revs);
-          setRelated(rel);
+      setSelectedColor((prev) => (prev && p.colorNames?.includes(prev) ? prev : p.colorNames?.[0]));
+      setSelectedSize((prev) => (prev && p.sizes?.includes(prev) ? prev : p.sizes?.[0]));
+      setLoading(false);
+      Promise.all([
+        getReviewsByProduct(p.id),
+        getRelatedProducts(p.id, p.category),
+      ]).then(([revs, rel]) => {
+        setReviews(revs);
+        setRelated(rel);
+      });
+    } else {
+      setLoading(true);
+      getProductBySlug(slug).then((fetched) => {
+        setProduct(fetched);
+        if (fetched) {
+          setSelectedColor(fetched.colorNames?.[0]);
+          setSelectedSize(fetched.sizes?.[0]);
+          Promise.all([
+            getReviewsByProduct(fetched.id),
+            getRelatedProducts(fetched.id, fetched.category),
+          ]).then(([revs, rel]) => {
+            setReviews(revs);
+            setRelated(rel);
+            setLoading(false);
+          });
+        } else {
           setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
-    });
-  }, [slug]);
+        }
+      });
+    }
+  }, [slug, storeProducts]);
 
   const handleAddToCart = () => {
     if (!product) return;

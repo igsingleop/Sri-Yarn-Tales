@@ -41,6 +41,7 @@ const footerLinks = {
     { label: "Contact", to: "/contact" },
     { label: "My Account", to: "/account" },
     { label: "Track Order", to: "/account" },
+    { label: "Admin Portal", to: "/admin" },
   ],
   Policies: [
     { label: "Shipping Policy", to: "/shipping" },

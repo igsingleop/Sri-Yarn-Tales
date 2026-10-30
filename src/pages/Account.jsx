@@ -3,10 +3,10 @@ import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, MapPin, Heart, LogOut, Settings, ChevronRight,
-  ShieldCheck, ArrowRight, Sparkles, AlertCircle, Info, ExternalLink,
+  ArrowRight, Sparkles, AlertCircle, Info,
   CheckCircle2
 } from "lucide-react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatINR } from "../lib/utils";
 import { useAuthStore } from "../store";
 import { signInWithGoogle, isFirebaseConfigured } from "../config/firebase";
@@ -50,14 +50,12 @@ function GoogleIcon({ className = "w-5 h-5" }) {
 
 export default function Account() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isDirectAdmin = searchParams.get("admin") === "1";
 
   const { user, login, loginWithGoogleUser, logout } = useAuthStore();
   const [isLogin, setIsLogin] = useState(true);
   const [activeTab, setActiveTab] = useState("orders");
   
-  const [identifier, setIdentifier] = useState(isDirectAdmin ? "admin" : "");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -75,15 +73,15 @@ export default function Account() {
 
     const res = login(identifier.trim(), password);
 
+    if (!res.success) {
+      setError(res.error || "Login failed. Please verify your credentials.");
+      return;
+    }
+
     // If user entered admin or is an admin account, redirect immediately to /admin
     if (res.role === "admin") {
       navigate("/admin");
     }
-  };
-
-  const handleQuickAdminLogin = () => {
-    login("admin", "admin123");
-    navigate("/admin");
   };
 
   // Google Sign-In Handler
@@ -229,14 +227,11 @@ export default function Account() {
                     id="acc-email"
                     type="text"
                     className="input"
-                    placeholder="Enter username (e.g. 'admin') or email"
+                    placeholder="Enter your username or email"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     autoFocus
                   />
-                  <p className="text-[11px] text-warmgray mt-1">
-                    Tip: Enter <span className="font-semibold text-primary">admin</span> to open the Admin Dashboard!
-                  </p>
                 </div>
 
                 <div>
@@ -256,29 +251,6 @@ export default function Account() {
                   <ArrowRight size={16} />
                 </button>
               </form>
-
-              {/* Quick Admin Shortcut Card */}
-              <div className="p-4 rounded-2xl bg-primary-light/60 border border-primary/20 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={18} className="text-primary" />
-                    <span className="text-xs font-bold text-cocoa">Admin Access</span>
-                  </div>
-                  <span className="text-[10px] bg-primary text-white font-semibold px-2 py-0.5 rounded-full">
-                    Redirects to Admin
-                  </span>
-                </div>
-                <p className="text-xs text-warmgray leading-relaxed">
-                  Enter username <strong>admin</strong> above, or click below to enter the product & banner control dashboard instantly:
-                </p>
-                <button
-                  type="button"
-                  onClick={handleQuickAdminLogin}
-                  className="w-full py-2.5 px-3 rounded-xl bg-cocoa text-white hover:bg-cocoa/90 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
-                >
-                  <ShieldCheck size={14} /> Quick One-Click Admin Login
-                </button>
-              </div>
 
               <p className="text-center text-sm text-warmgray pt-1">
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -356,23 +328,13 @@ export default function Account() {
                     <p className="text-xs font-bold text-cocoa">
                       Want to test Google login right now?
                     </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleDemoGoogleLogin(false)}
-                        className="py-2.5 px-3 rounded-xl bg-primary text-white hover:bg-primary-dark font-semibold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                      >
-                        <GoogleIcon className="w-4 h-4" /> Customer Demo
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDemoGoogleLogin(true)}
-                        className="py-2.5 px-3 rounded-xl bg-cocoa text-white hover:bg-cocoa/90 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                      >
-                        <ShieldCheck size={14} /> Admin Demo
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDemoGoogleLogin(false)}
+                      className="w-full py-2.5 px-3 rounded-xl bg-primary text-white hover:bg-primary-dark font-semibold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                    >
+                      <GoogleIcon className="w-4 h-4" /> Continue with Demo Account
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -388,35 +350,6 @@ export default function Account() {
     <>
       <Helmet><title>My Account | Sri Yarn &amp; Tales</title></Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* If logged in as admin, show notice to jump to admin dashboard */}
-        {user.role === "admin" && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-primary/15 via-butter/25 to-primary/10 border border-primary/30 flex items-center justify-between flex-wrap gap-4 shadow-sm"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                <ShieldCheck size={24} />
-              </div>
-              <div>
-                <h3 className="font-heading font-bold text-cocoa text-base sm:text-lg">
-                  Administrator Session Active
-                </h3>
-                <p className="text-xs sm:text-sm text-warmgray">
-                  You are logged in as Store Administrator. Add new products, update images, and edit site banners.
-                </p>
-              </div>
-            </div>
-            <Link
-              to="/admin"
-              className="btn-primary py-2.5 px-5 text-sm font-semibold flex items-center gap-2 shadow-rose-lg"
-            >
-              Go to Admin Dashboard <ArrowRight size={16} />
-            </Link>
-          </motion.div>
-        )}
-
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="space-y-4">
@@ -429,11 +362,6 @@ export default function Account() {
               />
               <div className="flex items-center justify-center gap-1.5 flex-wrap">
                 <h2 className="font-heading font-bold text-cocoa">{user.name}</h2>
-                {user.role === "admin" && (
-                  <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    Admin
-                  </span>
-                )}
               </div>
               <p className="text-warmgray text-sm">{user.email}</p>
               {user.provider === "google" && (
@@ -445,16 +373,6 @@ export default function Account() {
 
             {/* Nav */}
             <div className="bg-white rounded-3xl p-3 shadow-card space-y-1 border border-border/40">
-              {user.role === "admin" && (
-                <Link
-                  to="/admin"
-                  className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold bg-primary text-white shadow-sm transition-all"
-                >
-                  <ShieldCheck size={18} /> Admin Dashboard
-                  <ChevronRight size={14} className="ml-auto" />
-                </Link>
-              )}
-
               {[
                 { id: "orders", icon: Package, label: "My Orders" },
                 { id: "addresses", icon: MapPin, label: "Addresses" },
