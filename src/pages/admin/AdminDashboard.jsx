@@ -7,12 +7,10 @@ import {
   ExternalLink, LogOut, Check, ArrowLeft, Search, Star,
   Sparkles, RefreshCw, Eye, Tag, Layers,
   AlertCircle, Upload, ShieldCheck, Lock,
-  Key, EyeOff, User, FileSpreadsheet, Download,
-  CheckSquare, FileText, X
+  Key, EyeOff, User, FileSpreadsheet, Download
 } from "lucide-react";
-import { useProductStore, useBannerStore, useAuthStore } from "../../store";
+import { useProductStore, useBannerStore, useAuthStore, useCategoryStore } from "../../store";
 import { formatINR } from "../../lib/utils";
-import categoriesData from "../../data/categories.json";
 
 // Image compression utility to ensure images fit in localStorage and render instantly
 function compressImage(file, maxWidth = 900, quality = 0.82) {
@@ -139,7 +137,7 @@ function downloadSampleCSV() {
 `name,category,price,comparePrice,stock,description,materials,imageUrl,isBestseller,isNew,isCustomizable,tags
 "Lavender Bunny Plushie",amigurumi,649,899,15,"Cute hand-crocheted lavender bunny with floppy ears and soft tail","100% organic cotton yarn, hypoallergenic fiberfill","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",true,true,true,"bunny;amigurumi;cute"
 "Sunburst Crochet Tote Bag",bags,1299,1599,8,"Boho-style hand-woven granny square tote bag with durable handles","100% premium mercerized cotton yarn","https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=600&fit=crop",true,false,false,"tote;bag;grannysquare"
-"Pastel Coaster Set of 4",home-decor,399,499,25,"Charming floral coasters in pastel hues for tea mugs and cups","Durable washable cotton yarn","https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=600&h=600&fit=crop",false,true,true,"coasters;homedecor;kitchen"
+"Pastel Coaster Set of 4",home-decor,399,499,25,"Charming floral coasters in pastel hues for tea mugs and cups","Durable washable cotton yarn","https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",false,true,true,"coasters;homedecor;kitchen"
 "Boho Crochet Bucket Hat",wearables,849,1099,10,"Breathable summer bucket hat in earthy crochet pattern","100% soft cotton yarn","https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=600&h=600&fit=crop",false,true,false,"hat;summer;boho"`;
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -215,6 +213,13 @@ export default function AdminDashboard() {
     updatePromoBanner,
     resetBanners,
   } = useBannerStore();
+  const {
+    categories,
+    updateCategory,
+    addCategory,
+    deleteCategory,
+    resetCategories,
+  } = useCategoryStore();
 
   // Admin Credentials Gate State
   const [adminUsername, setAdminUsername] = useState("admin");
@@ -226,6 +231,17 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [toast, setToast] = useState(null);
+
+  // Category Edit / Add Modal State
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    slug: "",
+    description: "",
+    image: "",
+    emoji: "🧶",
+  });
 
   // Multiple Selection & Delete State
   const [selectedProductIds, setSelectedProductIds] = useState(new Set());
@@ -382,8 +398,8 @@ export default function AdminDashboard() {
         }));
         updateHeroBanner(nextHero);
         showToast(`Hero photo ${index + 1} published live to storefront!`);
-      } catch (_err) {
-        alert("Failed to process photo");
+      } catch (err) {
+        alert(err?.message || "Failed to process photo");
       }
     }
   };
@@ -400,8 +416,8 @@ export default function AdminDashboard() {
         }));
         updatePromoBanner(nextPromo);
         showToast("Promotional banner photo published live to storefront!");
-      } catch (_err) {
-        alert("Failed to process photo");
+      } catch (err) {
+        alert(err?.message || "Failed to process photo");
       }
     }
   };
@@ -449,6 +465,81 @@ export default function AdminDashboard() {
         setSelectedProductIds(next);
       }
       showToast(`Product "${name}" deleted from store.`);
+    }
+  };
+
+  // Category Handlers
+  const handleOpenAddCategory = () => {
+    setEditingCategory(null);
+    setCategoryFormData({
+      name: "",
+      slug: "",
+      description: "Handcrafted crochet creations made with love.",
+      image: "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",
+      emoji: "🧶",
+    });
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleOpenEditCategory = (cat) => {
+    setEditingCategory(cat);
+    setCategoryFormData({
+      name: cat.name || "",
+      slug: cat.slug || "",
+      description: cat.description || "",
+      image: cat.image || "",
+      emoji: cat.emoji || "🧶",
+    });
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCategoryFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const compressed = await compressImage(file, 800, 0.85);
+        setCategoryFormData((prev) => ({ ...prev, image: compressed }));
+        showToast("Category photo uploaded and optimized for live display!");
+      } catch (err) {
+        alert(err.message || "Failed to process photo");
+      }
+    }
+  };
+
+  const handleQuickCategoryPhotoUpload = async (catId, file) => {
+    if (file) {
+      try {
+        const compressed = await compressImage(file, 800, 0.85);
+        updateCategory(catId, { image: compressed });
+        showToast("Category photo updated and published live!");
+      } catch (err) {
+        alert(err.message || "Failed to process photo");
+      }
+    }
+  };
+
+  const handleSaveCategory = (e) => {
+    e.preventDefault();
+    if (!categoryFormData.name.trim()) {
+      alert("Please provide a category name");
+      return;
+    }
+
+    if (editingCategory) {
+      updateCategory(editingCategory.id, categoryFormData);
+      showToast(`Category "${categoryFormData.name}" updated! Changes reflect live across the storefront.`);
+    } else {
+      addCategory(categoryFormData);
+      showToast(`Added new category "${categoryFormData.name}"! Changes reflect live.`);
+    }
+
+    setIsCategoryModalOpen(false);
+  };
+
+  const handleDeleteCategory = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete category "${name}"? Products in this category will remain preserved.`)) {
+      deleteCategory(id);
+      showToast(`Category "${name}" deleted.`);
     }
   };
 
@@ -842,13 +933,17 @@ export default function AdminDashboard() {
               <p className="text-[11px] text-sage font-medium mt-1">Live in store database</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs">
+            <div
+              onClick={() => setActiveTab("categories")}
+              className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs cursor-pointer hover:border-primary/50 transition-colors"
+              title="Click to view & edit Categories"
+            >
               <div className="flex items-center justify-between text-warmgray mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Categories</span>
                 <Layers size={18} className="text-butter-dark" />
               </div>
-              <p className="font-heading font-bold text-3xl text-cocoa">{categoriesData.length}</p>
-              <p className="text-[11px] text-warmgray mt-1">Product lines active</p>
+              <p className="font-heading font-bold text-3xl text-cocoa">{categories.length}</p>
+              <p className="text-[11px] text-warmgray mt-1">Click to edit &amp; customize</p>
             </div>
 
             <div className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs">
@@ -874,7 +969,7 @@ export default function AdminDashboard() {
 
           {/* Navigation Tabs */}
           <div className="flex items-center justify-between border-b border-border/60 mb-8 pb-3 flex-wrap gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setActiveTab("products")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
@@ -884,6 +979,17 @@ export default function AdminDashboard() {
                 }`}
               >
                 <Package size={16} /> Products Management ({products.length})
+              </button>
+
+              <button
+                onClick={() => setActiveTab("categories")}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+                  activeTab === "categories"
+                    ? "bg-cocoa text-white shadow-sm"
+                    : "bg-white text-warmgray hover:text-cocoa hover:bg-white/80"
+                }`}
+              >
+                <Layers size={16} /> Shop by Category Editor ({categories.length})
               </button>
 
               <button
@@ -930,7 +1036,7 @@ export default function AdminDashboard() {
                     className="input py-2 text-sm bg-white"
                   >
                     <option value="all">All Categories</option>
-                    {categoriesData.map((c) => (
+                    {categories.map((c) => (
                       <option key={c.slug} value={c.slug}>
                         {c.name}
                       </option>
@@ -1170,7 +1276,135 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* TAB 2: BANNERS & HERO EDITOR */}
+          {/* TAB 2: SHOP BY CATEGORY COLLECTIONS EDITOR */}
+          {activeTab === "categories" && (
+            <div className="space-y-6">
+              {/* Header and Controls */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-border/50 shadow-xs">
+                <div>
+                  <h2 className="font-heading font-bold text-xl text-cocoa flex items-center gap-2">
+                    <Layers size={20} className="text-primary" /> Shop by Category Collections
+                  </h2>
+                  <p className="text-xs text-warmgray mt-0.5">
+                    Customize titles, descriptions, and cover photos for categories featured on the homepage and catalog.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Reset all categories back to default collection?")) {
+                        resetCategories();
+                        showToast("Categories reset to default.");
+                      }
+                    }}
+                    className="btn-ghost text-xs py-2 px-3 text-warmgray flex items-center gap-1 border border-border/60 rounded-2xl"
+                  >
+                    <RefreshCw size={13} /> Reset Defaults
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenAddCategory}
+                    className="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-rose-sm whitespace-nowrap"
+                  >
+                    <Plus size={16} /> Add Category
+                  </button>
+                </div>
+              </div>
+
+              {/* Categories Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories.map((cat) => {
+                  const productCount = products.filter((p) => p.category === cat.slug).length;
+                  return (
+                    <div
+                      key={cat.id || cat.slug}
+                      className="bg-white rounded-3xl border border-border/50 shadow-xs overflow-hidden flex flex-col group hover:shadow-card transition-all"
+                    >
+                      {/* Image Preview with quick change */}
+                      <div className="relative aspect-video sm:aspect-square overflow-hidden bg-oatmeal border-b border-border/40">
+                        <img
+                          src={cat.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
+                          alt={cat.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                          }}
+                        />
+                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-xl text-xs font-bold text-cocoa shadow-xs flex items-center gap-1">
+                          <span>{cat.emoji || "🧶"}</span>
+                          <span>{cat.slug}</span>
+                        </div>
+                        <div className="absolute top-3 right-3 bg-primary text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-xs">
+                          {productCount} item{productCount !== 1 ? "s" : ""}
+                        </div>
+
+                        {/* Quick photo upload button */}
+                        <label className="absolute bottom-3 right-3 bg-white/90 hover:bg-white text-cocoa text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-all">
+                          <Upload size={13} className="text-primary" /> Change Photo
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleQuickCategoryPhotoUpload(cat.id, e.target.files?.[0])}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <h3 className="font-heading font-bold text-lg text-cocoa flex items-center gap-1.5">
+                              <span>{cat.emoji}</span> {cat.name}
+                            </h3>
+                            <Link
+                              to={`/shop/${cat.slug}`}
+                              target="_blank"
+                              className="text-warmgray hover:text-primary transition-colors p-1"
+                              title="View on storefront"
+                            >
+                              <ExternalLink size={14} />
+                            </Link>
+                          </div>
+                          <p className="text-xs text-warmgray mt-1.5 line-clamp-2 leading-relaxed">
+                            {cat.description || "No description provided."}
+                          </p>
+                        </div>
+
+                        <div className="pt-3 border-t border-border/40 flex items-center justify-between">
+                          <span className="text-[11px] text-warmgray">
+                            URL: <code className="bg-cream px-1.5 py-0.5 rounded text-cocoa font-mono">/shop/{cat.slug}</code>
+                          </span>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditCategory(cat)}
+                              className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1 font-semibold"
+                            >
+                              <Edit3 size={13} /> Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCategory(cat.id, cat.name)}
+                              className="p-1.5 text-warmgray hover:text-error hover:bg-red-50 rounded-xl transition-colors"
+                              title="Delete Category"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: BANNERS & HERO EDITOR */}
           {activeTab === "banners" && (
             <div className="space-y-8">
               {/* Sticky Top Action Bar */}
@@ -1634,7 +1868,7 @@ export default function AdminDashboard() {
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       >
-                        {categoriesData.map((c) => (
+                        {categories.map((c) => (
                           <option key={c.slug} value={c.slug}>
                             {c.name}
                           </option>
@@ -1779,6 +2013,210 @@ export default function AdminDashboard() {
                       className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center gap-2"
                     >
                       <Check size={16} /> {editingProduct ? "Update Product" : "Save & Publish"}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ADD / EDIT CATEGORY MODAL */}
+        <AnimatePresence>
+          {isCategoryModalOpen && (
+            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="bg-white rounded-4xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-border/40 relative max-h-[92vh] overflow-y-auto"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-border/40 pb-4 mb-6">
+                  <div>
+                    <h3 className="font-heading font-bold text-2xl text-cocoa">
+                      {editingCategory ? "Edit Category Collection" : "Add New Category Collection"}
+                    </h3>
+                    <p className="text-xs text-warmgray mt-0.5">
+                      Configure category details, cover image, and description for the storefront.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsCategoryModalOpen(false)}
+                    className="w-8 h-8 rounded-full bg-oatmeal hover:bg-border/60 text-warmgray hover:text-cocoa flex items-center justify-center text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveCategory} className="space-y-4">
+                  {/* Category Name & Emoji */}
+                  <div className="grid grid-cols-4 gap-3">
+                    <div className="col-span-3">
+                      <label className="label">Category Name *</label>
+                      <input
+                        type="text"
+                        required
+                        className="input"
+                        placeholder="e.g. Home Decor, Wearables, etc."
+                        value={categoryFormData.name}
+                        onChange={(e) => {
+                          const name = e.target.value;
+                          setCategoryFormData((prev) => ({
+                            ...prev,
+                            name,
+                            slug: editingCategory ? prev.slug : name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+                          }));
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Emoji Icon</label>
+                      <input
+                        type="text"
+                        className="input text-center text-lg"
+                        placeholder="🧸"
+                        value={categoryFormData.emoji}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, emoji: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quick Emoji Picker suggestions */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] text-warmgray mr-1">Quick pick:</span>
+                    {["🧸", "👜", "🏡", "🧣", "👶", "✨", "🧶", "🌸", "🎁", "☕"].map((em) => (
+                      <button
+                        key={em}
+                        type="button"
+                        onClick={() => setCategoryFormData((prev) => ({ ...prev, emoji: em }))}
+                        className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center border transition-all ${
+                          categoryFormData.emoji === em ? "border-primary bg-primary/10" : "border-border/50 hover:bg-oatmeal"
+                        }`}
+                      >
+                        {em}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Slug */}
+                  <div>
+                    <label className="label">URL Slug</label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warmgray text-xs font-mono">
+                        /shop/
+                      </span>
+                      <input
+                        type="text"
+                        required
+                        className="input pl-16 text-sm font-mono"
+                        placeholder="home-decor"
+                        value={categoryFormData.slug}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="label">Description</label>
+                    <textarea
+                      rows={2}
+                      className="input text-sm"
+                      placeholder="Short description for collection cards..."
+                      value={categoryFormData.description}
+                      onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                    />
+                  </div>
+
+                  {/* Cover Photo */}
+                  <div className="p-4 rounded-3xl bg-cream/60 border border-border/50 space-y-3">
+                    <label className="label">Category Cover Image</label>
+                    <div className="flex gap-4 items-start">
+                      {/* Image Preview */}
+                      <div className="w-24 h-24 rounded-2xl overflow-hidden bg-oatmeal flex-shrink-0 border border-border/60 shadow-xs relative">
+                        {categoryFormData.image ? (
+                          <img
+                            src={categoryFormData.image}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-warmgray text-xs">
+                            No image
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 space-y-2">
+                        {/* URL input */}
+                        <input
+                          type="text"
+                          placeholder="Paste image URL (https://...)"
+                          className="input text-xs py-2"
+                          value={categoryFormData.image}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, image: e.target.value })}
+                        />
+
+                        {/* Local file upload with auto-compression */}
+                        <div className="flex items-center gap-2">
+                          <label className="btn-secondary text-xs py-1.5 px-3 rounded-xl cursor-pointer flex items-center gap-1.5 font-medium">
+                            <Upload size={13} /> Upload from Computer
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleCategoryFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                          <span className="text-[11px] text-warmgray">Auto-compressed JPG, PNG</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live Card Preview (as shown on Homepage) */}
+                  <div className="pt-2">
+                    <p className="text-xs font-bold text-warmgray mb-2 uppercase tracking-wider">
+                      Storefront "Shop by Category" Card Preview
+                    </p>
+                    <div className="max-w-[200px] mx-auto rounded-3xl overflow-hidden bg-white shadow-card border border-border/40">
+                      <div className="aspect-square overflow-hidden bg-oatmeal">
+                        <img
+                          src={categoryFormData.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                          }}
+                        />
+                      </div>
+                      <div className="p-3 text-center">
+                        <p className="font-heading font-semibold text-sm text-cocoa">
+                          {categoryFormData.name || "Category Name"}
+                        </p>
+                        <p className="text-xs text-warmgray mt-0.5">4 items</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                    <button
+                      type="button"
+                      onClick={() => setIsCategoryModalOpen(false)}
+                      className="btn-ghost py-2.5 px-5 text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center gap-2"
+                    >
+                      <Check size={16} /> {editingCategory ? "Update Category" : "Save & Publish"}
                     </button>
                   </div>
                 </form>

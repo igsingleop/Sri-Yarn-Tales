@@ -10,7 +10,7 @@ import ProductCard, { ProductCardSkeleton } from "../components/product/ProductC
 import { getProducts, getCategories } from "../lib/api";
 import { brand } from "../config/brand";
 import { debounce } from "../lib/utils";
-import { useProductStore } from "../store";
+import { useProductStore, useCategoryStore } from "../store";
 
 const sortOptions = [
   { value: "featured", label: "Featured" },
@@ -213,6 +213,7 @@ export default function Shop() {
   }, [filters, sort]);
 
   const storeProducts = useProductStore((s) => s.products);
+  const storeCategories = useCategoryStore((s) => s.categories);
 
   // Fetch products immediately on storeProducts or filter change
   useEffect(() => {
@@ -239,7 +240,7 @@ export default function Shop() {
 
   useEffect(() => {
     getCategories().then(setCategories);
-  }, [storeProducts]);
+  }, [storeProducts, storeCategories]);
 
   const activeFilterCount = [
     filters.category,

@@ -126,6 +126,20 @@ export const useProductStore = create(
     }),
     {
       name: "syt-custom-products",
+      onRehydrateStorage: () => (state) => {
+        if (state?.products && Array.isArray(state.products)) {
+          state.products = state.products.map((item) => {
+            if (item?.images && Array.isArray(item.images)) {
+              item.images = item.images.map((img) =>
+                img?.includes("photo-1568760970073-ce3f8af8cb72")
+                  ? "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"
+                  : img
+              );
+            }
+            return item;
+          });
+        }
+      },
     }
   )
 );

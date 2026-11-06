@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { formatINR } from "../lib/utils";
 
 // ---- Cart Store ----
 export const useCartStore = create(
@@ -137,3 +136,4 @@ export const useUIStore = create((set) => ({
 export { useAuthStore } from "./authStore";
 export { useProductStore } from "./productStore";
 export { useBannerStore } from "./bannerStore";
+export { useCategoryStore } from "./categoryStore";

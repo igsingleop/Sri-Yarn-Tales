@@ -21,7 +21,7 @@ const DEFAULT_BANNER_STATE = {
     heroImages: [
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
       "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&h=400&fit=crop",
     ],
   },
@@ -73,6 +73,15 @@ export const useBannerStore = create(
     }),
     {
       name: "syt-custom-banners",
+      onRehydrateStorage: () => (state) => {
+        if (state?.heroBanner?.heroImages && Array.isArray(state.heroBanner.heroImages)) {
+          state.heroBanner.heroImages = state.heroBanner.heroImages.map((img) =>
+            img?.includes("photo-1568760970073-ce3f8af8cb72")
+              ? "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop"
+              : img
+          );
+        }
+      },
     }
   )
 );

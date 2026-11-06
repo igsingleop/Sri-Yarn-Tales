@@ -2,10 +2,24 @@ import defaultProducts from "../data/products.json";
 import reviewsData from "../data/reviews.json";
 import categoriesData from "../data/categories.json";
 import { useProductStore } from "../store/productStore";
+import { useCategoryStore } from "../store/categoryStore";
 
 // Instant resolver for client state, with optional delay for operations that simulate network checkout
 const delay = (ms = 0) =>
   ms > 0 ? new Promise((res) => setTimeout(res, ms)) : Promise.resolve();
+
+// Get current live categories
+export const getCurrentCategories = () => {
+  try {
+    const storeCategories = useCategoryStore?.getState?.()?.categories;
+    if (storeCategories && Array.isArray(storeCategories) && storeCategories.length > 0) {
+      return [...storeCategories];
+    }
+  } catch {
+    // fallback
+  }
+  return [...categoriesData];
+};
 
 // Get current live products (from persistent store or fallback to JSON)
 export const getCurrentProducts = () => {
@@ -134,7 +148,8 @@ export const searchProducts = async (query) => {
 export const getCategories = async () => {
   await delay(0);
   const products = getCurrentProducts();
-  return categoriesData.map((cat) => ({
+  const rawCategories = getCurrentCategories();
+  return rawCategories.map((cat) => ({
     ...cat,
     count: products.filter((p) => p.category === cat.slug).length,
   }));

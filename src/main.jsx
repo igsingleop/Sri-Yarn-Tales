@@ -5,12 +5,14 @@ import App from "./App";
 import { initCrossTabSync } from "./store/sync";
 import { useProductStore } from "./store/productStore";
 import { useBannerStore } from "./store/bannerStore";
+import { useCategoryStore } from "./store/categoryStore";
 import { useAuthStore } from "./store/authStore";
 
 // Initialize instantaneous cross-tab and cross-window sync
 initCrossTabSync({
   setProducts: (products) => useProductStore.setState({ products }),
   setBanners: (banners) => useBannerStore.setState(banners),
+  setCategories: (categories) => useCategoryStore.setState({ categories }),
   setAuth: (user) => useAuthStore.setState({ user }),
   setAdminAuth: (adminUser) => useAuthStore.setState({ adminUser }),
 });

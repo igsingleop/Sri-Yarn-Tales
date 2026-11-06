@@ -41,7 +41,7 @@ export function broadcastSync(type, payload) {
  * @param {Function} stores.setBanners
  * @param {Function} stores.setAuth
  */
-export function initCrossTabSync({ setProducts, setBanners, setAuth, setAdminAuth }) {
+export function initCrossTabSync({ setProducts, setBanners, setCategories, setAuth, setAdminAuth }) {
   if (typeof window === "undefined") return () => {};
 
   // 1. BroadcastChannel listener (fastest, microsecond cross-tab sync)
@@ -52,6 +52,8 @@ export function initCrossTabSync({ setProducts, setBanners, setAuth, setAdminAut
         setProducts(payload);
       } else if (type === "SYNC_BANNERS" && setBanners && payload) {
         setBanners(payload);
+      } else if (type === "SYNC_CATEGORIES" && setCategories && payload) {
+        setCategories(payload);
       } else if (type === "SYNC_AUTH" && setAuth) {
         setAuth(payload);
       } else if (type === "SYNC_ADMIN_AUTH" && setAdminAuth) {
@@ -73,6 +75,11 @@ export function initCrossTabSync({ setProducts, setBanners, setAuth, setAdminAut
         const parsed = JSON.parse(event.newValue);
         if (parsed?.state) {
           setBanners(parsed.state);
+        }
+      } else if (event.key === "syt-custom-categories" && setCategories) {
+        const parsed = JSON.parse(event.newValue);
+        if (parsed?.state?.categories && Array.isArray(parsed.state.categories)) {
+          setCategories(parsed.state.categories);
         }
       } else if (event.key === "syt-auth") {
         const parsed = JSON.parse(event.newValue);

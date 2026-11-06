@@ -10,7 +10,7 @@ import ProductCard, { ProductCardSkeleton } from "../components/product/ProductC
 import { getBestsellers, getNewArrivals, getCategories, getAllReviews } from "../lib/api";
 import { brand } from "../config/brand";
 import { formatINR } from "../lib/utils";
-import { useBannerStore, useProductStore } from "../store";
+import { useBannerStore, useProductStore, useCategoryStore } from "../store";
 
 // ---- Floating Blob ----
 function Blob({ className, style }) {
@@ -87,7 +87,7 @@ function Hero() {
   const images = heroBanner.heroImages || [
     "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
     "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=400&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop",
     "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&h=400&fit=crop",
   ];
 
@@ -222,7 +222,7 @@ function Hero() {
                   className="rounded-3xl overflow-hidden shadow-warm aspect-video"
                 >
                   <img
-                    src={images[2] || "https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=400&h=300&fit=crop"}
+                    src={images[2] || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop"}
                     alt="Handmade crochet item 3"
                     className="w-full h-full object-cover"
                   />
@@ -648,7 +648,7 @@ function InstagramGrid() {
     "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop",
     "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&h=300&fit=crop",
     "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1568760970073-ce3f8af8cb72?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=300&h=300&fit=crop",
     "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=300&h=300&fit=crop",
     "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
   ];
@@ -818,6 +818,7 @@ function PromoBannerSection() {
 // ---- Main Home Page ----
 export default function Home() {
   const storeProducts = useProductStore((s) => s.products);
+  const storeCategories = useCategoryStore((s) => s.categories);
   const [bestsellers, setBestsellers] = useState(() =>
     storeProducts.filter((p) => p.isBestseller).slice(0, 4)
   );
@@ -837,7 +838,7 @@ export default function Home() {
     getCategories().then(setCategories);
     getAllReviews().then(setReviews);
     setLoading(false);
-  }, [storeProducts]);
+  }, [storeProducts, storeCategories]);
 
   return (
     <>
