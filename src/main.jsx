@@ -1,5 +1,5 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import "./styles/index.css";
 import App from "./App";
 import { initCrossTabSync } from "./store/sync";
@@ -17,8 +17,15 @@ initCrossTabSync({
   setAdminAuth: (adminUser) => useAuthStore.setState({ adminUser }),
 });
 
-createRoot(document.getElementById("root")).render(
+const container = document.getElementById("root");
+const appElement = (
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
+if (container && container.hasChildNodes()) {
+  hydrateRoot(container, appElement);
+} else if (container) {
+  createRoot(container).render(appElement);
+}

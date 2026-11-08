@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, Component } from "react";
+import React, { Suspense, Component } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
@@ -7,18 +7,17 @@ import Layout from "./components/layout/Layout";
 import PageLoader from "./components/ui/PageLoader";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
-// ---- Lazy-loaded pages ----
-const Home = lazy(() => import("./pages/Home"));
-const Shop = lazy(() => import("./pages/Shop"));
-const ProductDetail = lazy(() => import("./pages/ProductDetail"));
-const Cart = lazy(() => import("./pages/Cart"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const Wishlist = lazy(() => import("./pages/Wishlist"));
-const CustomOrders = lazy(() => import("./pages/CustomOrders"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Account = lazy(() => import("./pages/Account"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+import Home from "./pages/Home";
+import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Wishlist from "./pages/Wishlist";
+import CustomOrders from "./pages/CustomOrders";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Account from "./pages/Account";
+import NotFound from "./pages/NotFound";
 
 // Robust React Error Boundary
 class ErrorBoundary extends Component {
@@ -106,17 +105,23 @@ function AnimatedRoutes() {
   );
 }
 
+export function AppContent() {
+  return (
+    <Layout>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <AnimatedRoutes />
+        </Suspense>
+      </ErrorBoundary>
+    </Layout>
+  );
+}
+
 export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <Layout>
-          <ErrorBoundary>
-            <Suspense fallback={<PageLoader />}>
-              <AnimatedRoutes />
-            </Suspense>
-          </ErrorBoundary>
-        </Layout>
+        <AppContent />
       </BrowserRouter>
     </HelmetProvider>
   );

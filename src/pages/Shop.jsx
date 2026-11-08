@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import {
   SlidersHorizontal, Grid2x2, Grid3x3, X, ChevronDown,
   Star, Check
@@ -185,16 +185,40 @@ function FilterSidebar({ filters, setFilters, categories, onClose, mobile = fals
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { category: routeCategory } = useParams();
+  const storeProducts = useProductStore((s) => s.products);
+  const storeCategories = useCategoryStore((s) => s.categories);
+
+  const initialCat = routeCategory || searchParams.get("category") || null;
+  const initialSearch = searchParams.get("search") || "";
+
+  const [products, setProducts] = useState(() => {
+    let list = Array.isArray(storeProducts) ? storeProducts : [];
+    if (initialCat) {
+      list = list.filter((p) => p.category === initialCat);
+    }
+    return list;
+  });
+
+  const [categories, setCategories] = useState(() => {
+    return Array.isArray(storeCategories) && storeCategories.length > 0
+      ? storeCategories.map((cat) => ({
+          ...cat,
+          count: (Array.isArray(storeProducts) ? storeProducts : []).filter(
+            (p) => p.category === cat.slug
+          ).length,
+        }))
+      : [];
+  });
+
+  const [loading, setLoading] = useState(false);
   const [gridCols, setGridCols] = useState(3);
   const [filterOpen, setFilterOpen] = useState(false);
   const [sort, setSort] = useState(searchParams.get("sort") || "featured");
 
   const [filters, setFilters] = useState({
-    category: searchParams.get("category") || null,
-    search: searchParams.get("search") || "",
+    category: initialCat,
+    search: initialSearch,
     minPrice: 0,
     maxPrice: 5000,
     colors: [],
@@ -202,18 +226,6 @@ export default function Shop() {
     inStock: false,
     isCustomizable: false,
   });
-
-  // Sync filters to URL
-  useEffect(() => {
-    const params = {};
-    if (filters.category) params.category = filters.category;
-    if (filters.search) params.search = filters.search;
-    if (sort !== "featured") params.sort = sort;
-    setSearchParams(params, { replace: true });
-  }, [filters, sort]);
-
-  const storeProducts = useProductStore((s) => s.products);
-  const storeCategories = useCategoryStore((s) => s.categories);
 
   // Fetch products immediately on storeProducts or filter change
   useEffect(() => {
@@ -261,7 +273,11 @@ export default function Shop() {
   return (
     <>
       <Helmet>
-        <title>Shop Handmade Crochet | Sri Yarn &amp; Tales</title>
+        <title>
+          {filters.category
+            ? `${categories.find((c) => c.slug === filters.category)?.name || "Collection"} | Sri Yarn & Tales`
+            : "Shop Handmade Crochet | Sri Yarn & Tales"}
+        </title>
         <meta name="description" content="Browse our full collection of handmade crochet products — amigurumi, bags, home decor, wearables, baby items, and accessories." />
       </Helmet>
 
@@ -392,7 +408,7 @@ export default function Shop() {
             {/* Products grid */}
             <div className="flex-1 min-w-0">
               {loading ? (
-                <div className={`grid gap-4 sm:gap-6 ${gridCols === 2 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"}`}>
+                <div className={`grid gap-4 sm:gap-6 items-stretch ${gridCols === 2 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"}`}>
                   {Array(6).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)}
                 </div>
               ) : products.length === 0 ? (
@@ -412,7 +428,7 @@ export default function Shop() {
                   </button>
                 </motion.div>
               ) : (
-                <div className={`grid gap-4 sm:gap-6 ${gridCols === 2 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"}`}>
+                <div className={`grid gap-4 sm:gap-6 items-stretch ${gridCols === 2 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"}`}>
                   {products.map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} />
                   ))}

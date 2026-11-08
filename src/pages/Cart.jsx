@@ -68,7 +68,7 @@ export default function Cart() {
   return (
     <>
       <Helmet>
-        <title>Your Cart ({items.reduce((s, i) => s + i.qty, 0)} items) | Sri Yarn &amp; Tales</title>
+        <title>{`Your Cart (${items.reduce((s, i) => s + i.qty, 0)} items) | Sri Yarn & Tales`}</title>
       </Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

@@ -11,6 +11,7 @@ import { getBestsellers, getNewArrivals, getCategories, getAllReviews } from "..
 import { brand } from "../config/brand";
 import { formatINR } from "../lib/utils";
 import { useBannerStore, useProductStore, useCategoryStore } from "../store";
+import reviewsData from "../data/reviews.json";
 
 // ---- Floating Blob ----
 function Blob({ className, style }) {
@@ -391,7 +392,7 @@ function ProductSection({ title, subtitle, products, loading, viewAllLink }) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
           {loading
             ? Array(4).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)
             : products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)
@@ -825,8 +826,15 @@ export default function Home() {
   const [newArrivals, setNewArrivals] = useState(() =>
     storeProducts.filter((p) => p.isNew).slice(0, 4)
   );
-  const [categories, setCategories] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [categories, setCategories] = useState(() =>
+    (Array.isArray(storeCategories) ? storeCategories : []).map((cat) => ({
+      ...cat,
+      count: (Array.isArray(storeProducts) ? storeProducts : []).filter(
+        (p) => p.category === cat.slug
+      ).length,
+    }))
+  );
+  const [reviews, setReviews] = useState(() => reviewsData || []);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

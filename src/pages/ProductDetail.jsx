@@ -12,6 +12,7 @@ import { getProductBySlug, getReviewsByProduct, getRelatedProducts, checkPincode
 import { useCartStore, useWishlistStore, useProductStore } from "../store";
 import { formatINR, getDiscountPercent } from "../lib/utils";
 import { brand } from "../config/brand";
+import reviewsData from "../data/reviews.json";
 
 function RatingBar({ label, value, count, total }) {
   return (
@@ -62,13 +63,27 @@ function AccordionItem({ title, children }) {
 export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [related, setRelated] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const storeProducts = useProductStore((s) => s.products);
+
+  const initialProduct = Array.isArray(storeProducts)
+    ? storeProducts.find((item) => item.slug === slug)
+    : null;
+
+  const [product, setProduct] = useState(initialProduct || null);
+  const [reviews, setReviews] = useState(() => {
+    if (!initialProduct) return [];
+    return reviewsData.filter((r) => r.productId === initialProduct.id);
+  });
+  const [related, setRelated] = useState(() => {
+    if (!initialProduct || !Array.isArray(storeProducts)) return [];
+    return storeProducts
+      .filter((p) => p.category === initialProduct.category && p.id !== initialProduct.id)
+      .slice(0, 4);
+  });
+  const [loading, setLoading] = useState(!initialProduct);
   const [activeImg, setActiveImg] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(() => initialProduct?.colorNames?.[0] || null);
+  const [selectedSize, setSelectedSize] = useState(() => initialProduct?.sizes?.[0] || null);
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
   const [added, setAdded] = useState(false);
@@ -76,9 +91,7 @@ export default function ProductDetail() {
   const [pincodeResult, setPincodeResult] = useState(null);
   const [pincodeLoading, setPincodeLoading] = useState(false);
 
-  const storeProducts = useProductStore((s) => s.products);
   const addItem = useCartStore((s) => s.addItem);
-  const openCart = () => useUIStore?.getState?.()?.openCart?.();
   const { toggle, isWishlisted } = useWishlistStore();
   const wishlisted = product ? isWishlisted(product.id) : false;
 
@@ -182,7 +195,7 @@ export default function ProductDetail() {
   return (
     <>
       <Helmet>
-        <title>{product.name} | Sri Yarn &amp; Tales</title>
+        <title>{`${product.name} | Sri Yarn & Tales`}</title>
         <meta name="description" content={product.description.slice(0, 155)} />
         <script type="application/ld+json">
           {JSON.stringify({
@@ -279,7 +292,7 @@ export default function ProductDetail() {
                     }`}
                     aria-label={`View image ${i + 1}`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -604,7 +617,7 @@ export default function ProductDetail() {
         {related.length > 0 && (
           <section className="mt-16 pt-12 border-t border-border">
             <h2 className="section-title mb-8">You May Also Like</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 items-stretch">
               {related.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
           </section>

@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
-    "build": "node ./node_modules/vite/bin/vite.js build",
+    "build": "node ./node_modules/vite/bin/vite.js build && node ./node_modules/vite/bin/vite.js build --ssr src/entry-server.jsx --outDir dist/server && node scripts/prerender.js",
+    "build:client": "node ./node_modules/vite/bin/vite.js build",
+    "build:server": "node ./node_modules/vite/bin/vite.js build --ssr src/entry-server.jsx --outDir dist/server",
+    "prerender": "node scripts/prerender.js",
     "lint": "node ./node_modules/oxlint/bin/oxlint",
     "preview": "node ./node_modules/vite/bin/vite.js preview"
   },
