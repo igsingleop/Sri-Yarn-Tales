@@ -1,7 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Heart, Leaf, Clock, Award } from "lucide-react";
+import { Heart, Leaf, Clock, Award, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Counter({ to, suffix, label }) {
   const [count, setCount] = React.useState(0);
@@ -12,148 +13,171 @@ function Counter({ to, suffix, label }) {
         if (!started) {
           setStarted(true);
           let s = 0;
-          const step = to / 60;
+          const step = Math.max(1, Math.floor(to / 50));
           const t = setInterval(() => {
             s += step;
-            if (s >= to) { setCount(to); clearInterval(t); } else setCount(Math.floor(s));
-          }, 16);
+            if (s >= to) {
+              setCount(to);
+              clearInterval(t);
+            } else {
+              setCount(s);
+            }
+          }, 20);
         }
       }}
       viewport={{ once: true }}
-      className="text-center"
+      className="text-left"
     >
-      <p className="font-heading font-bold text-4xl text-cocoa">{count.toLocaleString("en-IN")}{suffix}</p>
-      <p className="text-warmgray text-sm mt-1">{label}</p>
+      <p className="font-heading font-black text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight">
+        {count.toLocaleString("en-IN")}{suffix}
+      </p>
+      <p className="text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-wider font-semibold mt-1">
+        {label}
+      </p>
     </motion.div>
   );
 }
 
 export default function About() {
   const values = [
-    { icon: Heart, title: "Made with Love", desc: "Every stitch is a labour of love. No machines, no shortcuts — just skill, patience, and passion." },
-    { icon: Leaf, title: "Sustainably Made", desc: "We choose yarns that are kind to the planet — natural fibres, minimal waste, plastic-free packaging." },
-    { icon: Clock, title: "Slow Craft", desc: "We believe in taking our time. Each piece is crafted slowly, thoughtfully, and without compromise." },
-    { icon: Award, title: "Premium Quality", desc: "We use only the finest yarn — soft, durable, and a joy to touch. Quality you can feel." },
+    { icon: Heart, title: "100% Handcrafted", desc: "Every loop is calibrated by human touch. Zero automation, no mass assembly." },
+    { icon: Leaf, title: "Natural Combed Fibres", desc: "Combed natural cotton and pure merino wool. Completely hypoallergenic and biodegradable." },
+    { icon: Clock, title: "Slow Craft Ethics", desc: "We dedicate hours of patient knotting to every piece so each item endures generations." },
+    { icon: Award, title: "Uncompromising Finish", desc: "Rigorous tension inspection and reinforced seam finishes for heirloom durability." },
   ];
 
   return (
     <>
       <Helmet>
-        <title>About Us | Sri Yarn &amp; Tales</title>
-        <meta name="description" content="Meet the maker behind Sri Yarn & Tales — a Bangalore-based handmade crochet brand built on love, slow craft, and sustainable yarn." />
+        <title>Our Story &amp; Atelier Philosophy | Sri Yarn &amp; Tales</title>
+        <meta name="description" content="Discover the philosophy behind Sri Yarn & Tales — artisanal Indian crochet brand elevating slow craft, natural fibres, and timeless minimalist essentials." />
       </Helmet>
 
-      <div>
-        {/* Hero */}
-        <section className="bg-gradient-hero py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.p className="text-primary font-accent text-xl mb-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              Our Story
-            </motion.p>
-            <motion.h1 className="section-title mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              From One Hook, A World of Warmth
+      <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
+        {/* Editorial Header */}
+        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-16 sm:py-24 px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+              The Atelier // Origins
+            </p>
+            <motion.h1
+              className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white leading-[1.05]"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              Every Stitch Has Intent. Zero Compromise.
             </motion.h1>
-            <motion.p className="text-warmgray text-lg max-w-2xl mx-auto leading-relaxed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-              Sri Yarn &amp; Tales was born in a cosy Bangalore apartment, fuelled by chai, soft yarn, and an 
-              unstoppable need to make things. What started as a personal creative outlet became a small business 
-              that ships handmade love to homes all across India.
+            <motion.p
+              className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+            >
+              Sri Yarn &amp; Tales was established in Bangalore, India, to rescue authentic artisanal crochet from fast-fashion obsolescence. We treat the hook as an instrument of slow architecture.
             </motion.p>
           </div>
         </section>
 
-        {/* Maker story */}
-        <section className="py-16">
+        {/* Maker Profile */}
+        <section className="py-16 sm:py-24 border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-                <div className="relative">
+            <div className="grid lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-5 relative">
+                <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
                   <img
-                    src="https://images.unsplash.com/photo-1612548403247-aa2873e9422d?w=700&h=550&fit=crop"
-                    alt="The maker crocheting by hand"
-                    className="rounded-4xl w-full shadow-rose-lg"
+                    src="https://images.unsplash.com/photo-1612548403247-aa2873e9422d?w=800&h=1000&fit=crop"
+                    alt="Artisan crafting crochet at Sri Yarn & Tales"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-warm text-center">
-                    <p className="font-accent text-primary text-2xl">5+ years</p>
-                    <p className="text-xs text-warmgray">of crocheting</p>
-                  </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div className="space-y-5" initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-                <h2 className="section-title">Meet the Maker</h2>
-                <p className="text-warmgray leading-relaxed">
-                  Hi! I'm Srimathi, the hands and heart behind every piece in this shop. I've been crocheting 
-                  since I was a teenager, taught by my grandmother who believed that the best gifts were always 
-                  handmade ones.
+              <div className="lg:col-span-7 space-y-6 text-left">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-400">
+                  Master Artisan &amp; Founder
                 </p>
-                <p className="text-warmgray leading-relaxed">
-                  After years of making things just for friends and family, I finally took the leap and opened 
-                  Sri Yarn &amp; Tales in 2023. I work from my home studio in Bangalore, surrounded by yarn in 
-                  every colour imaginable, a cup of filter coffee, and a lot of good music.
+                <h2 className="font-heading font-black text-2xl sm:text-4xl uppercase tracking-tight text-zinc-950 dark:text-white">
+                  Crafting Heirlooms for the Modern World
+                </h2>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+                  "I learned the mathematics and rhythm of crochet from my grandmother. While modern industrial manufacturing favors volume and disposability, handmade crochet remains one of the few textiles that no machine in the world can replicate. Every knot requires human fingers, tactile intuition, and patience."
                 </p>
-                <p className="text-warmgray leading-relaxed">
-                  Every order is packed personally by me, and I genuinely care about every single product that 
-                  leaves my hands. If you have a question, a custom request, or just want to chat about crochet 
-                  — please reach out. I'd love to hear from you! 🧶
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+                  Today, every single creation shipped from Sri Yarn &amp; Tales is hand-knotted with pure natural yarn, individually numbered, and checked for tension perfection before leaving our atelier.
                 </p>
                 <div className="pt-2">
-                  <p className="font-accent text-primary text-2xl">— Srimathi</p>
-                  <p className="text-warmgray text-sm">Founder &amp; Maker, Sri Yarn &amp; Tales</p>
+                  <p className="font-heading font-black text-sm uppercase tracking-wider text-zinc-950 dark:text-white">
+                    — Srimathi
+                  </p>
+                  <p className="text-xs text-zinc-400 uppercase tracking-widest font-semibold">
+                    Founder &amp; Creative Director // Sri Yarn &amp; Tales
+                  </p>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Values */}
-        <section className="py-16 bg-oatmeal">
+        {/* Pillars of Craft */}
+        <section className="py-16 sm:py-24 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-12">What We Stand For</h2>
+            <div className="text-center mb-12">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-2">
+                Brand Core
+              </p>
+              <h2 className="font-heading font-black text-2xl sm:text-4xl uppercase tracking-tight text-zinc-950 dark:text-white">
+                Our Core Principles
+              </h2>
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {values.map((v, i) => (
-                <motion.div key={v.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-3xl p-6 shadow-card text-center">
-                  <div className="w-14 h-14 bg-primary-light rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <v.icon size={24} className="text-primary" />
+              {values.map((v) => (
+                <div
+                  key={v.title}
+                  className="p-6 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 space-y-3"
+                >
+                  <div className="w-10 h-10 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-white">
+                    <v.icon size={18} />
                   </div>
-                  <h3 className="font-heading font-bold text-cocoa mb-2">{v.title}</h3>
-                  <p className="text-warmgray text-sm leading-relaxed">{v.desc}</p>
-                </motion.div>
+                  <h3 className="font-heading font-black text-sm uppercase tracking-wider text-zinc-950 dark:text-white">
+                    {v.title}
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed font-normal">
+                    {v.desc}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="py-16">
+        {/* Metrics Strip */}
+        <section className="py-16 sm:py-20 border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-3 gap-8">
-              <Counter to={2000} suffix="+" label="Happy Customers" />
-              <Counter to={5000} suffix="+" label="Pieces Handcrafted" />
-              <Counter to={500} suffix="+" label="5-Star Reviews" />
+              <Counter to={2000} suffix="+" label="Collectors Across India" />
+              <Counter to={5000} suffix="+" label="Handmade Pieces Finished" />
+              <Counter to={500} suffix="+" label="5-Star Verified Reviews" />
             </div>
           </div>
         </section>
 
-        {/* Process photos */}
-        <section className="py-16 bg-oatmeal">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-10">The Craft Process</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {[
-                "https://images.unsplash.com/photo-1576150854012-72bc5f9f7a03?w=400&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1604868179606-5cbea1e5fb60?w=400&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1612548403247-aa2873e9422d?w=400&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-              ].map((src, i) => (
-                <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }}
-                  className="aspect-square rounded-3xl overflow-hidden">
-                  <img src={src} alt={`Craft process step ${i+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-                </motion.div>
-              ))}
+        {/* CTA */}
+        <section className="py-20 text-center">
+          <div className="max-w-xl mx-auto px-4 space-y-4">
+            <h2 className="font-heading font-black text-2xl sm:text-3xl uppercase tracking-tight text-zinc-950 dark:text-white">
+              Experience Authentic Indian Crochet
+            </h2>
+            <p className="text-xs uppercase tracking-wider text-zinc-500">
+              Explore current seasonal catalog or commission a bespoke creation.
+            </p>
+            <div className="pt-4 flex justify-center gap-3">
+              <Link to="/shop" className="btn-primary">
+                Shop Collection <ArrowRight size={14} />
+              </Link>
+              <Link to="/custom-orders" className="btn-secondary">
+                Bespoke Orders
+              </Link>
             </div>
           </div>
         </section>

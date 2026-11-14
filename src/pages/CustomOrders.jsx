@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowRight, Check, Upload, Star, Sparkles, MessageSquare, Clock, Package } from "lucide-react";
+import { ArrowRight, Check, Upload, Star, Sparkles, MessageSquare, Package } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(2, "Name required"),
@@ -19,21 +19,21 @@ const schema = z.object({
 });
 
 const steps = [
-  { icon: MessageSquare, title: "Share Your Idea", desc: "Tell us what you have in mind — product type, colours, size, and any inspiration images." },
-  { icon: Star, title: "Get a Quote", desc: "We'll review your requirements and send a personalised quote within 24-48 hours." },
-  { icon: Sparkles, title: "We Start Crafting", desc: "Once you confirm the quote, our maker begins crafting your one-of-a-kind piece with love." },
-  { icon: Package, title: "Delivery", desc: "Your custom piece is carefully packed in our signature gift box and shipped to your door." },
+  { icon: MessageSquare, title: "1. Brief & Vision", desc: "Submit product category, dimensions, color preferences, and concept references." },
+  { icon: Star, title: "2. Atelier Quote", desc: "Our creative director evaluates feasibility and returns a custom quote within 24 hours." },
+  { icon: Sparkles, title: "3. Hand-Knotting", desc: "Upon confirmation, your piece is slowly hand-crafted stitch by stitch in our atelier." },
+  { icon: Package, title: "4. Insured Delivery", desc: "Arrives carefully boxed with proof of craftsmanship and care documentation." },
 ];
 
 const productTypes = [
-  "Amigurumi / Plushie",
-  "Bag or Tote",
-  "Home Decor",
-  "Wearable (Scarf, Beanie, etc.)",
-  "Baby Item",
-  "Accessories (Keychain, Earrings, etc.)",
-  "Custom Wedding / Event Piece",
-  "Other",
+  "Amigurumi Plush Collectible",
+  "Architectural Bag / Tote",
+  "Home Decor Installation",
+  "Wearable / Scarf / Beanie",
+  "Baby Heirloom Set",
+  "Bespoke Accessory",
+  "Event / Corporate Gifting",
+  "Other Unique Commission",
 ];
 
 export default function CustomOrders() {
@@ -42,162 +42,172 @@ export default function CustomOrders() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data) => {
-    await new Promise((r) => setTimeout(r, 1500)); // Simulate submission
+  const onSubmit = async () => {
+    await new Promise((r) => setTimeout(r, 1000));
     setSubmitted(true);
   };
 
   return (
     <>
       <Helmet>
-        <title>Custom Orders | Sri Yarn &amp; Tales</title>
-        <meta name="description" content="Order a completely custom handmade crochet piece — personalised to your colours, size, and design. Amigurumi, bags, wearables and more." />
+        <title>Bespoke Custom Orders | Sri Yarn &amp; Tales</title>
+        <meta name="description" content="Commission a completely custom artisanal crochet piece — personalised palette, dimensions, and embroidery." />
       </Helmet>
 
-      <div>
-        {/* Hero */}
-        <section className="bg-gradient-rose text-white py-20 px-4 text-center relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="absolute w-2 h-2 bg-white rounded-full animate-float"
-                style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 4}s` }} />
-            ))}
-          </div>
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <motion.p className="font-accent text-white/80 text-xl mb-3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              Made Just for You
-            </motion.p>
-            <motion.h1 className="font-heading font-bold mb-4" style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
-              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              Custom Crochet Orders
+      <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
+        {/* Editorial Header */}
+        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-16 sm:py-24 px-4 text-center">
+          <div className="max-w-3xl mx-auto space-y-4">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+              Bespoke Commissions
+            </p>
+            <motion.h1
+              className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              Tailored by Master Artisans
             </motion.h1>
-            <motion.p className="text-white/80 text-lg max-w-2xl mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-              Have a specific idea in mind? We'd love to bring it to life. Share your vision and we'll craft something 
-              completely unique — from custom amigurumi characters to personalised wedding favours.
+            <motion.p
+              className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+            >
+              Bring your design concepts to life. Whether a character collectible, bespoke colorway tote, or architectural home wall hanging, our atelier crafts each piece with meticulous care.
             </motion.p>
           </div>
         </section>
 
         {/* Process Steps */}
-        <section className="py-16 bg-oatmeal">
+        <section className="py-16 sm:py-20 border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-12">How It Works</h2>
+            <div className="text-center mb-12">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-2">
+                The Journey
+              </p>
+              <h2 className="font-heading font-black text-2xl sm:text-3xl uppercase tracking-tight text-zinc-950 dark:text-white">
+                How Bespoke Craft Works
+              </h2>
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {steps.map((s, i) => (
-                <motion.div key={s.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center mx-auto mb-4 relative">
-                    <s.icon size={28} className="text-primary" />
-                    <span className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">{i + 1}</span>
+              {steps.map((s) => (
+                <div
+                  key={s.title}
+                  className="p-6 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 space-y-3"
+                >
+                  <div className="w-10 h-10 rounded bg-black dark:bg-white text-white dark:text-black flex items-center justify-center">
+                    <s.icon size={18} />
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-cocoa mb-2">{s.title}</h3>
-                  <p className="text-warmgray text-sm leading-relaxed">{s.desc}</p>
-                </motion.div>
+                  <h3 className="font-heading font-black text-sm uppercase tracking-wider text-zinc-950 dark:text-white">
+                    {s.title}
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed font-normal">
+                    {s.desc}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Form */}
-        <section className="py-16">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        {/* Commission Form */}
+        <section className="py-16 sm:py-24">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
-              <h2 className="section-title">Tell Us About Your Project</h2>
-              <p className="section-subtitle mx-auto mt-3">
-                Fill in the details below and we'll get back to you within 24-48 hours with a quote.
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-2">
+                Atelier Inquiry
               </p>
+              <h2 className="font-heading font-black text-2xl sm:text-3xl uppercase tracking-tight text-zinc-950 dark:text-white">
+                Submit Your Project Details
+              </h2>
             </div>
 
             {submitted ? (
-              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                className="bg-white rounded-4xl p-10 shadow-warm text-center">
-                <div className="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check size={40} className="text-primary" />
+              <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-10 bg-zinc-50 dark:bg-zinc-950 text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <Check size={32} />
                 </div>
-                <h3 className="font-heading font-bold text-2xl text-cocoa mb-2">Request Received! 🎉</h3>
-                <p className="text-warmgray">
-                  Thank you! We've received your custom order request and will get back to you within 24-48 hours.
-                  Check your email for a confirmation.
+                <h3 className="font-heading font-black text-xl uppercase tracking-tight text-zinc-950 dark:text-white">
+                  Commission Request Received
+                </h3>
+                <p className="text-zinc-500 text-xs uppercase tracking-wider max-w-sm mx-auto">
+                  Our creative director will review your specifications and email a bespoke estimate within 24 hours.
                 </p>
-              </motion.div>
+              </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-4xl p-6 sm:p-10 shadow-warm space-y-5" noValidate>
+              <form onSubmit={handleSubmit(onSubmit)} className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 sm:p-10 bg-zinc-50/50 dark:bg-zinc-950/50 space-y-5" noValidate>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="label" htmlFor="cu-name">Your Name <span className="text-error">*</span></label>
-                    <input id="cu-name" {...register("name")} className={`input ${errors.name ? "input-error" : ""}`} placeholder="Priya Sharma" />
-                    {errors.name && <p className="text-xs text-error mt-1">{errors.name.message}</p>}
+                    <label className="label" htmlFor="cu-name">Full Name *</label>
+                    <input id="cu-name" {...register("name")} className={`input ${errors.name ? "input-error" : ""}`} placeholder="Deepak Kumar" />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                   </div>
                   <div>
-                    <label className="label" htmlFor="cu-email">Email <span className="text-error">*</span></label>
-                    <input id="cu-email" type="email" {...register("email")} className={`input ${errors.email ? "input-error" : ""}`} placeholder="priya@example.com" />
-                    {errors.email && <p className="text-xs text-error mt-1">{errors.email.message}</p>}
+                    <label className="label" htmlFor="cu-email">Email Address *</label>
+                    <input id="cu-email" type="email" {...register("email")} className={`input ${errors.email ? "input-error" : ""}`} placeholder="deepak@example.com" />
+                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="label" htmlFor="cu-phone">Mobile Number <span className="text-error">*</span></label>
-                  <div className="flex gap-2">
-                    <span className="input flex-shrink-0 w-16 text-center font-semibold bg-oatmeal">+91</span>
-                    <input id="cu-phone" type="tel" maxLength={10} {...register("phone")} className={`input flex-1 ${errors.phone ? "input-error" : ""}`} placeholder="98765 43210" />
-                  </div>
-                  {errors.phone && <p className="text-xs text-error mt-1">{errors.phone.message}</p>}
+                  <label className="label" htmlFor="cu-phone">Mobile Contact (+91) *</label>
+                  <input id="cu-phone" type="tel" maxLength={10} {...register("phone")} className={`input ${errors.phone ? "input-error" : ""}`} placeholder="9876543210" />
+                  {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
                 </div>
 
                 <div>
-                  <label className="label" htmlFor="cu-type">Product Type <span className="text-error">*</span></label>
+                  <label className="label" htmlFor="cu-type">Product Category *</label>
                   <select id="cu-type" {...register("productType")} className={`input ${errors.productType ? "input-error" : ""}`}>
-                    <option value="">Select product type...</option>
+                    <option value="">Select category...</option>
                     {productTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
-                  {errors.productType && <p className="text-xs text-error mt-1">{errors.productType.message}</p>}
+                  {errors.productType && <p className="text-xs text-red-500 mt-1">{errors.productType.message}</p>}
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="label" htmlFor="cu-size">Preferred Size</label>
-                    <input id="cu-size" {...register("size")} className="input" placeholder="e.g. 20cm tall, medium, A4 size..." />
+                    <label className="label" htmlFor="cu-size">Dimensions / Size</label>
+                    <input id="cu-size" {...register("size")} className="input" placeholder="e.g. 25cm height / Medium" />
                   </div>
                   <div>
-                    <label className="label" htmlFor="cu-colors">Colour Preferences</label>
-                    <input id="cu-colors" {...register("colorPreferences")} className="input" placeholder="e.g. pastel pink and white..." />
+                    <label className="label" htmlFor="cu-colors">Colorway Palette</label>
+                    <input id="cu-colors" {...register("colorPreferences")} className="input" placeholder="e.g. Obsidian black & cream" />
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="label" htmlFor="cu-budget">Budget Range <span className="text-error">*</span></label>
+                    <label className="label" htmlFor="cu-budget">Budget Tier *</label>
                     <select id="cu-budget" {...register("budget")} className={`input ${errors.budget ? "input-error" : ""}`}>
-                      <option value="">Select budget...</option>
-                      <option value="under-500">Under ₹500</option>
-                      <option value="500-1000">₹500 – ₹1,000</option>
-                      <option value="1000-2000">₹1,000 – ₹2,000</option>
-                      <option value="2000-5000">₹2,000 – ₹5,000</option>
+                      <option value="">Select budget tier...</option>
+                      <option value="under-1000">₹500 – ₹1,000</option>
+                      <option value="1000-2500">₹1,000 – ₹2,500</option>
+                      <option value="2500-5000">₹2,500 – ₹5,000</option>
                       <option value="5000+">₹5,000+</option>
                     </select>
-                    {errors.budget && <p className="text-xs text-error mt-1">{errors.budget.message}</p>}
+                    {errors.budget && <p className="text-xs text-red-500 mt-1">{errors.budget.message}</p>}
                   </div>
                   <div>
-                    <label className="label" htmlFor="cu-deadline">Required By</label>
+                    <label className="label" htmlFor="cu-deadline">Delivery Target Date</label>
                     <input id="cu-deadline" type="date" {...register("deadline")} className="input" min={new Date().toISOString().split("T")[0]} />
-                    <p className="text-xs text-warmgray mt-1">Please allow at least 2 weeks for custom orders</p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="label" htmlFor="cu-notes">Additional Notes / Description</label>
+                  <label className="label" htmlFor="cu-notes">Project Specifications</label>
                   <textarea id="cu-notes" {...register("notes")} rows={4} className="input resize-none"
-                    placeholder="Describe your idea in detail — reference images, character details, special requirements, personalization notes..." />
+                    placeholder="Describe specific details, character inspiration, custom embroidery initials, or requirements..." />
                 </div>
 
-                <div className="bg-oatmeal rounded-2xl p-4 flex items-start gap-3 text-sm text-warmgray">
-                  <Upload size={16} className="text-primary flex-shrink-0 mt-0.5" />
-                  <p>Have reference images? Please email them to <strong className="text-primary">hello@srigyarnandtales.com</strong> after submitting this form.</p>
+                <div className="p-3 rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-start gap-3 text-xs text-zinc-500">
+                  <Upload size={14} className="text-zinc-900 dark:text-white flex-shrink-0 mt-0.5" />
+                  <p>Inspiration images may be attached in reply to your email confirmation.</p>
                 </div>
 
-                <button type="submit" disabled={isSubmitting} className="btn-primary w-full btn-lg disabled:opacity-50">
-                  {isSubmitting ? "Sending..." : "Submit Custom Order Request"}
-                  <ArrowRight size={18} />
+                <button type="submit" disabled={isSubmitting} className="btn-primary w-full btn-lg">
+                  {isSubmitting ? "Transmitting..." : "Submit Bespoke Commission"}
+                  <ArrowRight size={14} />
                 </button>
               </form>
             )}

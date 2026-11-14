@@ -1,67 +1,42 @@
 import React from "react";
-import { motion } from "framer-motion";
 
-// Yarn ball SVG logo mark
-export function YarnBallLogo({ className = "w-8 h-8" }) {
+// Official Brand Logo Emblem (Image)
+export function OfficialLogoImage({ className = "w-10 h-10" }) {
   return (
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-label="Sri Yarn & Tales logo mark"
-    >
-      {/* Yarn ball body */}
-      <circle cx="24" cy="24" r="18" fill="#FBE9ED" stroke="#D4768A" strokeWidth="2" />
-      {/* Yarn strands */}
-      <path
-        d="M8 20C12 14 22 10 30 16C36 20 38 28 34 34"
-        stroke="#D4768A"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M10 28C16 24 24 22 30 26C34 29 35 34 32 38"
-        stroke="#B85C71"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.7"
-      />
-      <path
-        d="M6 18C8 12 18 6 26 10"
-        stroke="#D4768A"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.5"
-      />
-      {/* Looped thread / needle */}
-      <path
-        d="M32 10 Q42 6 44 16 Q46 24 38 28 Q34 30 30 28"
-        stroke="#D4768A"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Needle eye */}
-      <circle cx="44" cy="16" r="2" fill="#D4768A" />
-    </svg>
+    <img
+      src="/logo.jpg"
+      alt="Sri Yarn & Tales official emblem"
+      className={`rounded-full object-cover flex-shrink-0 shadow-sm border border-zinc-200/90 dark:border-zinc-750 bg-white ${className}`}
+      width={48}
+      height={48}
+      loading="eager"
+    />
   );
 }
 
-// Full logo with text
-export default function Logo({ showText = true, className = "" }) {
+// Backward-compatible YarnBallLogo export
+export function YarnBallLogo({ className = "w-8 h-8" }) {
+  return <OfficialLogoImage className={className} />;
+}
+
+// Full Official Logo lockup with optional typography
+export default function Logo({ showText = true, className = "", size = "md" }) {
+  const imgSize =
+    size === "lg"
+      ? "w-12 h-12 sm:w-14 sm:h-14"
+      : size === "sm"
+      ? "w-8 h-8"
+      : "w-10 h-10 sm:w-11 sm:h-11";
+
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <YarnBallLogo className="w-9 h-9 flex-shrink-0" />
+    <div className={`flex items-center gap-3 select-none ${className}`}>
+      <OfficialLogoImage className={imgSize} />
       {showText && (
         <div className="flex flex-col leading-none">
-          <span className="font-heading font-bold text-lg text-cocoa leading-none">
+          <span className="font-heading font-black text-sm tracking-[0.22em] uppercase text-zinc-950 dark:text-white transition-colors">
             Sri Yarn
           </span>
-          <span className="font-accent text-sm text-primary leading-none">
+          <span className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 dark:text-zinc-400 font-semibold mt-0.5 transition-colors">
             &amp; Tales
           </span>
         </div>

@@ -22,8 +22,8 @@ export const brand = {
   welcomeCoupon: "WELCOME10",          // 10% off first order
   welcomeDiscount: 10,
   logo: {
-    mark: "/logo-mark.svg",            // yarn-ball SVG
-    full: "/logo-full.svg",
+    mark: "/logo.jpg",
+    full: "/logo.jpg",
     alt: "Sri Yarn & Tales - Handmade Crochet",
   },
   seo: {

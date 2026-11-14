@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingBag, Eye, Star, Check, Zap } from "lucide-react";
+import { Heart, ShoppingBag, Check, Zap } from "lucide-react";
 import { formatINR, getDiscountPercent } from "../../lib/utils";
 import { useCartStore, useWishlistStore } from "../../store";
 
@@ -28,10 +28,10 @@ export default function ProductCard({ product, index = 0 }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.06 }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.3) }}
       className="group h-full flex flex-col"
     >
       <Link
@@ -39,61 +39,63 @@ export default function ProductCard({ product, index = 0 }) {
         className="flex flex-col h-full flex-1"
         aria-label={`View ${product.name}`}
       >
-        <div className="card overflow-hidden cursor-pointer h-full flex flex-col flex-1 border border-border/30">
-          {/* Image container */}
-          <div className="relative aspect-square sm:aspect-product bg-oatmeal overflow-hidden flex-shrink-0">
+        <div className="card overflow-hidden cursor-pointer h-full flex flex-col flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 hover:border-black dark:hover:border-white transition-colors duration-200">
+          {/* Edge-to-edge clean image container */}
+          <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden flex-shrink-0">
             <img
               src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               loading="lazy"
               width={400}
               height={400}
             />
 
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            {/* Badges — High-contrast top brand style */}
+            <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10 pointer-events-none">
               {product.isNew && (
-                <span className="badge-primary text-xs font-bold shadow-xs">New</span>
+                <span className="badge bg-white text-black border border-zinc-200 dark:bg-zinc-900 dark:text-white dark:border-zinc-700 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 shadow-xs">
+                  New
+                </span>
               )}
               {product.isBestseller && !product.isNew && (
-                <span className="badge bg-butter/95 text-cocoa text-xs font-bold shadow-xs">
+                <span className="badge bg-black text-white dark:bg-white dark:text-black text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 shadow-xs">
                   Bestseller
                 </span>
               )}
               {discount > 0 && (
-                <span className="badge-error text-xs font-bold shadow-xs">{discount}% off</span>
+                <span className="badge bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 shadow-xs">
+                  -{discount}%
+                </span>
               )}
             </div>
 
-            {/* Wishlist */}
+            {/* Minimalist Wishlist Button */}
             <button
               onClick={handleWishlist}
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-              className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm z-10 ${
+              className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 z-10 shadow-xs ${
                 wishlisted
-                  ? "bg-primary text-white scale-110"
-                  : "bg-white/90 text-warmgray hover:bg-primary hover:text-white"
+                  ? "bg-black text-white dark:bg-white dark:text-black scale-105"
+                  : "bg-white/90 dark:bg-black/80 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
               }`}
             >
-              <motion.div
-                animate={wishlisted ? { scale: [1, 1.3, 1] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
-              </motion.div>
+              <Heart
+                size={14}
+                className={wishlisted ? "fill-current" : ""}
+              />
             </button>
 
-            {/* Quick add button - always visible on all products */}
-            <div className="absolute bottom-3 left-3 right-3 z-10">
+            {/* Quick Add Button — Nike/Adidas permanent high-contrast action */}
+            <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10">
               <button
                 type="button"
                 onClick={handleAddToCart}
                 aria-label={`Add ${product.name} to cart`}
-                className={`w-full py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-2xl transition-all duration-200 shadow-sm flex items-center justify-center gap-1.5 hover:shadow-md hover:scale-[1.02] active:scale-95 ${
+                className={`w-full py-2.5 px-3 text-[11px] font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-1.5 active:scale-95 shadow-sm ${
                   added
-                    ? "bg-sage text-white shadow-sm"
-                    : "bg-primary text-white hover:bg-primary-dark"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                 }`}
               >
                 <AnimatePresence mode="wait">
@@ -105,7 +107,7 @@ export default function ProductCard({ product, index = 0 }) {
                       exit={{ scale: 0.8, opacity: 0 }}
                       className="flex items-center gap-1.5 font-bold"
                     >
-                      <Check size={16} /> Added!
+                      <Check size={14} /> Added
                     </motion.span>
                   ) : (
                     <motion.span
@@ -115,80 +117,72 @@ export default function ProductCard({ product, index = 0 }) {
                       exit={{ scale: 0.8, opacity: 0 }}
                       className="flex items-center gap-1.5"
                     >
-                      <ShoppingBag size={16} /> Quick Add
+                      <ShoppingBag size={13} /> Quick Add
                     </motion.span>
                   )}
                 </AnimatePresence>
               </button>
             </div>
 
-            {/* Out of stock */}
+            {/* Out of stock overlay */}
             {product.stock === 0 && (
-              <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-20">
-                <span className="bg-cocoa text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                  Out of Stock
+              <div className="absolute inset-0 bg-white/80 dark:bg-black/80 flex items-center justify-center z-20">
+                <span className="bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">
+                  Sold Out
                 </span>
               </div>
             )}
           </div>
 
-          {/* Product info - flexible vertical layout with pinned bottom */}
-          <div className="p-4 flex-1 flex flex-col justify-between">
-            {/* Top section: Category, Title, Ratings */}
+          {/* Product details — Fixed-height layout with strict alignment */}
+          <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+            {/* Upper: Category, Title, Rating */}
             <div>
               {/* Category */}
-              <p className="text-xs text-warmgray capitalize mb-1 font-medium tracking-wide">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-1">
                 {product.category.replace("-", " ")}
               </p>
 
-              {/* Title - fixed 2-line height (h-11 = 44px) so 1-line and 2-line titles occupy identical height */}
-              <h3 className="font-heading font-semibold text-cocoa text-base leading-snug line-clamp-2 h-11 flex items-start group-hover:text-primary transition-colors">
+              {/* Title — strictly clamped to 2 lines with fixed height */}
+              <h3 className="font-heading font-bold text-zinc-950 dark:text-white text-sm sm:text-base leading-snug line-clamp-2 h-10 flex items-start group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                 {product.name}
               </h3>
 
-              {/* Rating row - fixed height for perfect horizontal alignment */}
-              <div className="flex items-center gap-1.5 h-5 mt-1.5 mb-2.5">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star
-                      key={s}
-                      size={12}
-                      className={
-                        s <= Math.round(product.rating)
-                          ? "text-butter-dark fill-butter-dark"
-                          : "text-border"
-                      }
-                      fill={s <= Math.round(product.rating) ? "currentColor" : "none"}
-                    />
-                  ))}
+              {/* Rating row */}
+              <div className="flex items-center gap-1.5 h-4 mt-1.5 mb-2">
+                <div className="flex text-amber-500 dark:text-amber-400">
+                  {"★".repeat(Math.round(product.rating || 5))}
+                  {"☆".repeat(5 - Math.round(product.rating || 5))}
                 </div>
-                <span className="text-xs text-warmgray">({product.reviewCount})</span>
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium">
+                  ({product.reviewCount})
+                </span>
               </div>
             </div>
 
-            {/* Bottom section: Price and Customizable status with consistent spacing */}
-            <div className="mt-auto pt-2 border-t border-border/30">
-              <div className="flex items-baseline gap-2 h-7">
-                <span className="price text-lg font-bold text-primary">
+            {/* Lower: Price and Status Pinned */}
+            <div className="mt-auto pt-2.5 border-t border-zinc-100 dark:border-zinc-900">
+              <div className="flex items-baseline gap-2 h-6">
+                <span className="price text-base sm:text-lg font-black text-zinc-950 dark:text-white">
                   {formatINR(product.price)}
                 </span>
                 {product.comparePrice && (
-                  <span className="price-compare text-sm text-warmgray line-through">
+                  <span className="price-compare text-xs text-zinc-400 dark:text-zinc-500 line-through">
                     {formatINR(product.comparePrice)}
                   </span>
                 )}
               </div>
 
-              {/* Customizable / status slot with fixed height so every card is equal height */}
-              <div className="h-5 flex items-center mt-1">
+              {/* Customisable status badge */}
+              <div className="h-4 flex items-center mt-1">
                 {product.isCustomizable ? (
-                  <div className="flex items-center gap-1 text-xs text-sage-dark font-medium">
-                    <Zap size={11} className="text-sage" />
+                  <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold tracking-tight">
+                    <Zap size={11} />
                     <span>Customisable</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 text-xs text-warmgray font-medium">
-                    <Check size={11} className="text-sage" />
+                  <div className="flex items-center gap-1 text-[11px] text-zinc-400 dark:text-zinc-500 font-medium">
+                    <Check size={11} className="text-zinc-400" />
                     <span>Ready to Ship</span>
                   </div>
                 )}
@@ -201,20 +195,20 @@ export default function ProductCard({ product, index = 0 }) {
   );
 }
 
-// Skeleton loader
+// Minimalist Skeleton Loader
 export function ProductCardSkeleton() {
   return (
-    <div className="card overflow-hidden h-full flex flex-col border border-border/30">
-      <div className="aspect-square sm:aspect-product skeleton flex-shrink-0" />
+    <div className="card overflow-hidden h-full flex flex-col bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+      <div className="aspect-square skeleton flex-shrink-0" />
       <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div className="space-y-2">
-          <div className="skeleton h-3 w-16 rounded" />
-          <div className="skeleton h-11 w-full rounded" />
-          <div className="skeleton h-4 w-24 rounded" />
+          <div className="skeleton h-3 w-16 rounded-xs" />
+          <div className="skeleton h-10 w-full rounded-xs" />
+          <div className="skeleton h-3 w-20 rounded-xs" />
         </div>
-        <div className="space-y-1.5 pt-2 border-t border-border/20">
-          <div className="skeleton h-6 w-20 rounded" />
-          <div className="skeleton h-4 w-16 rounded" />
+        <div className="space-y-1 pt-2.5 border-t border-zinc-100 dark:border-zinc-900">
+          <div className="skeleton h-5 w-24 rounded-xs" />
+          <div className="skeleton h-3 w-16 rounded-xs" />
         </div>
       </div>
     </div>

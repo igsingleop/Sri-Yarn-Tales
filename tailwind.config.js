@@ -1,9 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
+        // Top-brand high contrast & zinc palette
+        zinc: {
+          50: "#fafafa",
+          100: "#f4f4f5",
+          200: "#e4e4e7",
+          300: "#d4d4d8",
+          400: "#a1a1aa",
+          500: "#71717a",
+          600: "#52525b",
+          700: "#3f3f46",
+          800: "#27272a",
+          900: "#18181b",
+          950: "#09090b",
+        },
         // Primary palette
         primary: {
           DEFAULT: "#D4768A",
@@ -59,10 +74,11 @@ export default {
         success: "#8FA98B",
       },
       fontFamily: {
-        sans: ["Poppins", "system-ui", "-apple-system", "sans-serif"],
-        heading: ["Poppins", "sans-serif"],
-        body: ["Poppins", "sans-serif"],
+        sans: ["'Plus Jakarta Sans'", "Poppins", "system-ui", "-apple-system", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "Poppins", "sans-serif"],
+        body: ["'Plus Jakarta Sans'", "Poppins", "sans-serif"],
         accent: ["Caveat", "cursive"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
       },
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "1rem" }],

@@ -1,16 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
-  Heart, Mail, Phone, MapPin,
-  CreditCard, Shield, Package, RefreshCw
+  Heart, Shield, Package, RefreshCw
 } from "lucide-react";
 import Logo from "../ui/Logo";
 import { brand } from "../../config/brand";
 
-function Instagram({ className, size = 18 }) {
+function InstagramIcon({ className = "w-4 h-4" }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
@@ -18,168 +16,168 @@ function Instagram({ className, size = 18 }) {
   );
 }
 
-function Facebook({ className, size = 18 }) {
+function FacebookIcon({ className = "w-4 h-4" }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   );
 }
 
 const footerLinks = {
-  Shop: [
+  Collections: [
     { label: "Amigurumi Toys", to: "/shop/amigurumi" },
     { label: "Bags & Totes", to: "/shop/bags" },
     { label: "Home Decor", to: "/shop/home-decor" },
-    { label: "Wearables", to: "/shop/wearables" },
+    { label: "Wearables & Scarves", to: "/shop/wearables" },
     { label: "Baby Items", to: "/shop/baby" },
     { label: "Accessories", to: "/shop/accessories" },
   ],
-  Company: [
-    { label: "About Us", to: "/about" },
-    { label: "Custom Orders", to: "/custom-orders" },
-    { label: "Contact", to: "/contact" },
-    { label: "My Account", to: "/account" },
-    { label: "Track Order", to: "/account" },
+  Atelier: [
+    { label: "Our Story & Ethics", to: "/about" },
+    { label: "Bespoke Commissions", to: "/custom-orders" },
+    { label: "Contact Atelier", to: "/contact" },
+    { label: "Collector Account", to: "/account" },
     { label: "Admin Portal", to: "/admin" },
   ],
-  Policies: [
+  ClientCare: [
     { label: "Shipping Policy", to: "/shipping" },
-    { label: "Returns & Refunds", to: "/returns" },
+    { label: "Returns & Exchanges", to: "/returns" },
     { label: "Privacy Policy", to: "/privacy" },
     { label: "Terms of Service", to: "/terms" },
-    { label: "FAQ", to: "/faq" },
+    { label: "FAQ & Care Guide", to: "/faq" },
   ],
 };
 
 const trustBadges = [
-  { icon: Shield, label: "Secure Payments" },
-  { icon: Package, label: "Gift Packaging" },
-  { icon: RefreshCw, label: "Easy Returns" },
-  { icon: Heart, label: "Handmade with Love" },
+  { icon: Shield, label: "Encrypted Transactions" },
+  { icon: Package, label: "Artisanal Gift Packaging" },
+  { icon: RefreshCw, label: "Seamless Returns" },
+  { icon: Heart, label: "100% Handcrafted in India" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-cocoa text-white relative overflow-hidden">
-      {/* Decorative top edge */}
-      <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-
-      {/* Trust badges strip */}
-      <div className="border-b border-white/10">
+    <footer className="bg-black text-white dark:bg-[#070709] border-t border-zinc-800 transition-colors">
+      {/* Top Value Badges Strip */}
+      <div className="border-b border-zinc-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {trustBadges.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-3 text-sm text-white/70">
-                <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Icon size={16} className="text-primary" />
+              <div key={label} className="flex items-center gap-3 text-xs text-zinc-400">
+                <div className="w-8 h-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-white">
+                  <Icon size={14} />
                 </div>
-                <span className="font-medium">{label}</span>
+                <span className="font-bold uppercase tracking-wider">{label}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Main footer content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand column */}
+      {/* Main Footer Links */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+          {/* Brand Manifesto Column */}
           <div className="lg:col-span-2 space-y-4">
-            <Logo className="[&_span]:text-white [&_.font-accent]:text-primary" />
-            <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-              Handcrafted crochet products made with love in India. 
-              Every stitch tells a story, every piece is one-of-a-kind.
+            <Logo className="text-white [&_span]:text-white" />
+            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-sm font-normal">
+              Sri Yarn &amp; Tales is an artisanal crochet house based in India. Every creation is hand-knotted with pure combed fibres, redefining slow luxury for modern living.
             </p>
 
-            {/* Social */}
-            <div className="flex gap-3 pt-2">
+            {/* Social Channels */}
+            <div className="flex gap-2.5 pt-2">
               <a
                 href={brand.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-9 h-9 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
                 aria-label="Instagram"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors"
               >
-                <Instagram size={18} />
+                <InstagramIcon className="w-4 h-4" />
               </a>
               <a
                 href={brand.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-9 h-9 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
                 aria-label="Facebook"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors"
               >
-                <Facebook size={18} />
+                <FacebookIcon className="w-4 h-4" />
               </a>
-              {/* WhatsApp */}
-              <a
-                href={`https://wa.me/${brand.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors text-sm font-bold"
-              >
-                WA
-              </a>
-            </div>
-
-            {/* Contact info */}
-            <div className="space-y-2 text-sm text-white/60 pt-2">
-              <a href={`mailto:${brand.email}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Mail size={14} /> {brand.email}
-              </a>
-              <a href={`tel:${brand.phone}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Phone size={14} /> {brand.phone}
-              </a>
-              <p className="flex items-center gap-2">
-                <MapPin size={14} /> {brand.address}
-              </p>
             </div>
           </div>
 
-          {/* Nav columns */}
-          {Object.entries(footerLinks).map(([heading, links]) => (
-            <div key={heading} className="space-y-3">
-              <h3 className="font-heading font-semibold text-white text-sm uppercase tracking-wider">
-                {heading}
-              </h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-white/60 text-sm hover:text-primary transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Links Column: Collections */}
+          <div className="space-y-3">
+            <p className="font-heading font-black text-xs uppercase tracking-[0.2em] text-white">
+              Collections
+            </p>
+            <ul className="space-y-2">
+              {footerLinks.Collections.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.to}
+                    className="text-xs text-zinc-400 hover:text-white transition-colors uppercase tracking-wider font-medium"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Links Column: Atelier */}
+          <div className="space-y-3">
+            <p className="font-heading font-black text-xs uppercase tracking-[0.2em] text-white">
+              Atelier
+            </p>
+            <ul className="space-y-2">
+              {footerLinks.Atelier.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.to}
+                    className="text-xs text-zinc-400 hover:text-white transition-colors uppercase tracking-wider font-medium"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Links Column: Client Care */}
+          <div className="space-y-3">
+            <p className="font-heading font-black text-xs uppercase tracking-[0.2em] text-white">
+              Client Care
+            </p>
+            <ul className="space-y-2">
+              {footerLinks.ClientCare.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.to}
+                    className="text-xs text-zinc-400 hover:text-white transition-colors uppercase tracking-wider font-medium"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40">
-            <p>© 2026 Sri Yarn &amp; Tales. All rights reserved.</p>
-            <div className="flex items-center gap-1">
-              Made with <Heart size={12} className="text-primary mx-1" fill="currentColor" /> in India
-            </div>
-            <div className="flex items-center gap-2">
-              <span>We accept:</span>
-              <span className="flex gap-1">
-                {["UPI", "Visa", "MC", "RuPay", "COD"].map((p) => (
-                  <span key={p} className="bg-white/10 px-1.5 py-0.5 rounded text-xs font-medium">
-                    {p}
-                  </span>
-                ))}
-              </span>
-            </div>
+        {/* Lower Legal & Regional Strip */}
+        <div className="mt-16 pt-8 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-medium">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="font-bold uppercase tracking-widest text-zinc-400">
+              India // INR (₹)
+            </span>
           </div>
+
+          <p className="uppercase tracking-wider text-[11px] text-center sm:text-right">
+            &copy; {new Date().getFullYear()} SRI YARN &amp; TALES. ALL RIGHTS RESERVED. HANDMADE WITH PRIDE.
+          </p>
         </div>
       </div>
     </footer>

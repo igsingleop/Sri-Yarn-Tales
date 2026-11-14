@@ -34,30 +34,31 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-gradient-to-b from-cream via-oatmeal/40 to-cream flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-16 h-16 rounded-3xl bg-red-50 border border-red-200 text-error flex items-center justify-center text-3xl mb-4 shadow-sm">
-            🧶
-          </div>
-          <h2 className="font-heading font-bold text-2xl text-cocoa mb-2">Something went wrong</h2>
-          <p className="text-sm text-warmgray max-w-md mb-6 leading-relaxed">
-            {this.state.error?.message || "An unexpected error occurred while loading this view."}
-          </p>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                this.setState({ hasError: false, error: null });
-                window.location.reload();
-              }}
-              className="btn-primary py-2.5 px-5 rounded-2xl text-sm font-semibold shadow-rose-sm"
-            >
-              Reload Page
-            </button>
-            <a
-              href="/"
-              className="btn-secondary py-2.5 px-5 rounded-2xl text-sm font-semibold"
-            >
-              Return to Storefront
-            </a>
+        <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex flex-col items-center justify-center p-6 text-center">
+          <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-8 max-w-md bg-zinc-50 dark:bg-zinc-950 space-y-4">
+            <h2 className="font-heading font-black text-xl uppercase tracking-tight text-zinc-950 dark:text-white">
+              An Issue Occurred
+            </h2>
+            <p className="text-xs text-zinc-500 uppercase tracking-wider leading-relaxed">
+              {this.state.error?.message || "An unexpected error occurred while loading this view."}
+            </p>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  window.location.reload();
+                }}
+                className="btn-primary"
+              >
+                Reload
+              </button>
+              <a
+                href="/"
+                className="btn-secondary"
+              >
+                Storefront
+              </a>
+            </div>
           </div>
         </div>
       );

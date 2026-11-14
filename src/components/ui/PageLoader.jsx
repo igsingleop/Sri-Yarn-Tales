@@ -4,62 +4,24 @@ import { YarnBallLogo } from "./Logo";
 
 export default function PageLoader() {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-cream">
-      {/* Animated yarn ball */}
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="relative"
+        transition={{ duration: 0.3 }}
+        className="flex flex-col items-center gap-4"
       >
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
         >
-          <YarnBallLogo className="w-16 h-16" />
+          <YarnBallLogo className="w-12 h-12" />
         </motion.div>
 
-        {/* Unspooling thread */}
-        <motion.div
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-          style={{ transformOrigin: "left" }}
-        >
-          <div className="h-0.5 w-20 bg-gradient-to-r from-primary to-transparent rounded-full" />
-        </motion.div>
+        <p className="font-heading font-black text-xs tracking-[0.25em] uppercase text-zinc-950 dark:text-white">
+          Sri Yarn &amp; Tales
+        </p>
       </motion.div>
-
-      {/* Brand name */}
-      <motion.p
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-        className="mt-8 font-heading text-lg text-cocoa"
-      >
-        Sri Yarn &amp; Tales
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="text-sm text-warmgray mt-1"
-      >
-        Crafting your experience…
-      </motion.p>
-
-      {/* Dot loader */}
-      <div className="flex gap-1.5 mt-6">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="w-2 h-2 rounded-full bg-primary"
-            animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
-            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-          />
-        ))}
-      </div>
     </div>
   );
 }

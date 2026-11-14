@@ -137,3 +137,4 @@ export { useAuthStore } from "./authStore";
 export { useProductStore } from "./productStore";
 export { useBannerStore } from "./bannerStore";
 export { useCategoryStore } from "./categoryStore";
+export { useThemeStore } from "./themeStore";

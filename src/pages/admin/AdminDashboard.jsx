@@ -690,12 +690,12 @@ export default function AdminDashboard() {
           <title>Admin Portal Access — Sri Yarn &amp; Tales</title>
         </Helmet>
 
-        <div className="min-h-screen bg-gradient-to-b from-cream via-oatmeal/40 to-cream flex flex-col justify-center items-center px-4 py-12">
+        <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex flex-col justify-center items-center px-4 py-12">
           {/* Top Return link */}
           <div className="w-full max-w-md mb-6 flex justify-between items-center">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 text-sm font-medium text-warmgray hover:text-cocoa transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white transition-colors"
             >
               <ArrowLeft size={16} /> Return to Storefront
             </Link>
@@ -709,22 +709,24 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-md bg-white rounded-4xl p-7 sm:p-9 shadow-2xl border border-border/50"
+            className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl p-7 sm:p-9 shadow-2xl border border-zinc-200 dark:border-zinc-800"
           >
             {/* Header / Brand */}
             <div className="text-center space-y-3 mb-8">
-              <div className="w-14 h-14 rounded-2xl bg-cocoa text-butter flex items-center justify-center mx-auto shadow-rose-lg">
-                <Lock size={26} className="text-butter" />
-              </div>
+              <img
+                src="/logo.jpg"
+                alt="Sri Yarn & Tales"
+                className="w-16 h-16 rounded-full object-cover mx-auto shadow-md border border-zinc-200 dark:border-zinc-800"
+              />
 
               <div>
                 <span className="text-xs font-bold tracking-widest text-primary uppercase">
                   Sri Yarn &amp; Tales
                 </span>
-                <h1 className="font-heading font-bold text-2xl text-cocoa mt-1">
+                <h1 className="font-heading font-bold text-2xl text-zinc-950 dark:text-white mt-1">
                   Administrator Console
                 </h1>
-                <p className="text-xs text-warmgray mt-1 leading-relaxed">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
                   Enter your store administrator credentials to unlock and manage products, banners, and storefront settings.
                 </p>
               </div>
@@ -760,14 +762,14 @@ export default function AdminDashboard() {
               <div>
                 <label className="label text-xs">Admin Username or Email</label>
                 <div className="relative">
-                  <User size={16} className="text-warmgray absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <User size={16} className="text-zinc-500 dark:text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
                     value={adminUsername}
                     onChange={(e) => setAdminUsername(e.target.value)}
                     placeholder="admin or admin@sriyarn.com"
-                    className="input pl-10 text-sm"
+                    className="input pl-10 text-sm bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100"
                     autoFocus
                   />
                 </div>
@@ -776,22 +778,22 @@ export default function AdminDashboard() {
               <div>
                 <label className="label text-xs flex items-center justify-between">
                   <span>Admin Password</span>
-                  <span className="text-[11px] text-warmgray font-normal">(Demo: admin123)</span>
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">(Demo: admin123)</span>
                 </label>
                 <div className="relative">
-                  <Key size={16} className="text-warmgray absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Key size={16} className="text-zinc-500 dark:text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="Enter admin password"
-                    className="input pl-10 pr-10 text-sm"
+                    className="input pl-10 pr-10 text-sm bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-warmgray hover:text-cocoa"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -801,33 +803,33 @@ export default function AdminDashboard() {
 
               <button
                 type="submit"
-                className="btn-primary w-full py-3.5 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center justify-center gap-2 mt-2"
+                className="btn-primary w-full py-3.5 rounded-2xl text-sm font-semibold shadow-xl flex items-center justify-center gap-2 mt-2"
               >
                 <ShieldCheck size={18} /> Unlock Admin Dashboard
               </button>
             </form>
 
             {/* Quick Demo Access Box */}
-            <div className="mt-6 pt-6 border-t border-border/50 text-center">
-              <div className="p-4 rounded-2xl bg-cream border border-border/60 text-left space-y-2">
+            <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center">
+              <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-left space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
                     <Sparkles size={12} /> Default Demo Credentials
                   </span>
-                  <span className="text-[10px] bg-primary-light text-primary font-bold px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 font-bold px-2 py-0.5 rounded-full">
                     Instant Access
                   </span>
                 </div>
-                <div className="text-xs text-cocoa font-mono bg-white/80 p-2 rounded-xl border border-border/40 flex justify-between items-center">
+                <div className="text-xs text-zinc-950 dark:text-white font-mono bg-white dark:bg-zinc-900/80 p-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800 flex justify-between items-center">
                   <span>User: <strong>admin</strong></span>
                   <span>Pass: <strong>admin123</strong></span>
                 </div>
                 <button
                   type="button"
                   onClick={handleQuickAdminDemo}
-                  className="w-full mt-1 bg-cocoa text-white hover:bg-primary py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  className="w-full mt-1 bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs hover:bg-primary py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
                 >
-                  <Key size={13} className="text-butter" /> Quick One-Click Admin Sign In
+                  <Key size={13} className="text-amber-400" /> Quick One-Click Admin Sign In
                 </button>
               </div>
             </div>
@@ -853,9 +855,9 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 right-6 z-50 bg-cocoa text-white px-5 py-3 rounded-2xl shadow-rose-lg flex items-center gap-3 border border-white/20"
+            className="fixed top-6 right-6 z-50 bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-white/20"
           >
-            <div className="w-6 h-6 rounded-full bg-sage flex items-center justify-center text-white">
+            <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-white">
               <Check size={14} />
             </div>
             <span className="text-sm font-medium">{toast}</span>
@@ -863,22 +865,24 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen bg-oatmeal/40 pb-20">
+      <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 pb-20 transition-colors">
         {/* Top Admin Header Bar */}
-        <header className="bg-white border-b border-border/60 sticky top-0 z-30 shadow-xs">
+        <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-30 shadow-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 gap-4">
               {/* Brand & Badge */}
               <div className="flex items-center gap-3">
                 <Link to="/" className="flex items-center gap-2 group">
-                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm font-bold text-sm">
-                    🧶
-                  </div>
-                  <span className="font-heading font-bold text-lg text-cocoa">
+                  <img
+                    src="/logo.jpg"
+                    alt="Sri Yarn & Tales"
+                    className="w-9 h-9 rounded-full object-cover shadow-xs border border-zinc-200 dark:border-zinc-800"
+                  />
+                  <span className="font-heading font-bold text-lg text-zinc-950 dark:text-white">
                     Sri Yarn &amp; Tales
                   </span>
                 </Link>
-                <span className="bg-primary-light text-primary text-xs font-bold px-2.5 py-1 rounded-full border border-primary/20 flex items-center gap-1">
+                <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 text-xs font-bold px-2.5 py-1 rounded-full border border-zinc-300 dark:border-zinc-700 flex items-center gap-1">
                   <ShieldCheck size={13} /> Admin Console
                 </span>
               </div>
@@ -901,15 +905,15 @@ export default function AdminDashboard() {
                   <img
                     src={activeAdmin?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop"}
                     alt="Admin"
-                    className="w-8 h-8 rounded-full object-cover border border-primary-light"
+                    className="w-8 h-8 rounded-full object-cover border border-zinc-200 dark:border-zinc-700"
                   />
                   <div className="hidden md:block text-left">
-                    <p className="text-xs font-bold text-cocoa leading-tight">{activeAdmin?.name || "Admin Manager"}</p>
-                    <p className="text-[10px] text-warmgray">Store Administrator</p>
+                    <p className="text-xs font-bold text-zinc-950 dark:text-white leading-tight">{activeAdmin?.name || "Admin Manager"}</p>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Store Administrator</p>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="p-1.5 text-warmgray hover:text-error hover:bg-red-50 rounded-lg transition-colors ml-1"
+                    className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-error hover:bg-red-50 rounded-lg transition-colors ml-1"
                     title="Sign Out of Admin Console"
                   >
                     <LogOut size={16} />
@@ -924,58 +928,58 @@ export default function AdminDashboard() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs">
-              <div className="flex items-center justify-between text-warmgray mb-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Total Products</span>
                 <Package size={18} className="text-primary" />
               </div>
-              <p className="font-heading font-bold text-3xl text-cocoa">{products.length}</p>
-              <p className="text-[11px] text-sage font-medium mt-1">Live in store database</p>
+              <p className="font-heading font-bold text-3xl text-zinc-950 dark:text-white">{products.length}</p>
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">Live in store database</p>
             </div>
 
             <div
               onClick={() => setActiveTab("categories")}
-              className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs cursor-pointer hover:border-primary/50 transition-colors"
+              className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-xs cursor-pointer hover:border-zinc-400 dark:border-zinc-600 transition-colors"
               title="Click to view & edit Categories"
             >
-              <div className="flex items-center justify-between text-warmgray mb-2">
+              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Categories</span>
-                <Layers size={18} className="text-butter-dark" />
+                <Layers size={18} className="text-amber-500 dark:text-amber-400" />
               </div>
-              <p className="font-heading font-bold text-3xl text-cocoa">{categories.length}</p>
-              <p className="text-[11px] text-warmgray mt-1">Click to edit &amp; customize</p>
+              <p className="font-heading font-bold text-3xl text-zinc-950 dark:text-white">{categories.length}</p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">Click to edit &amp; customize</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs">
-              <div className="flex items-center justify-between text-warmgray mb-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Active Banners</span>
                 <ImageIcon size={18} className="text-primary-dark" />
               </div>
-              <p className="font-heading font-bold text-3xl text-cocoa">3 Sections</p>
+              <p className="font-heading font-bold text-3xl text-zinc-950 dark:text-white">3 Sections</p>
               <p className="text-[11px] text-primary font-medium mt-1">Hero, Promo &amp; Top bar</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-5 border border-border/50 shadow-xs">
-              <div className="flex items-center justify-between text-warmgray mb-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Inventory Status</span>
-                <Check size={18} className="text-sage" />
+                <Check size={18} className="text-emerald-600 dark:text-emerald-400" />
               </div>
-              <p className="font-heading font-bold text-3xl text-cocoa">
+              <p className="font-heading font-bold text-3xl text-zinc-950 dark:text-white">
                 {products.filter((p) => p.stock > 0).length} in stock
               </p>
-              <p className="text-[11px] text-sage font-medium mt-1">All items available</p>
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">All items available</p>
             </div>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center justify-between border-b border-border/60 mb-8 pb-3 flex-wrap gap-3">
+          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 mb-8 pb-3 flex-wrap gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setActiveTab("products")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                   activeTab === "products"
-                    ? "bg-cocoa text-white shadow-sm"
-                    : "bg-white text-warmgray hover:text-cocoa hover:bg-white/80"
+                    ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs"
+                    : "bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <Package size={16} /> Products Management ({products.length})
@@ -985,8 +989,8 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab("categories")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                   activeTab === "categories"
-                    ? "bg-cocoa text-white shadow-sm"
-                    : "bg-white text-warmgray hover:text-cocoa hover:bg-white/80"
+                    ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs"
+                    : "bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <Layers size={16} /> Shop by Category Editor ({categories.length})
@@ -996,8 +1000,8 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab("banners")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                   activeTab === "banners"
-                    ? "bg-cocoa text-white shadow-sm"
-                    : "bg-white text-warmgray hover:text-cocoa hover:bg-white/80"
+                    ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs"
+                    : "bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <ImageIcon size={16} /> Banners &amp; Hero Editor
@@ -1005,8 +1009,8 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Live Preview pill */}
-            <div className="text-xs font-medium text-sage flex items-center gap-1.5 bg-sage/10 px-3 py-1.5 rounded-full border border-sage/20">
-              <span className="w-2 h-2 rounded-full bg-sage animate-ping" />
+            <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 px-3 py-1.5 rounded-full border border-emerald-500/30">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
               Live Sync Active: Changes reflect instantly
             </div>
           </div>
@@ -1015,16 +1019,16 @@ export default function AdminDashboard() {
           {activeTab === "products" && (
             <div className="space-y-6">
               {/* Header and Controls */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-3xl border border-border/50 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                 {/* Search */}
                 <div className="relative flex-1 max-w-md">
-                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warmgray" />
+                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search products by name or category..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="input pl-10 py-2 text-sm w-full"
+                    className="input pl-10 py-2 text-sm w-full bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100"
                   />
                 </div>
 
@@ -1033,7 +1037,7 @@ export default function AdminDashboard() {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="input py-2 text-sm bg-white"
+                    className="input py-2 text-sm bg-white dark:bg-zinc-900"
                   >
                     <option value="all">All Categories</option>
                     {categories.map((c) => (
@@ -1048,12 +1052,12 @@ export default function AdminDashboard() {
                     className="btn-secondary py-2 px-3.5 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-xs whitespace-nowrap"
                     title="Upload multiple products at once via CSV spreadsheet or JSON file"
                   >
-                    <FileSpreadsheet size={16} className="text-cocoa" /> Bulk Upload
+                    <FileSpreadsheet size={16} className="text-zinc-950 dark:text-white" /> Bulk Upload
                   </button>
 
                   <button
                     onClick={handleOpenAdd}
-                    className="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-rose-sm whitespace-nowrap"
+                    className="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-xs whitespace-nowrap"
                   >
                     <Plus size={16} /> Add Product
                   </button>
@@ -1067,10 +1071,10 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-3.5 px-5 rounded-3xl bg-cocoa text-white flex items-center justify-between shadow-rose-lg flex-wrap gap-3 border border-white/20"
+                    className="p-3.5 px-5 rounded-xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs flex items-center justify-between shadow-xl flex-wrap gap-3 border border-white/20"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center font-bold text-xs text-butter">
+                      <div className="w-7 h-7 rounded-lg bg-white dark:bg-zinc-900/20 flex items-center justify-center font-bold text-xs text-amber-400">
                         {selectedProductIds.size}
                       </div>
                       <span className="text-sm font-semibold">
@@ -1085,7 +1089,7 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={clearSelection}
-                        className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-xl transition-colors hover:bg-white/10"
+                        className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-xl transition-colors hover:bg-white dark:bg-zinc-900/10"
                       >
                         Deselect All
                       </button>
@@ -1102,11 +1106,11 @@ export default function AdminDashboard() {
               </AnimatePresence>
 
               {/* Products Table Card */}
-              <div className="bg-white rounded-3xl border border-border/50 shadow-xs overflow-hidden">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="bg-cream/60 border-b border-border/60 text-xs font-semibold text-warmgray uppercase tracking-wider">
+                      <tr className="bg-zinc-50 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         <th className="py-4 px-4 w-12 text-center">
                           <input
                             type="checkbox"
@@ -1127,8 +1131,8 @@ export default function AdminDashboard() {
                     <tbody className="divide-y divide-border/40">
                       {filteredProducts.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-warmgray">
-                            <p className="text-base font-semibold text-cocoa">No products match your search</p>
+                          <td colSpan={7} className="py-12 text-center text-zinc-500 dark:text-zinc-400">
+                            <p className="text-base font-semibold text-zinc-950 dark:text-white">No products match your search</p>
                             <p className="text-xs mt-1">Try searching for something else or add a new product</p>
                           </td>
                         </tr>
@@ -1141,7 +1145,7 @@ export default function AdminDashboard() {
                               className={`transition-colors ${
                                 isSelected
                                   ? "bg-primary/5 hover:bg-primary/10"
-                                  : "hover:bg-oatmeal/20"
+                                  : "hover:bg-zinc-100/50 dark:bg-zinc-900/50"
                               }`}
                             >
                               {/* Selection Checkbox */}
@@ -1161,34 +1165,34 @@ export default function AdminDashboard() {
                                   <img
                                     src={p.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop"}
                                     alt={p.name}
-                                    className="w-12 h-12 rounded-2xl object-cover bg-oatmeal border border-border/60 flex-shrink-0"
+                                    className="w-12 h-12 rounded-2xl object-cover bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 flex-shrink-0"
                                   />
                                   <div>
                                     <Link
                                       to={`/product/${p.slug}`}
                                       target="_blank"
-                                      className="font-bold text-cocoa hover:text-primary transition-colors flex items-center gap-1 leading-snug"
+                                      className="font-bold text-zinc-950 dark:text-white hover:text-primary transition-colors flex items-center gap-1 leading-snug"
                                     >
                                       {p.name}
-                                    <ExternalLink size={12} className="text-warmgray" />
+                                    <ExternalLink size={12} className="text-zinc-500 dark:text-zinc-400" />
                                   </Link>
-                                  <p className="text-xs text-warmgray line-clamp-1 max-w-xs">{p.description}</p>
+                                  <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1 max-w-xs">{p.description}</p>
                                 </div>
                               </div>
                             </td>
 
                             {/* Category */}
                             <td className="py-4 px-4">
-                              <span className="capitalize text-xs bg-cream px-2.5 py-1 rounded-full border border-border/60 text-cocoa font-medium">
+                              <span className="capitalize text-xs bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-white font-medium">
                                 {p.category}
                               </span>
                             </td>
 
                             {/* Price */}
                             <td className="py-4 px-4">
-                              <div className="font-bold text-cocoa">{formatINR(p.price)}</div>
+                              <div className="font-bold text-zinc-950 dark:text-white">{formatINR(p.price)}</div>
                               {p.comparePrice && (
-                                <div className="text-xs text-warmgray line-through">
+                                <div className="text-xs text-zinc-500 dark:text-zinc-400 line-through">
                                   {formatINR(p.comparePrice)}
                                 </div>
                               )}
@@ -1199,9 +1203,9 @@ export default function AdminDashboard() {
                               <span
                                 className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
                                   p.stock > 5
-                                    ? "bg-sage/20 text-sage-dark"
+                                    ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-emerald-600 dark:text-emerald-400"
                                     : p.stock > 0
-                                    ? "bg-butter/30 text-cocoa"
+                                    ? "bg-amber-400/20 text-amber-700 dark:text-amber-300 text-zinc-950 dark:text-white"
                                     : "bg-red-100 text-error"
                                 }`}
                               >
@@ -1218,12 +1222,12 @@ export default function AdminDashboard() {
                                   </span>
                                 )}
                                 {p.isNew && (
-                                  <span className="bg-primary-light text-primary text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
                                     New
                                   </span>
                                 )}
                                 {p.isCustomizable && (
-                                  <span className="bg-oatmeal text-cocoa text-[10px] font-medium px-2 py-0.5 rounded-md">
+                                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white text-[10px] font-medium px-2 py-0.5 rounded-md">
                                     Custom
                                   </span>
                                 )}
@@ -1235,14 +1239,14 @@ export default function AdminDashboard() {
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => handleOpenEdit(p)}
-                                  className="p-2 text-warmgray hover:text-cocoa hover:bg-oatmeal rounded-xl transition-colors"
+                                  className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors"
                                   title="Edit Product"
                                 >
                                   <Edit3 size={16} />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProduct(p.id, p.name)}
-                                  className="p-2 text-warmgray hover:text-error hover:bg-red-50 rounded-xl transition-colors"
+                                  className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-error hover:bg-red-50 rounded-xl transition-colors"
                                   title="Delete Product"
                                 >
                                   <Trash2 size={16} />
@@ -1258,7 +1262,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Footer with Reset to Default */}
-                <div className="p-4 bg-cream/40 border-t border-border/40 flex items-center justify-between text-xs text-warmgray">
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-900/40 border-t border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
                   <span>Showing {filteredProducts.length} of {products.length} products</span>
                   <button
                     onClick={() => {
@@ -1267,7 +1271,7 @@ export default function AdminDashboard() {
                         showToast("Products reset to demo defaults.");
                       }
                     }}
-                    className="hover:text-cocoa flex items-center gap-1 underline"
+                    className="hover:text-zinc-950 dark:text-white flex items-center gap-1 underline"
                   >
                     <RefreshCw size={12} /> Reset to Demo Products
                   </button>
@@ -1280,12 +1284,12 @@ export default function AdminDashboard() {
           {activeTab === "categories" && (
             <div className="space-y-6">
               {/* Header and Controls */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-border/50 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                 <div>
-                  <h2 className="font-heading font-bold text-xl text-cocoa flex items-center gap-2">
+                  <h2 className="font-heading font-bold text-xl text-zinc-950 dark:text-white flex items-center gap-2">
                     <Layers size={20} className="text-primary" /> Shop by Category Collections
                   </h2>
-                  <p className="text-xs text-warmgray mt-0.5">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     Customize titles, descriptions, and cover photos for categories featured on the homepage and catalog.
                   </p>
                 </div>
@@ -1299,14 +1303,14 @@ export default function AdminDashboard() {
                         showToast("Categories reset to default.");
                       }
                     }}
-                    className="btn-ghost text-xs py-2 px-3 text-warmgray flex items-center gap-1 border border-border/60 rounded-2xl"
+                    className="btn-ghost text-xs py-2 px-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-1 border border-zinc-200 dark:border-zinc-800 rounded-2xl"
                   >
                     <RefreshCw size={13} /> Reset Defaults
                   </button>
                   <button
                     type="button"
                     onClick={handleOpenAddCategory}
-                    className="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-rose-sm whitespace-nowrap"
+                    className="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-1.5 rounded-2xl shadow-xs whitespace-nowrap"
                   >
                     <Plus size={16} /> Add Category
                   </button>
@@ -1320,10 +1324,10 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={cat.id || cat.slug}
-                      className="bg-white rounded-3xl border border-border/50 shadow-xs overflow-hidden flex flex-col group hover:shadow-card transition-all"
+                      className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden flex flex-col group hover:shadow-card transition-all"
                     >
                       {/* Image Preview with quick change */}
-                      <div className="relative aspect-video sm:aspect-square overflow-hidden bg-oatmeal border-b border-border/40">
+                      <div className="relative aspect-video sm:aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200/80 dark:border-zinc-800">
                         <img
                           src={cat.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
                           alt={cat.name}
@@ -1332,7 +1336,7 @@ export default function AdminDashboard() {
                             e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
                           }}
                         />
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-xl text-xs font-bold text-cocoa shadow-xs flex items-center gap-1">
+                        <div className="absolute top-3 left-3 bg-white dark:bg-zinc-900/90 backdrop-blur-xs px-2.5 py-1 rounded-xl text-xs font-bold text-zinc-950 dark:text-white shadow-xs flex items-center gap-1">
                           <span>{cat.emoji || "🧶"}</span>
                           <span>{cat.slug}</span>
                         </div>
@@ -1341,7 +1345,7 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Quick photo upload button */}
-                        <label className="absolute bottom-3 right-3 bg-white/90 hover:bg-white text-cocoa text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-all">
+                        <label className="absolute bottom-3 right-3 bg-white dark:bg-zinc-900/90 hover:bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5 transition-all">
                           <Upload size={13} className="text-primary" /> Change Photo
                           <input
                             type="file"
@@ -1356,26 +1360,26 @@ export default function AdminDashboard() {
                       <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                         <div>
                           <div className="flex items-center justify-between gap-2">
-                            <h3 className="font-heading font-bold text-lg text-cocoa flex items-center gap-1.5">
+                            <h3 className="font-heading font-bold text-lg text-zinc-950 dark:text-white flex items-center gap-1.5">
                               <span>{cat.emoji}</span> {cat.name}
                             </h3>
                             <Link
                               to={`/shop/${cat.slug}`}
                               target="_blank"
-                              className="text-warmgray hover:text-primary transition-colors p-1"
+                              className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors p-1"
                               title="View on storefront"
                             >
                               <ExternalLink size={14} />
                             </Link>
                           </div>
-                          <p className="text-xs text-warmgray mt-1.5 line-clamp-2 leading-relaxed">
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 line-clamp-2 leading-relaxed">
                             {cat.description || "No description provided."}
                           </p>
                         </div>
 
-                        <div className="pt-3 border-t border-border/40 flex items-center justify-between">
-                          <span className="text-[11px] text-warmgray">
-                            URL: <code className="bg-cream px-1.5 py-0.5 rounded text-cocoa font-mono">/shop/{cat.slug}</code>
+                        <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
+                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                            URL: <code className="bg-zinc-100 dark:bg-zinc-900 px-1.5 py-0.5 rounded text-zinc-950 dark:text-white font-mono">/shop/{cat.slug}</code>
                           </span>
 
                           <div className="flex items-center gap-2">
@@ -1389,7 +1393,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => handleDeleteCategory(cat.id, cat.name)}
-                              className="p-1.5 text-warmgray hover:text-error hover:bg-red-50 rounded-xl transition-colors"
+                              className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-error hover:bg-red-50 rounded-xl transition-colors"
                               title="Delete Category"
                             >
                               <Trash2 size={15} />
@@ -1408,11 +1412,11 @@ export default function AdminDashboard() {
           {activeTab === "banners" && (
             <div className="space-y-8">
               {/* Sticky Top Action Bar */}
-              <div className="bg-white p-4 rounded-3xl border border-border/50 shadow-xs flex items-center justify-between flex-wrap gap-3 sticky top-20 z-20">
+              <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs flex items-center justify-between flex-wrap gap-3 sticky top-20 z-20">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-sage" />
-                  <span className="text-xs font-bold text-cocoa">Banners Live Syncing</span>
-                  <span className="text-xs text-warmgray hidden sm:inline">— changes save directly to all active store sessions</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                  <span className="text-xs font-bold text-zinc-950 dark:text-white">Banners Live Syncing</span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400 hidden sm:inline">— changes save directly to all active store sessions</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -1423,14 +1427,14 @@ export default function AdminDashboard() {
                         showToast("Banners reset to defaults.");
                       }
                     }}
-                    className="btn-ghost text-xs py-2 px-3 text-warmgray flex items-center gap-1"
+                    className="btn-ghost text-xs py-2 px-3 text-zinc-500 dark:text-zinc-400 flex items-center gap-1"
                   >
                     <RefreshCw size={13} /> Reset Defaults
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveBanners}
-                    className="btn-primary py-2 px-5 text-sm font-semibold rounded-2xl shadow-rose-sm flex items-center gap-1.5"
+                    className="btn-primary py-2 px-5 text-sm font-semibold rounded-2xl shadow-xs flex items-center gap-1.5"
                   >
                     <Check size={16} /> Save &amp; Publish All Banners Live
                   </button>
@@ -1438,18 +1442,18 @@ export default function AdminDashboard() {
               </div>
 
               {/* 1. Top Announcement Bar Editor */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border/50 shadow-xs space-y-5">
-                <div className="flex items-center justify-between border-b border-border/40 pb-4">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-5">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
                   <div>
-                    <h2 className="font-heading font-bold text-xl text-cocoa flex items-center gap-2">
+                    <h2 className="font-heading font-bold text-xl text-zinc-950 dark:text-white flex items-center gap-2">
                       <Tag size={20} className="text-primary" /> Top Announcement Bar
                     </h2>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       The top promotional bar shown at the very top of every page.
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-cocoa">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-zinc-950 dark:text-white">
                       <input
                         type="checkbox"
                         checked={bannerForm.topAnnouncement.enabled}
@@ -1509,25 +1513,25 @@ export default function AdminDashboard() {
 
                 {/* Live Preview */}
                 <div className="mt-2">
-                  <p className="text-xs font-bold text-warmgray mb-1.5 uppercase tracking-wider">Live Preview</p>
+                  <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wider">Live Preview</p>
                   <div
                     className="text-white text-xs text-center py-2.5 px-4 font-medium rounded-xl shadow-xs transition-colors"
                     style={{ backgroundColor: bannerForm.topAnnouncement.bgColor || "#D4768A" }}
                   >
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-white mr-2 align-middle animate-pulse" />
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-white dark:bg-zinc-900 mr-2 align-middle animate-pulse" />
                     {bannerForm.topAnnouncement.text} {bannerForm.topAnnouncement.badgeText && `· ${bannerForm.topAnnouncement.badgeText}`}
                   </div>
                 </div>
               </div>
 
               {/* 2. Hero Banner Section Editor */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border/50 shadow-xs space-y-6">
-                <div className="flex items-center justify-between border-b border-border/40 pb-4">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-6">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
                   <div>
-                    <h2 className="font-heading font-bold text-xl text-cocoa flex items-center gap-2">
-                      <Sparkles size={20} className="text-butter-dark" /> Main Hero Banner (Homepage)
+                    <h2 className="font-heading font-bold text-xl text-zinc-950 dark:text-white flex items-center gap-2">
+                      <Sparkles size={20} className="text-amber-500 dark:text-amber-400" /> Main Hero Banner (Homepage)
                     </h2>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Customize the primary hero headline, subtext, and showcase images on the Home page.
                     </p>
                   </div>
@@ -1595,8 +1599,8 @@ export default function AdminDashboard() {
                   <label className="label mb-2">Hero Showcase Images (4 Collage Photos)</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {bannerForm.heroBanner.heroImages?.map((url, index) => (
-                      <div key={index} className="space-y-2 p-3 bg-cream/40 rounded-2xl border border-border/40">
-                        <div className="aspect-square rounded-xl overflow-hidden bg-oatmeal border border-border/50 relative group">
+                      <div key={index} className="space-y-2 p-3 bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
+                        <div className="aspect-square rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 relative group">
                           <img src={url} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
                         </div>
                         <input
@@ -1613,7 +1617,7 @@ export default function AdminDashboard() {
                           }}
                           placeholder={`Image ${index + 1} URL`}
                         />
-                        <label className="btn-ghost text-[11px] py-1 px-2 rounded-lg cursor-pointer flex items-center justify-center gap-1 border border-border/50 w-full hover:bg-white">
+                        <label className="btn-ghost text-[11px] py-1 px-2 rounded-lg cursor-pointer flex items-center justify-center gap-1 border border-zinc-200 dark:border-zinc-800 w-full hover:bg-white dark:bg-zinc-900">
                           <Upload size={11} /> Upload Photo
                           <input
                             type="file"
@@ -1629,18 +1633,18 @@ export default function AdminDashboard() {
               </div>
 
               {/* 3. Mid-Page Promotional Banner Editor */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border/50 shadow-xs space-y-6">
-                <div className="flex items-center justify-between border-b border-border/40 pb-4">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-6">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
                   <div>
-                    <h2 className="font-heading font-bold text-xl text-cocoa flex items-center gap-2">
-                      <ImageIcon size={20} className="text-sage-dark" /> Mid-Page Promotional Banner
+                    <h2 className="font-heading font-bold text-xl text-zinc-950 dark:text-white flex items-center gap-2">
+                      <ImageIcon size={20} className="text-emerald-600 dark:text-emerald-400" /> Mid-Page Promotional Banner
                     </h2>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Highlighted promotional banner featured on the homepage.
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-cocoa">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-zinc-950 dark:text-white">
                       <input
                         type="checkbox"
                         checked={bannerForm.promoBanner.enabled}
@@ -1759,8 +1763,8 @@ export default function AdminDashboard() {
 
                 {/* Banner Preview */}
                 <div>
-                  <p className="text-xs font-bold text-warmgray mb-2 uppercase tracking-wider">Live Banner Preview</p>
-                  <div className="relative rounded-3xl overflow-hidden bg-cocoa text-white p-6 sm:p-8">
+                  <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">Live Banner Preview</p>
+                  <div className="relative rounded-xl overflow-hidden bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs p-6 sm:p-8">
                     <img
                       src={bannerForm.promoBanner.imageUrl}
                       alt="Banner Preview"
@@ -1777,10 +1781,10 @@ export default function AdminDashboard() {
                         {bannerForm.promoBanner.subtitle}
                       </p>
                       <div className="pt-2 flex items-center gap-2">
-                        <span className="font-mono text-xs bg-white/10 px-3 py-1 rounded-lg border border-white/20">
+                        <span className="font-mono text-xs bg-white dark:bg-zinc-900/10 px-3 py-1 rounded-lg border border-white/20">
                           {bannerForm.promoBanner.couponCode}
                         </span>
-                        <span className="text-xs font-bold text-butter">
+                        <span className="text-xs font-bold text-amber-400">
                           {bannerForm.promoBanner.discountBadge || "Special Promo"}
                         </span>
                       </div>
@@ -1799,7 +1803,7 @@ export default function AdminDashboard() {
                       showToast("Banners reset to defaults.");
                     }
                   }}
-                  className="btn-ghost text-xs text-warmgray flex items-center gap-1.5"
+                  className="btn-ghost text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5"
                 >
                   <RefreshCw size={14} /> Reset Banners to Default
                 </button>
@@ -1807,7 +1811,7 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={handleSaveBanners}
-                  className="btn-primary py-3 px-8 text-base font-semibold shadow-rose-lg flex items-center gap-2 rounded-2xl"
+                  className="btn-primary py-3 px-8 text-base font-semibold shadow-xl flex items-center gap-2 rounded-2xl"
                 >
                   <Check size={18} /> Save &amp; Publish All Banners Live
                 </button>
@@ -1819,20 +1823,20 @@ export default function AdminDashboard() {
         {/* ADD / EDIT PRODUCT MODAL */}
         <AnimatePresence>
           {isProductModalOpen && (
-            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-white rounded-4xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-border/40 relative max-h-[90vh] overflow-y-auto"
+                className="bg-white dark:bg-zinc-900 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-zinc-200/80 dark:border-zinc-800 relative max-h-[90vh] overflow-y-auto"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-border/40 pb-4 mb-6">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4 mb-6">
                   <div>
-                    <h3 className="font-heading font-bold text-2xl text-cocoa">
+                    <h3 className="font-heading font-bold text-2xl text-zinc-950 dark:text-white">
                       {editingProduct ? "Edit Product" : "Add New Handcrafted Product"}
                     </h3>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       {editingProduct
                         ? "Make changes below and hit Update to publish live immediately."
                         : "Fill in the details to publish a new crochet product live to the store."}
@@ -1840,7 +1844,7 @@ export default function AdminDashboard() {
                   </div>
                   <button
                     onClick={() => setIsProductModalOpen(false)}
-                    className="w-8 h-8 rounded-full bg-oatmeal hover:bg-border/60 text-warmgray hover:text-cocoa flex items-center justify-center text-sm font-bold"
+                    className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-border/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white flex items-center justify-center text-sm font-bold"
                   >
                     ✕
                   </button>
@@ -1864,7 +1868,7 @@ export default function AdminDashboard() {
                     <div>
                       <label className="label">Category</label>
                       <select
-                        className="input bg-white capitalize"
+                        className="input bg-white dark:bg-zinc-900 capitalize"
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       >
@@ -1901,15 +1905,15 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Image Options: URL or File Upload */}
-                  <div className="p-4 rounded-3xl bg-cream/60 border border-border/50 space-y-3">
+                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
                     <label className="label">Product Image</label>
                     <div className="flex gap-4 items-start">
                       {/* Image Preview */}
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-oatmeal flex-shrink-0 border border-border/60 shadow-xs">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 border border-zinc-200 dark:border-zinc-800 shadow-xs">
                         {formData.imageUrl ? (
                           <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-warmgray text-xs">
+                          <div className="w-full h-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 text-xs">
                             No image
                           </div>
                         )}
@@ -1936,7 +1940,7 @@ export default function AdminDashboard() {
                               className="hidden"
                             />
                           </label>
-                          <span className="text-[11px] text-warmgray">Auto-compressed JPG, PNG, WEBP</span>
+                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Auto-compressed JPG, PNG, WEBP</span>
                         </div>
                       </div>
                     </div>
@@ -1968,7 +1972,7 @@ export default function AdminDashboard() {
 
                   {/* Badges / Checkboxes */}
                   <div className="flex items-center gap-6 pt-1 flex-wrap">
-                    <label className="flex items-center gap-2 text-sm text-cocoa cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-white cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.isBestseller}
@@ -1978,7 +1982,7 @@ export default function AdminDashboard() {
                       ⭐ Mark as Bestseller
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm text-cocoa cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-white cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.isNew}
@@ -1988,7 +1992,7 @@ export default function AdminDashboard() {
                       🆕 Mark as New Arrival
                     </label>
 
-                    <label className="flex items-center gap-2 text-sm text-cocoa cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-white cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.isCustomizable}
@@ -2000,7 +2004,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Submit / Cancel Buttons */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
                     <button
                       type="button"
                       onClick={() => setIsProductModalOpen(false)}
@@ -2010,7 +2014,7 @@ export default function AdminDashboard() {
                     </button>
                     <button
                       type="submit"
-                      className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center gap-2"
+                      className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-xl flex items-center gap-2"
                     >
                       <Check size={16} /> {editingProduct ? "Update Product" : "Save & Publish"}
                     </button>
@@ -2024,26 +2028,26 @@ export default function AdminDashboard() {
         {/* ADD / EDIT CATEGORY MODAL */}
         <AnimatePresence>
           {isCategoryModalOpen && (
-            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-white rounded-4xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-border/40 relative max-h-[92vh] overflow-y-auto"
+                className="bg-white dark:bg-zinc-900 rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-zinc-200/80 dark:border-zinc-800 relative max-h-[92vh] overflow-y-auto"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-border/40 pb-4 mb-6">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4 mb-6">
                   <div>
-                    <h3 className="font-heading font-bold text-2xl text-cocoa">
+                    <h3 className="font-heading font-bold text-2xl text-zinc-950 dark:text-white">
                       {editingCategory ? "Edit Category Collection" : "Add New Category Collection"}
                     </h3>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Configure category details, cover image, and description for the storefront.
                     </p>
                   </div>
                   <button
                     onClick={() => setIsCategoryModalOpen(false)}
-                    className="w-8 h-8 rounded-full bg-oatmeal hover:bg-border/60 text-warmgray hover:text-cocoa flex items-center justify-center text-sm font-bold"
+                    className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-border/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white flex items-center justify-center text-sm font-bold"
                   >
                     ✕
                   </button>
@@ -2084,14 +2088,14 @@ export default function AdminDashboard() {
 
                   {/* Quick Emoji Picker suggestions */}
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-[11px] text-warmgray mr-1">Quick pick:</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mr-1">Quick pick:</span>
                     {["🧸", "👜", "🏡", "🧣", "👶", "✨", "🧶", "🌸", "🎁", "☕"].map((em) => (
                       <button
                         key={em}
                         type="button"
                         onClick={() => setCategoryFormData((prev) => ({ ...prev, emoji: em }))}
                         className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center border transition-all ${
-                          categoryFormData.emoji === em ? "border-primary bg-primary/10" : "border-border/50 hover:bg-oatmeal"
+                          categoryFormData.emoji === em ? "border-primary bg-primary/10" : "border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                         }`}
                       >
                         {em}
@@ -2103,7 +2107,7 @@ export default function AdminDashboard() {
                   <div>
                     <label className="label">URL Slug</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warmgray text-xs font-mono">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 text-xs font-mono">
                         /shop/
                       </span>
                       <input
@@ -2130,11 +2134,11 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Cover Photo */}
-                  <div className="p-4 rounded-3xl bg-cream/60 border border-border/50 space-y-3">
+                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
                     <label className="label">Category Cover Image</label>
                     <div className="flex gap-4 items-start">
                       {/* Image Preview */}
-                      <div className="w-24 h-24 rounded-2xl overflow-hidden bg-oatmeal flex-shrink-0 border border-border/60 shadow-xs relative">
+                      <div className="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 border border-zinc-200 dark:border-zinc-800 shadow-xs relative">
                         {categoryFormData.image ? (
                           <img
                             src={categoryFormData.image}
@@ -2145,7 +2149,7 @@ export default function AdminDashboard() {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-warmgray text-xs">
+                          <div className="w-full h-full flex items-center justify-center text-zinc-500 dark:text-zinc-400 text-xs">
                             No image
                           </div>
                         )}
@@ -2172,7 +2176,7 @@ export default function AdminDashboard() {
                               className="hidden"
                             />
                           </label>
-                          <span className="text-[11px] text-warmgray">Auto-compressed JPG, PNG</span>
+                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Auto-compressed JPG, PNG</span>
                         </div>
                       </div>
                     </div>
@@ -2180,11 +2184,11 @@ export default function AdminDashboard() {
 
                   {/* Live Card Preview (as shown on Homepage) */}
                   <div className="pt-2">
-                    <p className="text-xs font-bold text-warmgray mb-2 uppercase tracking-wider">
+                    <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">
                       Storefront "Shop by Category" Card Preview
                     </p>
-                    <div className="max-w-[200px] mx-auto rounded-3xl overflow-hidden bg-white shadow-card border border-border/40">
-                      <div className="aspect-square overflow-hidden bg-oatmeal">
+                    <div className="max-w-[200px] mx-auto rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-card border border-zinc-200/80 dark:border-zinc-800">
+                      <div className="aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                         <img
                           src={categoryFormData.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
                           alt="Preview"
@@ -2195,16 +2199,16 @@ export default function AdminDashboard() {
                         />
                       </div>
                       <div className="p-3 text-center">
-                        <p className="font-heading font-semibold text-sm text-cocoa">
+                        <p className="font-heading font-semibold text-sm text-zinc-950 dark:text-white">
                           {categoryFormData.name || "Category Name"}
                         </p>
-                        <p className="text-xs text-warmgray mt-0.5">4 items</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">4 items</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
                     <button
                       type="button"
                       onClick={() => setIsCategoryModalOpen(false)}
@@ -2214,7 +2218,7 @@ export default function AdminDashboard() {
                     </button>
                     <button
                       type="submit"
-                      className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center gap-2"
+                      className="btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-xl flex items-center gap-2"
                     >
                       <Check size={16} /> {editingCategory ? "Update Category" : "Save & Publish"}
                     </button>
@@ -2228,24 +2232,24 @@ export default function AdminDashboard() {
         {/* BULK PRODUCT UPLOAD MODAL */}
         <AnimatePresence>
           {isBulkUploadOpen && (
-            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-white rounded-4xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-border/40 relative max-h-[92vh] overflow-y-auto"
+                className="bg-white dark:bg-zinc-900 rounded-2xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-zinc-200/80 dark:border-zinc-800 relative max-h-[92vh] overflow-y-auto"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-border/40 pb-4 mb-6">
+                <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800 pb-4 mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-cocoa text-butter flex items-center justify-center shadow-xs">
+                    <div className="w-10 h-10 rounded-2xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-amber-400 flex items-center justify-center shadow-xs">
                       <FileSpreadsheet size={20} />
                     </div>
                     <div>
-                      <h3 className="font-heading font-bold text-2xl text-cocoa">
+                      <h3 className="font-heading font-bold text-2xl text-zinc-950 dark:text-white">
                         Bulk Product Upload
                       </h3>
-                      <p className="text-xs text-warmgray mt-0.5">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                         Import multiple handmade crochet products at once via CSV spreadsheet or JSON file.
                       </p>
                     </div>
@@ -2257,19 +2261,19 @@ export default function AdminDashboard() {
                       setBulkParsedProducts([]);
                       setBulkParseError("");
                     }}
-                    className="w-8 h-8 rounded-full bg-oatmeal hover:bg-border/60 text-warmgray hover:text-cocoa flex items-center justify-center text-sm font-bold"
+                    className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-border/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:text-white flex items-center justify-center text-sm font-bold"
                   >
                     ✕
                   </button>
                 </div>
 
                 {/* Templates & Guidelines Banner */}
-                <div className="mb-6 p-4 rounded-3xl bg-cream/70 border border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="mb-6 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
-                    <h4 className="text-xs font-bold text-cocoa flex items-center gap-1.5 uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
                       <Download size={14} className="text-primary" /> Download Sample Templates
                     </h4>
-                    <p className="text-xs text-warmgray mt-0.5">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Need a sample file to get started? Download our ready-to-fill templates:
                     </p>
                   </div>
@@ -2277,14 +2281,14 @@ export default function AdminDashboard() {
                     <button
                       type="button"
                       onClick={downloadSampleCSV}
-                      className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1 font-semibold whitespace-nowrap bg-white"
+                      className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1 font-semibold whitespace-nowrap bg-white dark:bg-zinc-900"
                     >
                       <Download size={13} /> Sample CSV
                     </button>
                     <button
                       type="button"
                       onClick={downloadSampleJSON}
-                      className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1 font-semibold whitespace-nowrap bg-white"
+                      className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1 font-semibold whitespace-nowrap bg-white dark:bg-zinc-900"
                     >
                       <Download size={13} /> Sample JSON
                     </button>
@@ -2293,7 +2297,7 @@ export default function AdminDashboard() {
 
                 {/* File Upload Dropzone */}
                 <div className="space-y-4">
-                  <div className="border-2 border-dashed border-border/80 hover:border-primary/60 rounded-3xl p-6 sm:p-8 text-center bg-oatmeal/20 transition-colors relative">
+                  <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:border-primary/60 rounded-xl p-6 sm:p-8 text-center bg-zinc-100/50 dark:bg-zinc-900/50 transition-colors relative">
                     <input
                       type="file"
                       accept=".csv, .json, text/csv, application/json, text/plain"
@@ -2301,13 +2305,13 @@ export default function AdminDashboard() {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
                     <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
-                      <div className="w-12 h-12 rounded-2xl bg-white border border-border/60 flex items-center justify-center text-primary shadow-xs">
+                      <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-primary shadow-xs">
                         <Upload size={24} />
                       </div>
-                      <p className="font-semibold text-cocoa text-sm">
+                      <p className="font-semibold text-zinc-950 dark:text-white text-sm">
                         {bulkFile ? bulkFile.name : "Click or drag & drop your CSV or JSON file here"}
                       </p>
-                      <p className="text-xs text-warmgray">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
                         Supports CSV (comma-separated with headers) and JSON arrays
                       </p>
                     </div>
@@ -2315,7 +2319,7 @@ export default function AdminDashboard() {
 
                   {/* Parsing Spinner */}
                   {isParsingBulk && (
-                    <div className="p-4 text-center text-xs text-warmgray flex items-center justify-center gap-2">
+                    <div className="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-2">
                       <span className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       Parsing file contents...
                     </div>
@@ -2333,15 +2337,15 @@ export default function AdminDashboard() {
                   {bulkParsedProducts.length > 0 && (
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-sage-dark bg-sage/15 px-3 py-1 rounded-full border border-sage/20 flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 dark:bg-emerald-500/25 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
                           <Check size={13} /> {bulkParsedProducts.length} Products Ready to Import
                         </span>
-                        <span className="text-xs text-warmgray">Review products below before confirming</span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Review products below before confirming</span>
                       </div>
 
-                      <div className="border border-border/60 rounded-2xl overflow-hidden max-h-60 overflow-y-auto">
+                      <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden max-h-60 overflow-y-auto">
                         <table className="w-full text-left text-xs">
-                          <thead className="bg-cream sticky top-0 border-b border-border/60 text-warmgray font-semibold">
+                          <thead className="bg-zinc-100 dark:bg-zinc-900 sticky top-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-semibold">
                             <tr>
                               <th className="py-2.5 px-3">#</th>
                               <th className="py-2.5 px-3">Product Name</th>
@@ -2352,15 +2356,15 @@ export default function AdminDashboard() {
                           </thead>
                           <tbody className="divide-y divide-border/30">
                             {bulkParsedProducts.map((p, idx) => (
-                              <tr key={idx} className="hover:bg-oatmeal/30">
-                                <td className="py-2.5 px-3 font-mono text-warmgray">{idx + 1}</td>
-                                <td className="py-2.5 px-3 font-semibold text-cocoa">{p.name}</td>
+                              <tr key={idx} className="hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
+                                <td className="py-2.5 px-3 font-mono text-zinc-500 dark:text-zinc-400">{idx + 1}</td>
+                                <td className="py-2.5 px-3 font-semibold text-zinc-950 dark:text-white">{p.name}</td>
                                 <td className="py-2.5 px-3 capitalize">
-                                  <span className="bg-cream px-2 py-0.5 rounded-md border border-border/40">
+                                  <span className="bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-200/80 dark:border-zinc-800">
                                     {p.category}
                                   </span>
                                 </td>
-                                <td className="py-2.5 px-3 font-bold text-cocoa">{formatINR(p.price)}</td>
+                                <td className="py-2.5 px-3 font-bold text-zinc-950 dark:text-white">{formatINR(p.price)}</td>
                                 <td className="py-2.5 px-3">{p.stock}</td>
                               </tr>
                             ))}
@@ -2371,7 +2375,7 @@ export default function AdminDashboard() {
                   )}
 
                   {/* Modal Action Buttons */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/40">
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
                     <button
                       type="button"
                       onClick={() => {
@@ -2388,7 +2392,7 @@ export default function AdminDashboard() {
                       type="button"
                       disabled={bulkParsedProducts.length === 0}
                       onClick={handleConfirmBulkImport}
-                      className={`btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-rose-lg flex items-center gap-2 ${
+                      className={`btn-primary py-2.5 px-6 rounded-2xl text-sm font-semibold shadow-xl flex items-center gap-2 ${
                         bulkParsedProducts.length === 0 ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     >
