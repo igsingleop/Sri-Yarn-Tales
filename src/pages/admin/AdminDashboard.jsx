@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useProductStore, useBannerStore, useAuthStore, useCategoryStore } from "../../store";
 import { formatINR } from "../../lib/utils";
+import { isFirebaseConfigured } from "../../config/firebase";
 import {
   syncProductsToCloud,
   syncBannersToCloud,
@@ -1086,10 +1087,20 @@ export default function AdminDashboard() {
                 <span>Sanitize Catalog</span>
               </button>
 
-              <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 px-3 py-1.5 rounded-full border border-emerald-500/30">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
-                Live Cloud Sync: All Devices Connected
-              </div>
+              {isFirebaseConfigured ? (
+                <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 px-3 py-1.5 rounded-full border border-emerald-500/30">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
+                  Live Cloud Sync: All Devices Connected
+                </div>
+              ) : (
+                <div
+                  className="text-xs font-medium text-amber-700 dark:text-amber-300 flex items-center gap-1.5 bg-amber-500/10 dark:bg-amber-500/20 px-3 py-1.5 rounded-full border border-amber-500/30"
+                  title="Environment variables are kept secret from Git. Configure them securely in your deployment dashboard (e.g. Vercel) to activate live multi-device sync."
+                >
+                  <Lock size={12} className="text-amber-500" />
+                  Env Secrets Guarded (Local Mode Active)
+                </div>
+              )}
             </div>
           </div>
 
