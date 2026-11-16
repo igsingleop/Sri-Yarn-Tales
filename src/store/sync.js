@@ -1,3 +1,5 @@
+import { syncProductsToCloud, syncBannersToCloud, syncCategoriesToCloud } from "../services/cloudSync";
+
 // Cross-tab and in-memory real-time synchronization helper
 // Sri Yarn & Tales Storefront & Admin Portal
 
@@ -13,8 +15,8 @@ if (typeof window !== "undefined" && "BroadcastChannel" in window) {
 }
 
 /**
- * Broadcast an update event to all other open tabs/windows
- * @param {"SYNC_PRODUCTS" | "SYNC_BANNERS" | "SYNC_AUTH"} type 
+ * Broadcast an update event to all other open tabs/windows and sync to live cloud
+ * @param {"SYNC_PRODUCTS" | "SYNC_BANNERS" | "SYNC_CATEGORIES" | "SYNC_AUTH" | "SYNC_ADMIN_AUTH"} type 
  * @param {any} payload 
  */
 export function broadcastSync(type, payload) {
@@ -31,6 +33,19 @@ export function broadcastSync(type, payload) {
     window.dispatchEvent(
       new CustomEvent(`syt:${type.toLowerCase()}`, { detail: payload })
     );
+
+    // Sync to Live Cloud Database for Instant Multi-Device Reflection
+    try {
+      if (type === "SYNC_PRODUCTS" && Array.isArray(payload)) {
+        syncProductsToCloud(payload);
+      } else if (type === "SYNC_BANNERS" && payload) {
+        syncBannersToCloud(payload);
+      } else if (type === "SYNC_CATEGORIES" && Array.isArray(payload)) {
+        syncCategoriesToCloud(payload);
+      }
+    } catch (_cloudErr) {
+      // Background cloud sync is non-blocking
+    }
   }
 }
 

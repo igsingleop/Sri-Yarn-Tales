@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import defaultProducts from "../data/products.json";
 import { broadcastSync } from "./sync";
+import { sanitizeProducts } from "../services/cloudSync";
 
 function slugify(text) {
   return text
@@ -26,13 +27,13 @@ export const useProductStore = create(
         const newProduct = {
           id,
           slug,
-          name: productData.name || "Untitled Product",
+          name: productData.name?.trim() || "Untitled Product",
           category: productData.category || "amigurumi",
           price: Number(productData.price) || 499,
           comparePrice: productData.comparePrice ? Number(productData.comparePrice) : null,
           images: productData.images && productData.images.length > 0 
             ? productData.images 
-            : ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"],
+            : ["https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"],
           colors: productData.colors || ["#D4768A", "#F4D58D", "#8FA98B"],
           colorNames: productData.colorNames || ["Rose Pink", "Butter Yellow", "Sage Green"],
           sizes: productData.sizes || ["Standard"],
@@ -50,7 +51,7 @@ export const useProductStore = create(
           createdAt: Date.now(),
         };
 
-        const updatedProducts = [newProduct, ...get().products];
+        const updatedProducts = sanitizeProducts([newProduct, ...get().products]);
         set({ products: updatedProducts });
         broadcastSync("SYNC_PRODUCTS", updatedProducts);
 
@@ -58,8 +59,10 @@ export const useProductStore = create(
       },
 
       updateProduct: (id, updatedFields) => {
-        const updatedProducts = get().products.map((item) =>
-          item.id === id ? { ...item, ...updatedFields } : item
+        const updatedProducts = sanitizeProducts(
+          get().products.map((item) =>
+            item.id === id ? { ...item, ...updatedFields } : item
+          )
         );
         set({ products: updatedProducts });
         broadcastSync("SYNC_PRODUCTS", updatedProducts);
@@ -86,13 +89,13 @@ export const useProductStore = create(
           return {
             id,
             slug,
-            name: p.name || "Untitled Product",
+            name: p.name?.trim() || "Untitled Product",
             category: p.category || "amigurumi",
             price: Number(p.price) || 499,
             comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
             images: Array.isArray(p.images) && p.images.length > 0
               ? p.images
-              : [p.imageUrl || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"],
+              : [p.imageUrl || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"],
             colors: p.colors || ["#D4768A", "#F4D58D", "#8FA98B"],
             colorNames: p.colorNames || ["Rose Pink", "Butter Yellow", "Sage Green"],
             sizes: p.sizes || ["Standard"],
@@ -113,31 +116,41 @@ export const useProductStore = create(
           };
         });
 
-        const updatedProducts = [...newItems, ...get().products];
+        const updatedProducts = sanitizeProducts([...newItems, ...get().products]);
         set({ products: updatedProducts });
         broadcastSync("SYNC_PRODUCTS", updatedProducts);
         return newItems;
       },
 
       resetProducts: () => {
-        set({ products: defaultProducts });
-        broadcastSync("SYNC_PRODUCTS", defaultProducts);
+        const clean = sanitizeProducts(defaultProducts);
+        set({ products: clean });
+        broadcastSync("SYNC_PRODUCTS", clean);
       },
     }),
     {
       name: "syt-custom-products",
       onRehydrateStorage: () => (state) => {
         if (state?.products && Array.isArray(state.products)) {
-          state.products = state.products.map((item) => {
-            if (item?.images && Array.isArray(item.images)) {
-              item.images = item.images.map((img) =>
-                img?.includes("photo-1568760970073-ce3f8af8cb72")
-                  ? "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"
-                  : img
-              );
-            }
-            return item;
-          });
+          state.products = sanitizeProducts(
+            state.products.map((item) => {
+              if (item?.images && Array.isArray(item.images)) {
+                item.images = item.images.map((img) => {
+                  if (img?.includes("photo-1558618666-fcd25c85cd64")) {
+                    return "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                  }
+                  if (img?.includes("photo-1548036328-c9fa89d128fa")) {
+                    return "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&h=600&fit=crop";
+                  }
+                  if (img?.includes("photo-1568760970073-ce3f8af8cb72")) {
+                    return "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                  }
+                  return img;
+                });
+              }
+              return item;
+            })
+          );
         }
       },
     }

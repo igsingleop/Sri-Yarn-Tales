@@ -5,6 +5,8 @@ import {
   signInWithPopup,
   signOut as firebaseSignOut
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Read Firebase configuration from Vite environment variables (.env)
 const firebaseConfig = {
@@ -27,12 +29,25 @@ export const isFirebaseConfigured = Boolean(
 // Initialize Firebase safely
 let app = null;
 let auth = null;
+let db = null;
+let storage = null;
 let googleProvider = null;
 
 if (isFirebaseConfigured) {
   try {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
+    // Initialize Firestore & Storage safely
+    try {
+      db = getFirestore(app);
+    } catch (dbErr) {
+      console.warn("Firestore init warning:", dbErr);
+    }
+    try {
+      storage = getStorage(app);
+    } catch (stErr) {
+      console.warn("Storage init warning:", stErr);
+    }
     googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
   } catch (error) {
@@ -86,4 +101,4 @@ export async function signOutFromFirebase() {
   }
 }
 
-export { app, auth, googleProvider };
+export { app, auth, db, storage, googleProvider };
