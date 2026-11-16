@@ -399,7 +399,7 @@ export default function AdminDashboard() {
         if (res?.url) {
           setFormData((prev) => ({ ...prev, imageUrl: res.url }));
           showToast(res.isCloudStorage 
-            ? "Product photo uploaded to Cloud CDN for instant display on all devices!" 
+            ? `Product photo uploaded to ${res.provider === "backblaze" ? "Backblaze B2" : "Cloud CDN"}!` 
             : "Product photo optimized and ready for live display!");
         }
       } catch (err) {
