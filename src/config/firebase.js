@@ -3,19 +3,21 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
+  signInAnonymously
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Read Firebase configuration from Vite environment variables (.env)
+// Firebase configuration: reads from environment variables with built-in production credentials
+// This ensures multi-device cloud synchronization works on all mobile networks, cellular IPs, and live deployments
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCS2M9m-FNllH0rtQ6nlT4vk_NZya2mpdc",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "sri-yarn-tales.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "sri-yarn-tales",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "sri-yarn-tales.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "386897098606",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:386897098606:web:9ed5eec20410c4ee28f37f",
 };
 
 // Check if actual configuration has been provided
@@ -50,6 +52,14 @@ if (isFirebaseConfigured) {
     }
     googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
+
+    // Enable anonymous authentication so every mobile device on any cellular network/IP has authorized read/write access
+    if (typeof window !== "undefined" && auth && !auth.currentUser) {
+      signInAnonymously(auth).catch((authErr) => {
+        // Non-blocking notice; Firestore rules can also allow public read
+        console.warn("Anonymous session notice:", authErr.message);
+      });
+    }
   } catch (error) {
     console.warn("Firebase initialization error:", error);
   }

@@ -2,6 +2,9 @@ import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 
+// In-memory record of the latest known catalog update timestamp
+let lastCloudCatalogTimestamp = 0;
+
 /**
  * Validates, deduplicates, and sanitizes product objects.
  * Prevents junk, corrupted entries, and malformed records from entering the catalog.
@@ -143,10 +146,22 @@ export async function uploadProductImage(file) {
 
 /**
  * Sync all products to Firestore Cloud
- * Ensures instant multi-device reflection on the live site
+ * Ensures instant multi-device reflection on the live site across ALL mobile networks and IPs
  */
 export async function syncProductsToCloud(products) {
   const cleanProducts = sanitizeProducts(products);
+  const now = Date.now();
+  lastCloudCatalogTimestamp = now;
+
+  // Update local storage cache immediately with timestamp
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        "syt-custom-products",
+        JSON.stringify({ state: { products: cleanProducts, updatedAt: now }, version: now })
+      );
+    }
+  } catch (_e) {}
 
   if (!db || typeof window === "undefined") {
     return { success: false, reason: "No cloud database instance available" };
@@ -158,13 +173,13 @@ export async function syncProductsToCloud(products) {
       docRef,
       {
         products: cleanProducts,
-        updatedAt: Date.now(),
+        updatedAt: now,
         count: cleanProducts.length,
         isLive: true,
       },
       { merge: true }
     );
-    return { success: true, count: cleanProducts.length };
+    return { success: true, count: cleanProducts.length, updatedAt: now };
   } catch (error) {
     console.warn("Firestore syncProducts notice:", error.message);
     return { success: false, error: error.message };
@@ -204,7 +219,7 @@ export async function syncCategoriesToCloud(categories) {
 }
 
 /**
- * Manually fetch the live catalog from Firestore Cloud
+ * Manually fetch the live catalog from Firestore Cloud (works over standard HTTPS on any IP)
  */
 export async function fetchLiveCatalogFromCloud() {
   if (!db || typeof window === "undefined") return null;
@@ -214,8 +229,12 @@ export async function fetchLiveCatalogFromCloud() {
     const snap = await getDoc(docRef);
     if (snap.exists()) {
       const data = snap.data();
-      if (Array.isArray(data?.products)) {
-        return sanitizeProducts(data.products);
+      if (Array.isArray(data?.products) && data.products.length > 0) {
+        lastCloudCatalogTimestamp = data.updatedAt || Date.now();
+        return {
+          products: sanitizeProducts(data.products),
+          updatedAt: data.updatedAt || Date.now(),
+        };
       }
     }
   } catch (error) {
@@ -227,6 +246,7 @@ export async function fetchLiveCatalogFromCloud() {
 /**
  * Initialize real-time Cloud Synchronization
  * Connects to Firestore snapshot listeners on all devices with ZERO DELAY!
+ * Includes mobile browser resume re-fetching (visibilitychange, focus, online, periodic heartbeat).
  */
 export function initLiveCloudSync({ setProducts, setBanners, setCategories, onStatusChange }) {
   if (typeof window === "undefined" || !db) {
@@ -236,7 +256,27 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
 
   onStatusChange?.({ status: "connecting", message: "Connecting to live cloud..." });
 
-  // 1. Live Catalog Listener
+  // Function to re-check and pull latest products (vital for mobile devices on 4G/5G)
+  const refreshCatalogActive = async () => {
+    try {
+      const result = await fetchLiveCatalogFromCloud();
+      if (result && Array.isArray(result.products) && result.products.length > 0) {
+        setProducts?.(result.products);
+        // Overwrite mobile device local storage so offline or refreshed state stays updated
+        try {
+          window.localStorage.setItem(
+            "syt-custom-products",
+            JSON.stringify({ state: { products: result.products, updatedAt: result.updatedAt }, version: result.updatedAt })
+          );
+        } catch (_e) {}
+      }
+    } catch (_e) {}
+  };
+
+  // 1. Immediately trigger an active fetch on startup so mobile devices don't have to wait for WebSocket negotiation
+  refreshCatalogActive();
+
+  // 2. Live Catalog Listener (real-time push)
   let unsubCatalog = () => {};
   try {
     const catalogRef = doc(db, "store", "catalog");
@@ -247,11 +287,21 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
           const data = snapshot.data();
           if (Array.isArray(data?.products) && data.products.length > 0) {
             const cleaned = sanitizeProducts(data.products);
+            lastCloudCatalogTimestamp = data.updatedAt || Date.now();
             setProducts?.(cleaned);
+
+            // Update mobile local storage with latest cloud snapshot
+            try {
+              window.localStorage.setItem(
+                "syt-custom-products",
+                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: lastCloudCatalogTimestamp })
+              );
+            } catch (_e) {}
+
             onStatusChange?.({
               status: "synced",
               message: "Live cloud connected — All devices in sync",
-              updatedAt: data.updatedAt || Date.now(),
+              updatedAt: lastCloudCatalogTimestamp,
               count: cleaned.length,
             });
           }
@@ -268,7 +318,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
     console.warn("Catalog listener setup notice:", e.message);
   }
 
-  // 2. Live Banners Listener
+  // 3. Live Banners Listener
   let unsubBanners = () => {};
   try {
     const bannersRef = doc(db, "store", "banners");
@@ -286,7 +336,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
     console.warn("Banners listener setup notice:", e.message);
   }
 
-  // 3. Live Categories Listener
+  // 4. Live Categories Listener
   let unsubCategories = () => {};
   try {
     const categoriesRef = doc(db, "store", "categories");
@@ -306,9 +356,29 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
     console.warn("Categories listener setup notice:", e.message);
   }
 
+  // 5. Mobile Lifecycle Resiliency Listeners:
+  // When mobile devices wake from sleep, change apps, or switch from Wi-Fi to cellular data,
+  // immediately pull latest cloud catalog to bypass paused WebSockets
+  const handleWakeOrFocus = () => {
+    if (document.visibilityState === "visible") {
+      refreshCatalogActive();
+    }
+  };
+
+  window.addEventListener("visibilitychange", handleWakeOrFocus);
+  window.addEventListener("focus", handleWakeOrFocus);
+  window.addEventListener("online", handleWakeOrFocus);
+
+  // Periodic heartbeat: check every 15 seconds to ensure mobile devices stay 100% updated
+  const heartbeatTimer = setInterval(refreshCatalogActive, 15000);
+
   return () => {
     unsubCatalog();
     unsubBanners();
     unsubCategories();
+    window.removeEventListener("visibilitychange", handleWakeOrFocus);
+    window.removeEventListener("focus", handleWakeOrFocus);
+    window.removeEventListener("online", handleWakeOrFocus);
+    clearInterval(heartbeatTimer);
   };
 }
