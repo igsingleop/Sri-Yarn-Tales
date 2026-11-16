@@ -411,8 +411,8 @@ export default function ProductDetail() {
                         aria-label={`Select color ${product.colorNames[i]}`}
                         title={product.colorNames[i]}
                         className={`w-6 h-6 rounded-full border transition-all ${selectedColor === product.colorNames[i]
-                            ? "border-black dark:border-white scale-110 ring-2 ring-black/30 dark:ring-white/30"
-                            : "border-zinc-300 dark:border-zinc-700 hover:scale-105"
+                          ? "border-black dark:border-white scale-110 ring-2 ring-black/30 dark:ring-white/30"
+                          : "border-zinc-300 dark:border-zinc-700 hover:scale-105"
                           }`}
                         style={{ backgroundColor: hex }}
                       />
@@ -449,10 +449,10 @@ export default function ProductDetail() {
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
                   className={`flex-1 h-10 sm:h-11 px-4 text-xs font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-2 shadow-xs ${product.stock === 0
-                      ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
-                      : added
-                        ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                        : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                    ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
+                    : added
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                      : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                     }`}
                 >
                   {added ? (
@@ -473,8 +473,8 @@ export default function ProductDetail() {
                   onClick={() => toggle(product)}
                   aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
                   className={`w-10 sm:w-11 h-10 sm:h-11 rounded-sm border border-zinc-300 dark:border-zinc-700 flex items-center justify-center transition-colors flex-shrink-0 ${wishlisted
-                      ? "bg-black text-white dark:bg-white dark:text-black"
-                      : "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
+                    ? "bg-black text-white dark:bg-white dark:text-black"
+                    : "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
                     }`}
                 >
                   <Heart size={16} className={wishlisted ? "fill-current" : ""} />
@@ -485,11 +485,10 @@ export default function ProductDetail() {
               <button
                 onClick={handleBuyNow}
                 disabled={product.stock === 0}
-                className={`w-full h-10 sm:h-11 px-4 text-xs font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-2 shadow-xs active:scale-[0.99] ${
-                  product.stock === 0
-                    ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
-                    : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                }`}
+                className={`w-full h-10 sm:h-11 px-4 text-xs font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-2 shadow-xs active:scale-[0.99] ${product.stock === 0
+                  ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
+                  : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                  }`}
               >
                 Buy Now
               </button>
