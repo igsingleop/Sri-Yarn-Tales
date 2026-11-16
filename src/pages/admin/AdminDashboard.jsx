@@ -19,6 +19,7 @@ import {
   syncCategoriesToCloud,
   uploadProductImage,
   sanitizeProducts,
+  checkCloudHealth,
 } from "../../services/cloudSync";
 
 // Image compression utility to ensure images fit in localStorage and render instantly
@@ -267,6 +268,13 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
+  const [cloudHealth, setCloudHealth] = useState({ checked: false, ok: false, status: "checking" });
+
+  useEffect(() => {
+    checkCloudHealth().then((health) => {
+      setCloudHealth({ checked: true, ...health });
+    });
+  }, []);
 
   // Form state for Product
   const [formData, setFormData] = useState({
@@ -410,10 +418,16 @@ export default function AdminDashboard() {
       const pRes = await syncProductsToCloud(products);
       await syncBannersToCloud({ topAnnouncement, heroBanner, promoBanner });
       await syncCategoriesToCloud(categories);
+      const health = await checkCloudHealth();
+      setCloudHealth({ checked: true, ...health });
       if (pRes.success) {
         showToast(`✓ All ${pRes.count} products synced to Live Cloud! Instantly visible on every device.`);
       } else {
-        showToast("Catalog saved locally and queued for cloud sync.");
+        showToast(
+          health.status === "database_missing"
+            ? "Saved locally. Click the setup link in the dashboard banner to create Firestore in Firebase Console."
+            : "Catalog saved locally and queued for cloud sync."
+        );
       }
     } catch (e) {
       showToast("Cloud sync updated locally.");
@@ -491,6 +505,7 @@ export default function AdminDashboard() {
     }
 
     const payload = {
+      ...(editingProduct || {}),
       name: formData.name.trim(),
       category: formData.category || "amigurumi",
       price: Number(formData.price),
@@ -498,7 +513,9 @@ export default function AdminDashboard() {
       stock: Number(formData.stock) || 1,
       description: formData.description?.trim() || "Handcrafted with premium soft yarn, made with love and precision.",
       materials: formData.materials?.trim() || "100% premium cotton yarn, hypoallergenic fiberfill",
-      images: [formData.imageUrl || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"],
+      images: formData.imageUrl
+        ? [formData.imageUrl, ...(editingProduct?.images?.slice(1) || [])]
+        : (editingProduct?.images?.length ? editingProduct.images : ["https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"]),
       isBestseller: Boolean(formData.isBestseller),
       isNew: Boolean(formData.isNew),
       isCustomizable: Boolean(formData.isCustomizable),
@@ -506,9 +523,13 @@ export default function AdminDashboard() {
 
     if (editingProduct) {
       updateProduct(editingProduct.id, payload);
+      const nextProducts = useProductStore.getState().products;
+      syncProductsToCloud(nextProducts);
       showToast(`Product "${payload.name}" updated! Changes live on all devices with zero delay.`);
     } else {
       addProduct(payload);
+      const nextProducts = useProductStore.getState().products;
+      syncProductsToCloud(nextProducts);
       showToast(`Added "${payload.name}" to store! Live on all devices with zero delay.`);
     }
 
@@ -524,6 +545,8 @@ export default function AdminDashboard() {
         next.delete(id);
         setSelectedProductIds(next);
       }
+      const nextProducts = useProductStore.getState().products;
+      syncProductsToCloud(nextProducts);
       showToast(`Product "${name}" deleted from store.`);
     }
   };
@@ -661,6 +684,8 @@ export default function AdminDashboard() {
       )
     ) {
       deleteMultipleProducts(Array.from(selectedProductIds));
+      const nextProducts = useProductStore.getState().products;
+      syncProductsToCloud(nextProducts);
       clearSelection();
       showToast(`Deleted ${count} product${count > 1 ? "s" : ""} from store.`);
     }
@@ -1108,10 +1133,26 @@ export default function AdminDashboard() {
                 <span>Export products.json</span>
               </button>
 
-              {isFirebaseConfigured ? (
+              {cloudHealth.checked && cloudHealth.ok ? (
                 <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 px-3 py-1.5 rounded-full border border-emerald-500/30">
                   <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
                   Live Cloud Sync: All Devices Connected
+                </div>
+              ) : cloudHealth.checked && cloudHealth.status === "database_missing" ? (
+                <a
+                  href="https://console.firebase.google.com/project/sri-yarn-tales/firestore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1.5 bg-amber-500/15 dark:bg-amber-500/25 px-3 py-1.5 rounded-full border border-amber-500/40 hover:bg-amber-500/20 transition-all"
+                  title="Click to open Firebase Console and click 'Create Database' to enable live multi-device sync across all phones and computers worldwide."
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  Firestore Setup Needed (Click to Enable)
+                </a>
+              ) : isFirebaseConfigured ? (
+                <div className="text-xs font-medium text-blue-600 dark:text-blue-400 flex items-center gap-1.5 bg-blue-500/10 dark:bg-blue-500/20 px-3 py-1.5 rounded-full border border-blue-500/30">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  Cloud Config Connected
                 </div>
               ) : (
                 <div
@@ -1128,6 +1169,29 @@ export default function AdminDashboard() {
           {/* TAB 1: PRODUCTS MANAGEMENT */}
           {activeTab === "products" && (
             <div className="space-y-6">
+              {/* Database Provisioning Helper Banner when needed */}
+              {cloudHealth.checked && cloudHealth.status === "database_missing" && (
+                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 rounded-2xl p-4 sm:p-5 text-xs text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                  <div className="space-y-1">
+                    <div className="font-bold flex items-center gap-2 text-sm text-amber-900 dark:text-amber-200">
+                      <AlertCircle size={16} className="text-amber-600 dark:text-amber-400 shrink-0" />
+                      Action Required for Live Multi-Device Sync:
+                    </div>
+                    <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                      Your Firebase project <span className="font-mono font-semibold">sri-yarn-tales</span> is linked! To automatically mirror all product edits and deletions to other devices and mobile phones without Git commits, click <strong>Create Database</strong> in your Firebase Console (select &ldquo;Start in test mode&rdquo;).
+                    </p>
+                  </div>
+                  <a
+                    href="https://console.firebase.google.com/project/sri-yarn-tales/firestore"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary text-xs shrink-0 inline-flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white border-none py-2.5 px-4 rounded-xl font-semibold shadow-xs"
+                  >
+                    <ExternalLink size={14} />
+                    Open Firebase Console
+                  </a>
+                </div>
+              )}
               {/* Header and Controls */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                 {/* Search */}

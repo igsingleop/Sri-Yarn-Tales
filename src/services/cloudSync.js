@@ -180,7 +180,7 @@ export async function syncProductsToCloud(products) {
     products: cleanProducts,
     updatedAt: now,
     count: cleanProducts.length,
-    version: now,
+    version: 0,
     isLive: true,
   };
 
@@ -189,12 +189,13 @@ export async function syncProductsToCloud(products) {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
         "syt-custom-products",
-        JSON.stringify({ state: { products: cleanProducts, updatedAt: now }, version: now })
+        JSON.stringify({ state: { products: cleanProducts, updatedAt: now }, version: 0 })
       );
     }
   } catch (_e) {}
 
   let synced = false;
+  let cloudError = null;
 
   // Sync to Firebase Firestore (if configured)
   if (db && typeof window !== "undefined") {
@@ -203,11 +204,12 @@ export async function syncProductsToCloud(products) {
       await setDoc(docRef, payload, { merge: true });
       synced = true;
     } catch (error) {
+      cloudError = error;
       console.warn("Firestore syncProducts notice:", error.message);
     }
   }
 
-  return { success: true, count: cleanProducts.length, updatedAt: now };
+  return { success: synced, count: cleanProducts.length, updatedAt: now, error: cloudError?.message };
 }
 
 /**
@@ -290,7 +292,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
         try {
           window.localStorage.setItem(
             "syt-custom-products",
-            JSON.stringify({ state: { products: result.products, updatedAt: result.updatedAt }, version: result.updatedAt })
+            JSON.stringify({ state: { products: result.products, updatedAt: result.updatedAt }, version: 0 })
           );
         } catch (_e) {}
 
@@ -324,7 +326,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
             try {
               window.localStorage.setItem(
                 "syt-custom-products",
-                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: lastCloudCatalogTimestamp })
+                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: 0 })
               );
             } catch (_e) {}
             onStatusChange?.({
@@ -374,4 +376,35 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
     window.removeEventListener("online", handleWakeOrFocus);
     clearInterval(heartbeatTimer);
   };
+}
+
+/**
+ * Diagnostic tool to check live Firestore connection and database provisioning
+ */
+export async function checkCloudHealth() {
+  if (!db) {
+    return { ok: false, status: "unconfigured", reason: "Firebase configuration not active" };
+  }
+  try {
+    const docRef = doc(db, "store", "catalog");
+    const snap = await getDoc(docRef);
+    return {
+      ok: true,
+      status: "connected",
+      exists: snap.exists(),
+      productCount: snap.exists() ? (snap.data()?.products?.length || 0) : 0,
+      updatedAt: snap.exists() ? snap.data()?.updatedAt : null,
+    };
+  } catch (err) {
+    const msg = err?.message || String(err);
+    const isMissingDb = msg.includes("does not exist") || msg.includes("not-found") || (err?.code === "not-found");
+    return {
+      ok: false,
+      status: isMissingDb ? "database_missing" : "error",
+      reason: isMissingDb
+        ? "Cloud Firestore database has not been created yet in Firebase Console."
+        : msg,
+      consoleUrl: "https://console.firebase.google.com/project/sri-yarn-tales/firestore",
+    };
+  }
 }

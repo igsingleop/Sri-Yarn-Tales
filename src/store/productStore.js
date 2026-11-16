@@ -59,9 +59,10 @@ export const useProductStore = create(
       },
 
       updateProduct: (id, updatedFields) => {
+        const targetId = String(id);
         const updatedProducts = sanitizeProducts(
           get().products.map((item) =>
-            item.id === id ? { ...item, ...updatedFields } : item
+            String(item.id) === targetId ? { ...item, ...updatedFields } : item
           )
         );
         set({ products: updatedProducts });
@@ -69,14 +70,15 @@ export const useProductStore = create(
       },
 
       deleteProduct: (id) => {
-        const updatedProducts = get().products.filter((item) => item.id !== id);
+        const targetId = String(id);
+        const updatedProducts = get().products.filter((item) => String(item.id) !== targetId);
         set({ products: updatedProducts });
         broadcastSync("SYNC_PRODUCTS", updatedProducts);
       },
 
       deleteMultipleProducts: (ids) => {
-        const idSet = new Set(ids);
-        const updatedProducts = get().products.filter((item) => !idSet.has(item.id));
+        const idSet = new Set((ids || []).map((x) => String(x)));
+        const updatedProducts = get().products.filter((item) => !idSet.has(String(item.id)));
         set({ products: updatedProducts });
         broadcastSync("SYNC_PRODUCTS", updatedProducts);
       },
@@ -130,6 +132,13 @@ export const useProductStore = create(
     }),
     {
       name: "syt-custom-products",
+      version: 0,
+      migrate: (persistedState) => {
+        if (persistedState && typeof persistedState === "object" && Array.isArray(persistedState.products)) {
+          return persistedState;
+        }
+        return persistedState;
+      },
       onRehydrateStorage: () => (state) => {
         if (state?.products && Array.isArray(state.products)) {
           state.products = sanitizeProducts(

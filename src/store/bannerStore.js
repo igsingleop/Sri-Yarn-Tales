@@ -73,6 +73,8 @@ export const useBannerStore = create(
     }),
     {
       name: "syt-custom-banners",
+      version: 0,
+      migrate: (s) => s,
       onRehydrateStorage: () => (state) => {
         if (state?.heroBanner?.heroImages && Array.isArray(state.heroBanner.heroImages)) {
           state.heroBanner.heroImages = state.heroBanner.heroImages.map((img) => {

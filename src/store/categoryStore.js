@@ -72,6 +72,8 @@ export const useCategoryStore = create(
     }),
     {
       name: "syt-custom-categories",
+      version: 0,
+      migrate: (s) => s,
       // Clean and migrate any previously saved legacy/non-crochet category images in localStorage
       onRehydrateStorage: () => (state) => {
         if (state && Array.isArray(state.categories)) {
