@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowRight, Check, Upload, Star, Sparkles, MessageSquare, Package } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Upload, Star, Sparkles, MessageSquare, Package } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(2, "Name required"),
@@ -21,7 +22,7 @@ const schema = z.object({
 const steps = [
   { icon: MessageSquare, title: "1. Brief & Vision", desc: "Submit product category, dimensions, color preferences, and concept references." },
   { icon: Star, title: "2. Atelier Quote", desc: "Our creative director evaluates feasibility and returns a custom quote within 24 hours." },
-  { icon: Sparkles, title: "3. Hand-Knotting", desc: "Upon confirmation, your piece is slowly hand-crafted stitch by stitch in our atelier." },
+  { icon: Sparkles, title: "3. Hand-Crocheting", desc: "Upon confirmation, your piece is slowly hand-crafted stitch by stitch in our atelier." },
   { icon: Package, title: "4. Insured Delivery", desc: "Arrives carefully boxed with proof of craftsmanship and care documentation." },
 ];
 
@@ -37,6 +38,7 @@ const productTypes = [
 ];
 
 export default function CustomOrders() {
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema),
@@ -56,26 +58,39 @@ export default function CustomOrders() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
         {/* Editorial Header */}
-        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-16 sm:py-24 px-4 text-center">
-          <div className="max-w-3xl mx-auto space-y-4">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
-              Bespoke Commissions
-            </p>
-            <motion.h1
-              className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-12 sm:py-20 px-4">
+          <div className="max-w-3xl mx-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-6 active:scale-95 shadow-2xs"
             >
-              Tailored by Master Artisans
-            </motion.h1>
-            <motion.p
-              className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-            >
-              Bring your design concepts to life. Whether a character collectible, bespoke colorway tote, or architectural home wall hanging, our atelier crafts each piece with meticulous care.
-            </motion.p>
+              <ArrowLeft size={13} className="stroke-[2.5]" />
+              <span>Back</span>
+            </button>
+            <div className="space-y-4 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+                Bespoke Commissions
+              </p>
+              <motion.h1
+                className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                Tailored by Master Artisans
+              </motion.h1>
+              <motion.p
+                className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                Bring your design concepts to life. Whether a character collectible, bespoke colorway tote, or architectural home wall hanging, our atelier crafts each piece with meticulous care.
+              </motion.p>
+            </div>
           </div>
         </section>
 

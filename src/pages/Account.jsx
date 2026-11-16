@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, MapPin, Heart, LogOut, Settings, ChevronRight,
-  ArrowRight, Info, CheckCircle2
+  ArrowRight, Info, CheckCircle2, ArrowLeft
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatINR } from "../lib/utils";
@@ -138,6 +138,18 @@ export default function Account() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-md border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 sm:p-8 bg-zinc-50/50 dark:bg-zinc-950/50"
           >
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
+            >
+              <ArrowLeft size={13} className="stroke-[2.5]" />
+              <span>Back</span>
+            </button>
+
             <div className="text-center mb-6">
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-1">
                 Atelier Access
@@ -281,6 +293,18 @@ export default function Account() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-10 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate("/");
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors mb-6 active:scale-95 shadow-2xs"
+          >
+            <ArrowLeft size={13} className="stroke-[2.5]" />
+            <span>Back</span>
+          </button>
+
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Sidebar Profile & Nav (4 cols) */}
             <div className="lg:col-span-4 space-y-4">

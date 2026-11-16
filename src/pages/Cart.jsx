@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag, Plus, Minus, Trash2, Heart, ArrowRight,
-  Tag, Check
+  Tag, Check, ArrowLeft
 } from "lucide-react";
 import { useCartStore, useWishlistStore } from "../store";
 import { formatINR } from "../lib/utils";
@@ -76,6 +76,18 @@ export default function Cart() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-10 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate("/shop");
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
+          >
+            <ArrowLeft size={13} className="stroke-[2.5]" />
+            <span>Back</span>
+          </button>
+
           <div className="mb-8 pb-4 border-b border-zinc-200 dark:border-zinc-800">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
               Checkout Bag

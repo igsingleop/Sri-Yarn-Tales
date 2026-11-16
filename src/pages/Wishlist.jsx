@@ -1,12 +1,13 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingBag, X } from "lucide-react";
+import { Heart, ShoppingBag, X, ArrowLeft } from "lucide-react";
 import ProductCard from "../components/product/ProductCard";
 import { useWishlistStore, useCartStore } from "../store";
 
 export default function Wishlist() {
+  const navigate = useNavigate();
   const { items, remove, clear } = useWishlistStore();
   const addItem = useCartStore((s) => s.addItem);
 
@@ -23,6 +24,18 @@ export default function Wishlist() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-10 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate("/");
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
+          >
+            <ArrowLeft size={13} className="stroke-[2.5]" />
+            <span>Back</span>
+          </button>
+
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800 gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">

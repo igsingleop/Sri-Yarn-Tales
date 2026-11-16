@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Phone, MapPin, MessageCircle, ChevronDown, Check, Send } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle, ChevronDown, Check, Send, ArrowLeft } from "lucide-react";
 import { brand } from "../config/brand";
 
 const schema = z.object({
@@ -41,6 +42,7 @@ function FaqItem({ q, a }) {
 }
 
 export default function Contact() {
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(schema) });
 
@@ -58,17 +60,30 @@ export default function Contact() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
         {/* Header */}
-        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-16 sm:py-20 px-4 text-center">
-          <div className="max-w-3xl mx-auto space-y-3">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
-              Client Support // Communications
-            </p>
-            <motion.h1 className="font-heading font-black text-3xl sm:text-5xl uppercase tracking-tight text-zinc-950 dark:text-white" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-              Connect With The Atelier
-            </motion.h1>
-            <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm uppercase tracking-wider">
-              Bespoke commissions, order queries, or private studio requests.
-            </p>
+        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-12 sm:py-16 px-4">
+          <div className="max-w-3xl mx-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
+            >
+              <ArrowLeft size={13} className="stroke-[2.5]" />
+              <span>Back</span>
+            </button>
+            <div className="space-y-3 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+                Client Support // Communications
+              </p>
+              <motion.h1 className="font-heading font-black text-3xl sm:text-5xl uppercase tracking-tight text-zinc-950 dark:text-white" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+                Connect With The Atelier
+              </motion.h1>
+              <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm uppercase tracking-wider">
+                Bespoke commissions, order queries, or private studio requests.
+              </p>
+            </div>
           </div>
         </section>
 

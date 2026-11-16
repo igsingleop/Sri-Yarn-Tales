@@ -1,8 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Heart, Leaf, Clock, Award, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Heart, Leaf, Clock, Award, ArrowRight, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Counter({ to, suffix, label }) {
   const [count, setCount] = React.useState(0);
@@ -39,10 +39,11 @@ function Counter({ to, suffix, label }) {
 }
 
 export default function About() {
+  const navigate = useNavigate();
   const values = [
-    { icon: Heart, title: "100% Handcrafted", desc: "Every loop is calibrated by human touch. Zero automation, no mass assembly." },
+    { icon: Heart, title: "100% Hand-Crocheted", desc: "Every loop is calibrated by human touch and a single hook. Zero automation, no mass assembly." },
     { icon: Leaf, title: "Natural Combed Fibres", desc: "Combed natural cotton and pure merino wool. Completely hypoallergenic and biodegradable." },
-    { icon: Clock, title: "Slow Craft Ethics", desc: "We dedicate hours of patient knotting to every piece so each item endures generations." },
+    { icon: Clock, title: "Slow Craft Ethics", desc: "We dedicate hours of patient crocheting to every piece so each item endures generations." },
     { icon: Award, title: "Uncompromising Finish", desc: "Rigorous tension inspection and reinforced seam finishes for heirloom durability." },
   ];
 
@@ -55,26 +56,39 @@ export default function About() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
         {/* Editorial Header */}
-        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-16 sm:py-24 px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-4">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
-              The Atelier // Origins
-            </p>
-            <motion.h1
-              className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white leading-[1.05]"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+        <section className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-12 sm:py-20 px-4">
+          <div className="max-w-4xl mx-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-6 active:scale-95 shadow-2xs"
             >
-              Every Stitch Has Intent. Zero Compromise.
-            </motion.h1>
-            <motion.p
-              className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-            >
-              Sri Yarn &amp; Tales was established in Bangalore, India, to rescue authentic artisanal crochet from fast-fashion obsolescence. We treat the hook as an instrument of slow architecture.
-            </motion.p>
+              <ArrowLeft size={13} className="stroke-[2.5]" />
+              <span>Back</span>
+            </button>
+            <div className="space-y-4 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+                The Atelier // Origins
+              </p>
+              <motion.h1
+                className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-zinc-950 dark:text-white leading-[1.05]"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                Every Stitch Has Intent. Zero Compromise.
+              </motion.h1>
+              <motion.p
+                className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                Sri Yarn &amp; Tales was established in Bangalore, India, to rescue authentic artisanal crochet from fast-fashion obsolescence. We treat the hook as an instrument of slow architecture.
+              </motion.p>
+            </div>
           </div>
         </section>
 
@@ -83,13 +97,20 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-5 relative">
-                <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
+                <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 shadow-xl relative">
                   <img
-                    src="https://images.unsplash.com/photo-1612548403247-aa2873e9422d?w=800&h=1000&fit=crop"
-                    alt="Artisan crafting crochet at Sri Yarn & Tales"
-                    className="w-full h-full object-cover"
+                    src="https://images.unsplash.com/photo-1789654498618-b14ffe50d0f4?w=800&h=1000&fit=crop"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1513890333407-6f85205e8ef2?w=800&h=1000&fit=crop";
+                    }}
+                    alt="Artisan hands crocheting with hook and yarn at Sri Yarn & Tales atelier"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     loading="lazy"
                   />
+                  <div className="absolute top-4 left-4 px-2.5 py-1 bg-black/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-widest rounded-xs border border-white/10">
+                    Master Artisan // Atelier
+                  </div>
                 </div>
               </div>
 
@@ -101,10 +122,10 @@ export default function About() {
                   Crafting Heirlooms for the Modern World
                 </h2>
                 <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
-                  "I learned the mathematics and rhythm of crochet from my grandmother. While modern industrial manufacturing favors volume and disposability, handmade crochet remains one of the few textiles that no machine in the world can replicate. Every knot requires human fingers, tactile intuition, and patience."
+                  "I learned the mathematics and rhythm of crochet from my grandmother. While modern industrial manufacturing favors volume and disposability, handmade crochet remains one of the few textile arts that no machine in the world can replicate. Every single loop requires human fingers, tactile intuition, a crochet hook, and genuine patience."
                 </p>
                 <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
-                  Today, every single creation shipped from Sri Yarn &amp; Tales is hand-knotted with pure natural yarn, individually numbered, and checked for tension perfection before leaving our atelier.
+                  Today, every single creation shipped from Sri Yarn &amp; Tales is hand-crocheted with pure natural yarn, individually inspected for tension perfection, and finished to heirloom quality before leaving our atelier.
                 </p>
                 <div className="pt-2">
                   <p className="font-heading font-black text-sm uppercase tracking-wider text-zinc-950 dark:text-white">

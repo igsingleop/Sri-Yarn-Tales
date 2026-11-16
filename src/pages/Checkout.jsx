@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   Check, ChevronRight, Loader2, CreditCard,
-  Smartphone, Building2, Wallet, Package
+  Smartphone, Building2, Wallet, Package, ArrowLeft
 } from "lucide-react";
 import { useCartStore } from "../store";
 import { formatINR } from "../lib/utils";
@@ -160,6 +160,23 @@ export default function Checkout() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-10 sm:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => {
+              if (step > 0) {
+                setStep((s) => s - 1);
+              } else if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/cart");
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors mb-6 active:scale-95 shadow-2xs"
+          >
+            <ArrowLeft size={13} className="stroke-[2.5]" />
+            <span>{step > 0 ? "Previous Step" : "Back to Bag"}</span>
+          </button>
+
           <div className="text-center mb-8">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-1">
               Encrypted Checkout

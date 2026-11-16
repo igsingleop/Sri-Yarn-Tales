@@ -1,24 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingBag, Check, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart, ArrowRight, Check, Zap } from "lucide-react";
 import { formatINR, getDiscountPercent } from "../../lib/utils";
-import { useCartStore, useWishlistStore } from "../../store";
+import { useWishlistStore } from "../../store";
 
 export default function ProductCard({ product, index = 0 }) {
-  const [added, setAdded] = useState(false);
-  const addItem = useCartStore((s) => s.addItem);
   const { toggle, isWishlisted } = useWishlistStore();
   const wishlisted = isWishlisted(product.id);
   const discount = getDiscountPercent(product.price, product.comparePrice);
-
-  const handleAddToCart = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addItem(product, {}, 1);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
 
   const handleWishlist = (e) => {
     e.preventDefault();
@@ -72,57 +62,19 @@ export default function ProductCard({ product, index = 0 }) {
 
             {/* Minimalist Wishlist Button */}
             <button
+              type="button"
               onClick={handleWishlist}
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-              className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 z-10 shadow-xs ${
-                wishlisted
+              className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 z-10 shadow-xs ${wishlisted
                   ? "bg-black text-white dark:bg-white dark:text-black scale-105"
                   : "bg-white/90 dark:bg-black/80 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
-              }`}
+                }`}
             >
               <Heart
                 size={14}
                 className={wishlisted ? "fill-current" : ""}
               />
             </button>
-
-            {/* Quick Add Button — Nike/Adidas permanent high-contrast action */}
-            <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10">
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                aria-label={`Add ${product.name} to cart`}
-                className={`w-full py-2.5 px-3 text-[11px] font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-1.5 active:scale-95 shadow-sm ${
-                  added
-                    ? "bg-emerald-600 text-white"
-                    : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                }`}
-              >
-                <AnimatePresence mode="wait">
-                  {added ? (
-                    <motion.span
-                      key="check"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      className="flex items-center gap-1.5 font-bold"
-                    >
-                      <Check size={14} /> Added
-                    </motion.span>
-                  ) : (
-                    <motion.span
-                      key="add"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      className="flex items-center gap-1.5"
-                    >
-                      <ShoppingBag size={13} /> Quick Add
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-            </div>
 
             {/* Out of stock overlay */}
             {product.stock === 0 && (
@@ -160,7 +112,7 @@ export default function ProductCard({ product, index = 0 }) {
               </div>
             </div>
 
-            {/* Lower: Price and Status Pinned */}
+            {/* Lower: Price, Status, and View Product Action below price */}
             <div className="mt-auto pt-2.5 border-t border-zinc-100 dark:border-zinc-900">
               <div className="flex items-baseline gap-2 h-6">
                 <span className="price text-base sm:text-lg font-black text-zinc-950 dark:text-white">
@@ -187,6 +139,23 @@ export default function ProductCard({ product, index = 0 }) {
                   </div>
                 )}
               </div>
+
+              {/* Action Button — Below the price, leads directly to Product Details / Explain Page */}
+              <div
+                className={`w-full py-2.5 px-3 text-[11px] font-bold uppercase tracking-wider rounded-sm transition-all duration-150 flex items-center justify-center gap-1.5 shadow-xs mt-3 ${
+                  product.stock === 0
+                    ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 cursor-not-allowed"
+                    : "bg-black text-white group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200"
+                }`}
+              >
+                {product.stock === 0 ? (
+                  <span>Sold Out</span>
+                ) : (
+                  <span className="flex items-center gap-1.5">
+                    View Product <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" />
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -206,9 +175,10 @@ export function ProductCardSkeleton() {
           <div className="skeleton h-10 w-full rounded-xs" />
           <div className="skeleton h-3 w-20 rounded-xs" />
         </div>
-        <div className="space-y-1 pt-2.5 border-t border-zinc-100 dark:border-zinc-900">
+        <div className="space-y-1.5 pt-2.5 border-t border-zinc-100 dark:border-zinc-900">
           <div className="skeleton h-5 w-24 rounded-xs" />
           <div className="skeleton h-3 w-16 rounded-xs" />
+          <div className="skeleton h-9 w-full rounded-sm mt-3" />
         </div>
       </div>
     </div>

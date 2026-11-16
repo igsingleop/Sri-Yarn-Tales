@@ -1,10 +1,11 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Search } from "lucide-react";
+import { Home, Search, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
+  const navigate = useNavigate();
   return (
     <>
       <Helmet>
@@ -30,7 +31,17 @@ export default function NotFound() {
             The piece or page you requested could not be located in our active catalog.
           </p>
 
-          <div className="flex gap-3 justify-center pt-4">
+          <div className="flex flex-wrap gap-3 justify-center pt-4">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="btn-secondary"
+            >
+              <ArrowLeft size={14} /> Go Back
+            </button>
             <Link to="/" className="btn-primary">
               <Home size={14} /> Home Atelier
             </Link>

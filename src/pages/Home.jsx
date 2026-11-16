@@ -15,7 +15,7 @@ import { useBannerStore, useProductStore, useCategoryStore } from "../store";
 import reviewsData from "../data/reviews.json";
 
 // ---- Counter component ----
-function Counter({ to, suffix = "", label }) {
+function Counter({ to, suffix = "", label, whiteText = false }) {
   const [count, setCount] = useState(0);
   const [started, setStarted] = useState(false);
 
@@ -40,10 +40,10 @@ function Counter({ to, suffix = "", label }) {
       viewport={{ once: true }}
       className="text-left"
     >
-      <p className="font-heading font-black text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight">
+      <p className={`font-heading font-black text-3xl sm:text-4xl tracking-tight ${whiteText ? 'text-white' : 'text-zinc-950 dark:text-white'}`}>
         {count.toLocaleString("en-IN")}{suffix}
       </p>
-      <p className="text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-wider font-semibold mt-1">
+      <p className={`text-xs uppercase tracking-wider font-semibold mt-1 ${whiteText ? 'text-zinc-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
         {label}
       </p>
     </motion.div>
@@ -156,12 +156,12 @@ function Hero() {
 function ValuePillars() {
   const pillars = [
     {
-      title: "100% Hand-Crafted",
-      desc: "Zero industrial automation. Every knot crafted by Indian artisans.",
+      title: "100% Hand-Crocheted",
+      desc: "Zero industrial automation. Every stitch crafted by Indian artisans.",
     },
     {
-      title: "Organic Natural Fibres",
-      desc: "Ultra-soft combed cotton & pure wool safe for sensitive skin.",
+      title: "Natural Soft Fibres",
+      desc: "Combed cotton & pure wool yarn safe for sensitive skin.",
     },
     {
       title: "Bespoke Commissions",
@@ -303,23 +303,23 @@ function BrandManifesto() {
           {/* Left: Manifesto Statement */}
           <div className="lg:col-span-7 space-y-6 text-left">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-400">
-              The Manifesto // Slow Luxury
+              The Craft // Artisanal Crochet
             </p>
             <h2 className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-white leading-tight">
-              Fast fashion forgets. True craft endures.
+              Fast fashion forgets. Pure crochet endures.
             </h2>
-            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-normal">
-              Sri Yarn &amp; Tales was founded with a singular conviction: that modern luxury lies in patience, human intentionality, and natural materials. Each piece is hand-knotted by expert artisans in India, turning raw soft yarn into timeless amigurumi, architectural bags, and bespoke home essentials.
+            <p className="text-zinc-300 text-base sm:text-lg leading-relaxed font-normal">
+              Sri Yarn &amp; Tales was founded with a singular conviction: that true luxury lies in patience, human intentionality, and natural fibers. Unlike machine knitwear, authentic crochet cannot be produced by any industrial machine in the world — each loop and stitch is guided by human hands and a single crochet hook.
             </p>
             <p className="text-zinc-400 text-sm sm:text-base leading-relaxed font-normal">
-              We reject the planned obsolescence of conveyor belts. Every knot is inspected, every stitch tension calibrated, delivering heirloom-grade creations that tell a story for decades to come.
+              We reject the disposable speed of modern factory assembly. Every stitch tension is calibrated, every tail securely woven in, delivering heirloom-grade amigurumi, architectural bags, and bespoke home textiles that tell a story for decades to come.
             </p>
 
             {/* Metrics */}
             <div className="grid grid-cols-3 gap-6 pt-6 border-t border-zinc-800">
-              <Counter to={5000} suffix="+" label="Stitches / Piece" />
-              <Counter to={100} suffix="%" label="Handcrafted" />
-              <Counter to={0} suffix="%" label="Machine Plastic" />
+              <Counter to={5000} suffix="+" label="Stitches / Creation" whiteText />
+              <Counter to={100} suffix="%" label="Hand-Crocheted" whiteText />
+              <Counter to={0} suffix="%" label="Machine Plastic" whiteText />
             </div>
 
             <div className="pt-4">
@@ -331,15 +331,25 @@ function BrandManifesto() {
 
           {/* Right: Studio Imagery Frame */}
           <div className="lg:col-span-5 relative">
-            <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+            <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1612548403247-aa2873e9422d?w=800&h=1000&fit=crop"
-                alt="Artisan hand-crafting crochet at Sri Yarn & Tales atelier"
-                className="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1789654498618-b14ffe50d0f4?w=800&h=1000&fit=crop"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1513890333407-6f85205e8ef2?w=800&h=1000&fit=crop";
+                }}
+                alt="Artisan hands crocheting with hook and yarn at Sri Yarn & Tales atelier"
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 loading="lazy"
+                width={800}
+                height={1000}
               />
-              <div className="absolute top-4 left-4 px-2.5 py-1 bg-black/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-widest rounded-xs">
-                Atelier Archive // India
+              <div className="absolute top-4 left-4 px-2.5 py-1 bg-black/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-widest rounded-xs border border-white/10">
+                Atelier Archive // 100% Hand-Crocheted
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 px-3 py-2 bg-black/75 backdrop-blur-xs rounded text-[11px] text-zinc-300 flex items-center justify-between border border-white/10">
+                <span className="font-semibold text-white">Technique: Single Hook Stitching</span>
+                <span className="text-zinc-400">Pure Combed Cotton</span>
               </div>
             </div>
           </div>

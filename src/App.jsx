@@ -74,6 +74,16 @@ const pageVariants = {
   exit: { opacity: 0, y: -8, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } },
 };
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
+  return null;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   return (
@@ -108,13 +118,16 @@ function AnimatedRoutes() {
 
 export function AppContent() {
   return (
-    <Layout>
-      <ErrorBoundary>
-        <Suspense fallback={<PageLoader />}>
-          <AnimatedRoutes />
-        </Suspense>
-      </ErrorBoundary>
-    </Layout>
+    <>
+      <ScrollToTop />
+      <Layout>
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <AnimatedRoutes />
+          </Suspense>
+        </ErrorBoundary>
+      </Layout>
+    </>
   );
 }
 

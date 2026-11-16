@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, Heart, ShoppingBag, Menu, User, ChevronDown
+  Search, Heart, ShoppingBag, Menu, User, ChevronDown, ArrowLeft
 } from "lucide-react";
 import Logo from "../ui/Logo";
 import {
@@ -39,6 +39,16 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const isHome = location.pathname === "/";
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
 
   const user = useAuthStore((s) => s.user);
   const topAnnouncement = useBannerStore((s) => s.topAnnouncement);
@@ -104,11 +114,27 @@ export default function Navbar() {
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-6">
-            {/* Brand Logo */}
-            <Link to="/" aria-label="Sri Yarn & Tales — Home" className="flex-shrink-0">
-              <Logo />
-            </Link>
+          <div className="flex items-center justify-between gap-3 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Universal Back Button (Visible on every page except Home) */}
+              {!isHome && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  aria-label="Go back to previous page"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95 shadow-2xs"
+                  title="Go back"
+                >
+                  <ArrowLeft size={14} className="stroke-[2.5]" />
+                  <span className="hidden sm:inline font-bold">Back</span>
+                </button>
+              )}
+
+              {/* Brand Logo */}
+              <Link to="/" aria-label="Sri Yarn & Tales — Home" className="flex-shrink-0">
+                <Logo />
+              </Link>
+            </div>
 
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center gap-7">

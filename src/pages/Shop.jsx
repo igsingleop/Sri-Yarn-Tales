@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams, useParams } from "react-router-dom";
+import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
 import {
   SlidersHorizontal, Grid2x2, Grid3x3, X, ChevronDown,
-  Star
+  Star, ArrowLeft
 } from "lucide-react";
 import ProductCard, { ProductCardSkeleton } from "../components/product/ProductCard";
 import { getProducts, getCategories } from "../lib/api";
@@ -211,6 +211,7 @@ function FilterSidebar({ filters, setFilters, categories, onClose, mobile = fals
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { category: routeCategory } = useParams();
+  const navigate = useNavigate();
   const storeProducts = useProductStore((s) => s.products);
   const storeCategories = useCategoryStore((s) => s.categories);
 
@@ -307,25 +308,38 @@ export default function Shop() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
         {/* Page Header — Architectural Minimalism */}
-        <div className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-12 px-4">
-          <div className="max-w-7xl mx-auto text-center space-y-2">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
-              The Catalog // 2026 Edition
-            </p>
-            <motion.h1
-              className="font-heading font-black text-3xl sm:text-5xl uppercase tracking-tight text-zinc-950 dark:text-white"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+        <div className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-10 px-4 relative">
+          <div className="max-w-7xl mx-auto relative">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate("/");
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
             >
-              {filters.category
-                ? categories.find((c) => c.slug === filters.category)?.name || "Collection"
-                : "All Creations"}
-            </motion.h1>
-            {filters.search && (
-              <p className="text-xs uppercase tracking-wider text-zinc-500 font-semibold">
-                Showing results matching: <strong className="text-black dark:text-white font-black">"{filters.search}"</strong>
+              <ArrowLeft size={13} className="stroke-[2.5]" />
+              <span>Back</span>
+            </button>
+            <div className="text-center space-y-2">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+                The Catalog // 2026 Edition
               </p>
-            )}
+              <motion.h1
+                className="font-heading font-black text-3xl sm:text-5xl uppercase tracking-tight text-zinc-950 dark:text-white"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                {filters.category
+                  ? categories.find((c) => c.slug === filters.category)?.name || "Collection"
+                  : "All Creations"}
+              </motion.h1>
+              {filters.search && (
+                <p className="text-xs uppercase tracking-wider text-zinc-500 font-semibold">
+                  Showing results matching: <strong className="text-black dark:text-white font-black">"{filters.search}"</strong>
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
