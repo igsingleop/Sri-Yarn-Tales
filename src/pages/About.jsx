@@ -99,10 +99,10 @@ export default function About() {
               <div className="lg:col-span-5 relative">
                 <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 shadow-xl relative">
                   <img
-                    src="https://images.unsplash.com/photo-1789654498618-b14ffe50d0f4?w=800&h=1000&fit=crop"
+                    src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800&h=1000&fit=crop"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1513890333407-6f85205e8ef2?w=800&h=1000&fit=crop";
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=800&h=1000&fit=crop";
                     }}
                     alt="Artisan hands crocheting with hook and yarn at Sri Yarn & Tales atelier"
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"

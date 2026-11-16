@@ -9,15 +9,15 @@ import {
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Read Firebase configuration exclusively from secure environment variables (.env / deployment secrets)
-// NEVER hardcode credentials in source code to ensure top security across git repositories
+// Firebase configuration: reads from environment variables (.env / deployment settings) with client project identifiers
+// Web client identifiers connect the app to Firebase project 'sri-yarn-tales' across all devices and live deployments
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCS2M9m-FNllH0rtQ6nlT4vk_NZya2mpdc",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "sri-yarn-tales.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "sri-yarn-tales",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "sri-yarn-tales.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "386897098606",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:386897098606:web:9ed5eec20410c4ee28f37f",
 };
 
 // Check if actual configuration has been provided

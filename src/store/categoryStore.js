@@ -41,7 +41,7 @@ export const useCategoryStore = create(
           slug,
           name,
           description: categoryData.description || "Handcrafted crochet creations made with love.",
-          image: categoryData.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",
+          image: categoryData.image || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
           emoji: categoryData.emoji || "✨",
           count: 0,
         };
@@ -72,15 +72,29 @@ export const useCategoryStore = create(
     }),
     {
       name: "syt-custom-categories",
-      // Migrate any previously saved broken home-decor image in localStorage
+      // Clean and migrate any previously saved legacy/non-crochet category images in localStorage
       onRehydrateStorage: () => (state) => {
         if (state && Array.isArray(state.categories)) {
           state.categories = state.categories.map((cat) => {
-            if (cat.slug === "home-decor" && cat.image?.includes("photo-1568760970073-ce3f8af8cb72")) {
-              return {
-                ...cat,
-                image: "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",
-              };
+            if (
+              cat.image?.includes("photo-1548036328-c9fa89d128fa") ||
+              cat.image?.includes("photo-1558618666-fcd25c85cd64") ||
+              cat.image?.includes("photo-1584589167171-541ce45f1eea") ||
+              cat.image?.includes("photo-1568760970073-ce3f8af8cb72")
+            ) {
+              const fallback =
+                cat.slug === "amigurumi"
+                  ? "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"
+                  : cat.slug === "bags"
+                  ? "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop"
+                  : cat.slug === "home-decor"
+                  ? "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=600&fit=crop"
+                  : cat.slug === "wearables"
+                  ? "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=600&fit=crop"
+                  : cat.slug === "baby"
+                  ? "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&h=600&fit=crop"
+                  : "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=600&h=600&fit=crop";
+              return { ...cat, image: fallback };
             }
             return cat;
           });

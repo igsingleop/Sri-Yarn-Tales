@@ -1,18 +1,21 @@
 import React from "react";
+import { useProductStore } from "../../store";
 
-// Reliable fallback image if any external asset fails
+// Reliable fallback image: authentic handmade crochet bunny
 const SAFE_FALLBACK =
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=800&fit=crop";
+  "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=800&fit=crop";
 
 export default function HeroPosterBanner({ images = [] }) {
-  // Column 1: Curated Artisan Crochet Works
-  const col1 = [
+  const storeProducts = useProductStore((s) => s.products) || [];
+
+  // Verified authentic crochet creations fallback collection
+  const fallbackCol1 = [
     {
       id: "c1-1",
       title: "Pastel Bunny Amigurumi",
       image:
         images[0] ||
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=800&fit=crop",
     },
     {
       id: "c1-2",
@@ -34,21 +37,20 @@ export default function HeroPosterBanner({ images = [] }) {
     },
   ];
 
-  // Column 2: Architectural Bags & Living Decor
-  const col2 = [
+  const fallbackCol2 = [
     {
       id: "c2-1",
       title: "Bohemian Market Tote",
       image:
         images[1] ||
-        "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=800&fit=crop",
     },
     {
       id: "c2-2",
       title: "Sunrise Macramé Hanging",
       image:
         images[2] ||
-        "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=800&fit=crop",
     },
     {
       id: "c2-3",
@@ -61,17 +63,16 @@ export default function HeroPosterBanner({ images = [] }) {
       id: "c2-4",
       title: "Crochet Mini Crossbody",
       image:
-        "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&h=800&fit=crop",
     },
   ];
 
-  // Column 3: Botanical Decor, Infant Knits & Hats
-  const col3 = [
+  const fallbackCol3 = [
     {
       id: "c3-1",
       title: "Boho Plant Hanger Set",
       image:
-        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=800&fit=crop",
     },
     {
       id: "c3-2",
@@ -83,7 +84,7 @@ export default function HeroPosterBanner({ images = [] }) {
       id: "c3-3",
       title: "Slouchy Crochet Beanie",
       image:
-        "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=600&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=600&h=800&fit=crop",
     },
     {
       id: "c3-4",
@@ -92,6 +93,31 @@ export default function HeroPosterBanner({ images = [] }) {
         "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=800&fit=crop",
     },
   ];
+
+  // Helper to map live store products into columns, falling back to verified crochet works
+  const col1 = storeProducts.length >= 4
+    ? storeProducts.slice(0, 4).map((p, i) => ({
+        id: p.id || `c1-${i}`,
+        title: p.name,
+        image: p.images?.[0] || fallbackCol1[i]?.image || SAFE_FALLBACK,
+      }))
+    : fallbackCol1;
+
+  const col2 = storeProducts.length >= 8
+    ? storeProducts.slice(4, 8).map((p, i) => ({
+        id: p.id || `c2-${i}`,
+        title: p.name,
+        image: p.images?.[0] || fallbackCol2[i]?.image || SAFE_FALLBACK,
+      }))
+    : fallbackCol2;
+
+  const col3 = storeProducts.length >= 12
+    ? storeProducts.slice(8, 12).map((p, i) => ({
+        id: p.id || `c3-${i}`,
+        title: p.name,
+        image: p.images?.[0] || fallbackCol3[i]?.image || SAFE_FALLBACK,
+      }))
+    : fallbackCol3;
 
   // Duplicated arrays for seamless continuous looping
   const loopCol1 = [...col1, ...col1];

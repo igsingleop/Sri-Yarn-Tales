@@ -106,7 +106,7 @@ function parseCSV(text) {
         stock: row.stock ? Number(row.stock) : 10,
         description: row.description || "Handcrafted with premium soft yarn, made with love and precision.",
         materials: row.materials || "100% premium cotton yarn, hypoallergenic fiberfill",
-        imageUrl: row.imageurl || row.image || row.images || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
+        imageUrl: row.imageurl || row.image || row.images || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
         isBestseller: row.isbestseller === "true" || row.bestseller === "true" || row.isbestseller === "1",
         isNew: row.isnew !== "false" && row.isnew !== "0",
         isCustomizable: row.iscustomizable === "true" || row.customizable === "true" || row.iscustomizable === "1",
@@ -132,7 +132,7 @@ function parseJSON(text) {
       stock: item.stock !== undefined ? Number(item.stock) : 10,
       description: item.description || "Handcrafted with premium soft yarn, made with love and precision.",
       materials: item.materials || "100% premium cotton yarn, hypoallergenic fiberfill",
-      imageUrl: item.imageUrl || (Array.isArray(item.images) ? item.images[0] : "") || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
+      imageUrl: item.imageUrl || (Array.isArray(item.images) ? item.images[0] : "") || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
       isBestseller: Boolean(item.isBestseller),
       isNew: item.isNew !== undefined ? Boolean(item.isNew) : true,
       isCustomizable: Boolean(item.isCustomizable),
@@ -144,9 +144,9 @@ function parseJSON(text) {
 function downloadSampleCSV() {
   const csvContent =
 `name,category,price,comparePrice,stock,description,materials,imageUrl,isBestseller,isNew,isCustomizable,tags
-"Lavender Bunny Plushie",amigurumi,649,899,15,"Cute hand-crocheted lavender bunny with floppy ears and soft tail","100% organic cotton yarn, hypoallergenic fiberfill","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",true,true,true,"bunny;amigurumi;cute"
-"Sunburst Crochet Tote Bag",bags,1299,1599,8,"Boho-style hand-woven granny square tote bag with durable handles","100% premium mercerized cotton yarn","https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=600&fit=crop",true,false,false,"tote;bag;grannysquare"
-"Pastel Coaster Set of 4",home-decor,399,499,25,"Charming floral coasters in pastel hues for tea mugs and cups","Durable washable cotton yarn","https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",false,true,true,"coasters;homedecor;kitchen"
+"Lavender Bunny Plushie",amigurumi,649,899,15,"Cute hand-crocheted lavender bunny with floppy ears and soft tail","100% organic cotton yarn, hypoallergenic fiberfill","https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",true,true,true,"bunny;amigurumi;cute"
+"Sunburst Crochet Tote Bag",bags,1299,1599,8,"Boho-style hand-woven granny square tote bag with durable handles","100% premium mercerized cotton yarn","https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop",true,false,false,"tote;bag;grannysquare"
+"Pastel Coaster Set of 4",home-decor,399,499,25,"Charming floral coasters in pastel hues for tea mugs and cups","Durable washable cotton yarn","https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=600&fit=crop",false,true,true,"coasters;homedecor;kitchen"
 "Boho Crochet Bucket Hat",wearables,849,1099,10,"Breathable summer bucket hat in earthy crochet pattern","100% soft cotton yarn","https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=600&h=600&fit=crop",false,true,false,"hat;summer;boho"`;
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -170,7 +170,7 @@ function downloadSampleJSON() {
       stock: 20,
       description: "Miniature crochet daisy flower keychain with golden ring.",
       materials: "100% combed cotton yarn, brass alloy ring",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=600&h=600&fit=crop",
       isBestseller: true,
       isNew: true,
       isCustomizable: true,
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
       stock: "15",
       description: "Handcrafted with premium yarn, made with love and precision.",
       materials: "100% premium soft cotton yarn, hypoallergenic fiberfill",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
       isBestseller: false,
       isNew: true,
       isCustomizable: true,
@@ -432,6 +432,18 @@ export default function AdminDashboard() {
     }
   };
 
+  // Download updated products.json for Git / Vercel deployment
+  const handleDownloadProductsJson = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "products.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast("✓ Downloaded updated products.json for production build!");
+  };
+
   // Handle local image upload for hero images
   const handleHeroImageUpload = async (index, file) => {
     if (file) {
@@ -486,7 +498,7 @@ export default function AdminDashboard() {
       stock: Number(formData.stock) || 1,
       description: formData.description?.trim() || "Handcrafted with premium soft yarn, made with love and precision.",
       materials: formData.materials?.trim() || "100% premium cotton yarn, hypoallergenic fiberfill",
-      images: [formData.imageUrl || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"],
+      images: [formData.imageUrl || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"],
       isBestseller: Boolean(formData.isBestseller),
       isNew: Boolean(formData.isNew),
       isCustomizable: Boolean(formData.isCustomizable),
@@ -523,7 +535,7 @@ export default function AdminDashboard() {
       name: "",
       slug: "",
       description: "Handcrafted crochet creations made with love.",
-      image: "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop",
+      image: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
       emoji: "🧶",
     });
     setIsCategoryModalOpen(true);
@@ -1087,6 +1099,15 @@ export default function AdminDashboard() {
                 <span>Sanitize Catalog</span>
               </button>
 
+              <button
+                onClick={handleDownloadProductsJson}
+                className="text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:text-black dark:hover:text-white flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 transition-all active:scale-95"
+                title="Download updated products.json for Git / Vercel deployment"
+              >
+                <Download size={13} className="text-blue-500" />
+                <span>Export products.json</span>
+              </button>
+
               {isFirebaseConfigured ? (
                 <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 px-3 py-1.5 rounded-full border border-emerald-500/30">
                   <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
@@ -1252,7 +1273,7 @@ export default function AdminDashboard() {
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <img
-                                    src={p.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop"}
+                                    src={p.images?.[0] || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=100&h=100&fit=crop"}
                                     alt={p.name}
                                     className="w-12 h-12 rounded-2xl object-cover bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 flex-shrink-0"
                                   />
@@ -1427,11 +1448,11 @@ export default function AdminDashboard() {
                       {/* Image Preview with quick change */}
                       <div className="relative aspect-video sm:aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200/80 dark:border-zinc-800">
                         <img
-                          src={cat.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
+                          src={cat.image || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"}
                           alt={cat.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop";
                           }}
                         />
                         <div className="absolute top-3 left-3 bg-white dark:bg-zinc-900/90 backdrop-blur-xs px-2.5 py-1 rounded-xl text-xs font-bold text-zinc-950 dark:text-white shadow-xs flex items-center gap-1">
@@ -2251,7 +2272,7 @@ export default function AdminDashboard() {
                             alt="Preview"
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop";
                             }}
                           />
                         ) : (
@@ -2296,11 +2317,11 @@ export default function AdminDashboard() {
                     <div className="max-w-[200px] mx-auto rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-card border border-zinc-200/80 dark:border-zinc-800">
                       <div className="aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                         <img
-                          src={categoryFormData.image || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"}
+                          src={categoryFormData.image || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"}
                           alt="Preview"
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.src = "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop";
                           }}
                         />
                       </div>

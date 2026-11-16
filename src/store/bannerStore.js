@@ -19,9 +19,9 @@ const DEFAULT_BANNER_STATE = {
     secondaryBtnText: "Order Custom",
     secondaryBtnLink: "/custom-orders",
     heroImages: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&h=400&fit=crop",
     ],
   },
@@ -75,11 +75,21 @@ export const useBannerStore = create(
       name: "syt-custom-banners",
       onRehydrateStorage: () => (state) => {
         if (state?.heroBanner?.heroImages && Array.isArray(state.heroBanner.heroImages)) {
-          state.heroBanner.heroImages = state.heroBanner.heroImages.map((img) =>
-            img?.includes("photo-1568760970073-ce3f8af8cb72")
-              ? "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=400&h=300&fit=crop"
-              : img
-          );
+          state.heroBanner.heroImages = state.heroBanner.heroImages.map((img) => {
+            if (
+              !img ||
+              img.includes("photo-1558618666-fcd25c85cd64") ||
+              img.includes("photo-1548036328-c9fa89d128fa") ||
+              img.includes("photo-1584589167171-541ce45f1eea") ||
+              img.includes("photo-1568760970073-ce3f8af8cb72") ||
+              img.includes("photo-1598300042247-d088f8ab3a91") ||
+              img.includes("photo-1622560480605-d83c853bc5c3") ||
+              img.includes("photo-1578587018452-892bacefd3f2")
+            ) {
+              return "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=400&h=400&fit=crop";
+            }
+            return img;
+          });
         }
       },
     }

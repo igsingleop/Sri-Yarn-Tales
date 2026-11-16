@@ -33,7 +33,7 @@ export default function ProductCard({ product, index = 0 }) {
           {/* Edge-to-edge clean image container */}
           <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden flex-shrink-0">
             <img
-              src={product.images?.[0] || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop"}
+              src={product.images?.[0] || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               loading="lazy"

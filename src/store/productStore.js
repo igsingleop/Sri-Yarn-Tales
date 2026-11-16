@@ -33,7 +33,7 @@ export const useProductStore = create(
           comparePrice: productData.comparePrice ? Number(productData.comparePrice) : null,
           images: productData.images && productData.images.length > 0 
             ? productData.images 
-            : ["https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"],
+            : ["https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"],
           colors: productData.colors || ["#D4768A", "#F4D58D", "#8FA98B"],
           colorNames: productData.colorNames || ["Rose Pink", "Butter Yellow", "Sage Green"],
           sizes: productData.sizes || ["Standard"],
@@ -95,7 +95,7 @@ export const useProductStore = create(
             comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
             images: Array.isArray(p.images) && p.images.length > 0
               ? p.images
-              : [p.imageUrl || "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop"],
+              : [p.imageUrl || "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"],
             colors: p.colors || ["#D4768A", "#F4D58D", "#8FA98B"],
             colorNames: p.colorNames || ["Rose Pink", "Butter Yellow", "Sage Green"],
             sizes: p.sizes || ["Standard"],
@@ -136,14 +136,29 @@ export const useProductStore = create(
             state.products.map((item) => {
               if (item?.images && Array.isArray(item.images)) {
                 item.images = item.images.map((img) => {
-                  if (img?.includes("photo-1558618666-fcd25c85cd64")) {
-                    return "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                  if (!img || img.includes("photo-1591781696001-67e57f2dc052")) {
+                    return "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=600&fit=crop";
                   }
-                  if (img?.includes("photo-1548036328-c9fa89d128fa")) {
-                    return "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&h=600&fit=crop";
+                  if (img.includes("photo-1558618666-fcd25c85cd64") || (item.slug?.includes("bunny") && img.includes("photo-1584589167171-541ce45f1eea"))) {
+                    return "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop";
                   }
-                  if (img?.includes("photo-1568760970073-ce3f8af8cb72")) {
-                    return "https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=600&h=600&fit=crop";
+                  if (img.includes("photo-1548036328-c9fa89d128fa") || img.includes("photo-1590874103328-eac38a683ce7")) {
+                    return "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop";
+                  }
+                  if (img.includes("photo-1622560480605-d83c853bc5c3")) {
+                    return "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop";
+                  }
+                  if (img.includes("photo-1598300042247-d088f8ab3a91")) {
+                    return "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=600&fit=crop";
+                  }
+                  if (img.includes("photo-1578587018452-892bacefd3f2")) {
+                    return "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=600&h=600&fit=crop";
+                  }
+                  if (img.includes("photo-1520903920243-00d872a2d1c9")) {
+                    return "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600&h=600&fit=crop";
+                  }
+                  if (img.includes("photo-1568760970073-ce3f8af8cb72") || img.includes("photo-1555041469-a586c61ea9bc")) {
+                    return "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=600&fit=crop";
                   }
                   return img;
                 });

@@ -56,8 +56,8 @@ function Hero() {
   const headline = heroBanner.headline || "Engineered By Hand. Woven For Life.";
   const subtext = heroBanner.subtext || "Discover limited-batch artisanal amigurumi, architectural bags, bespoke home decor, and luxury knitwear — handcrafted in India with 100% natural soft yarn.";
   const images = heroBanner.heroImages || [
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop",
     "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=600&fit=crop",
     "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=600&fit=crop",
   ];
@@ -333,10 +333,10 @@ function BrandManifesto() {
           <div className="lg:col-span-5 relative">
             <div className="aspect-[4/5] rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1789654498618-b14ffe50d0f4?w=800&h=1000&fit=crop"
+                src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800&h=1000&fit=crop"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1513890333407-6f85205e8ef2?w=800&h=1000&fit=crop";
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=800&h=1000&fit=crop";
                 }}
                 alt="Artisan hands crocheting with hook and yarn at Sri Yarn & Tales atelier"
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
