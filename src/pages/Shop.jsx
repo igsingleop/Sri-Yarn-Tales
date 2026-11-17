@@ -231,7 +231,7 @@ export default function Shop() {
       ? storeCategories.map((cat) => ({
           ...cat,
           count: (Array.isArray(storeProducts) ? storeProducts : []).filter(
-            (p) => p.category === cat.slug
+            (p) => String(p.category || "").toLowerCase().trim() === String(cat.slug || "").toLowerCase().trim()
           ).length,
         }))
       : [];
@@ -278,6 +278,23 @@ export default function Shop() {
   useEffect(() => {
     getCategories().then(setCategories);
   }, [storeProducts, storeCategories]);
+
+  useEffect(() => {
+    const nextCat = routeCategory || searchParams.get("category") || null;
+    const nextSearch = searchParams.get("search") || "";
+    const nextSort = searchParams.get("sort") || "featured";
+    setFilters((prev) => {
+      if (prev.category === nextCat && prev.search === nextSearch) return prev;
+      return {
+        ...prev,
+        category: nextCat,
+        search: nextSearch,
+      };
+    });
+    if (nextSort !== sort) {
+      setSort(nextSort);
+    }
+  }, [routeCategory, searchParams]);
 
   const activeFilterCount = [
     filters.category,

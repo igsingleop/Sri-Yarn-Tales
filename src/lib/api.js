@@ -40,40 +40,43 @@ export const getProducts = async (filters = {}) => {
   let products = getCurrentProducts();
 
   if (filters.category) {
-    products = products.filter((p) => p.category === filters.category);
-  }
-  if (filters.minPrice !== undefined) {
-    products = products.filter((p) => p.price >= filters.minPrice);
-  }
-  if (filters.maxPrice !== undefined) {
-    products = products.filter((p) => p.price <= filters.maxPrice);
-  }
-  if (filters.rating) {
-    products = products.filter((p) => p.rating >= filters.rating);
-  }
-  if (filters.colors && filters.colors.length > 0) {
-    products = products.filter((p) =>
-      p.colorNames.some((c) =>
-        filters.colors.map((fc) => fc.toLowerCase()).includes(c.toLowerCase())
-      )
-    );
-  }
-  if (filters.isCustomizable !== undefined) {
+    const targetCat = String(filters.category).toLowerCase().trim();
     products = products.filter(
-      (p) => p.isCustomizable === filters.isCustomizable
+      (p) => String(p.category || "").toLowerCase().trim() === targetCat
     );
   }
-  if (filters.inStock) {
-    products = products.filter((p) => p.stock > 0);
+  if (filters.minPrice !== undefined && Number(filters.minPrice) > 0) {
+    products = products.filter((p) => Number(p.price) >= Number(filters.minPrice));
   }
-  if (filters.search) {
-    const q = filters.search.toLowerCase();
+  if (filters.maxPrice !== undefined && Number(filters.maxPrice) < 5000) {
+    products = products.filter((p) => Number(p.price) <= Number(filters.maxPrice));
+  }
+  if (filters.rating && Number(filters.rating) > 0) {
+    products = products.filter((p) => Number(p.rating || 5) >= Number(filters.rating));
+  }
+  if (filters.colors && Array.isArray(filters.colors) && filters.colors.length > 0) {
+    const filterColors = filters.colors.map((fc) => String(fc).toLowerCase());
+    products = products.filter((p) =>
+      Array.isArray(p.colorNames) &&
+      p.colorNames.some((c) => filterColors.includes(String(c).toLowerCase()))
+    );
+  }
+  // ONLY filter if the user turned ON "Customisable Only"
+  if (filters.isCustomizable === true) {
+    products = products.filter((p) => Boolean(p.isCustomizable));
+  }
+  // ONLY filter if the user turned ON "In Stock Only"
+  if (filters.inStock === true) {
+    products = products.filter((p) => Number(p.stock) > 0);
+  }
+  if (filters.search && typeof filters.search === "string" && filters.search.trim()) {
+    const q = filters.search.trim().toLowerCase();
     products = products.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q)) ||
-        p.category.toLowerCase().includes(q)
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (Array.isArray(p.tags) && p.tags.some((t) => String(t).toLowerCase().includes(q))) ||
+        (p.category && p.category.toLowerCase().includes(q))
     );
   }
 
@@ -81,19 +84,22 @@ export const getProducts = async (filters = {}) => {
   if (filters.sort) {
     switch (filters.sort) {
       case "newest":
-        products = products.filter((p) => p.isNew).concat(products.filter((p) => !p.isNew));
+        products = [...products].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         break;
       case "price-asc":
-        products.sort((a, b) => a.price - b.price);
+        products = [...products].sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-desc":
-        products.sort((a, b) => b.price - a.price);
+        products = [...products].sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "rating":
-        products.sort((a, b) => b.rating - a.rating);
+        products = [...products].sort((a, b) => Number(b.rating || 5) - Number(a.rating || 5));
         break;
       case "bestsellers":
-        products = products.filter((p) => p.isBestseller).concat(products.filter((p) => !p.isBestseller));
+        products = [...products].sort((a, b) => {
+          if (Boolean(a.isBestseller) === Boolean(b.isBestseller)) return 0;
+          return a.isBestseller ? -1 : 1;
+        });
         break;
       default:
         break;
@@ -151,7 +157,9 @@ export const getCategories = async () => {
   const rawCategories = getCurrentCategories();
   return rawCategories.map((cat) => ({
     ...cat,
-    count: products.filter((p) => p.category === cat.slug).length,
+    count: products.filter(
+      (p) => String(p.category || "").toLowerCase().trim() === String(cat.slug || "").toLowerCase().trim()
+    ).length,
   }));
 };
 
