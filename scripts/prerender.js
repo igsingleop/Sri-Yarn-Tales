@@ -45,6 +45,10 @@ async function prerender() {
     { url: "/custom-orders", priority: "0.8", changefreq: "weekly" },
     { url: "/cart", priority: "0.5", changefreq: "monthly" },
     { url: "/wishlist", priority: "0.5", changefreq: "monthly" },
+    { url: "/account", priority: "0.5", changefreq: "monthly" },
+    { url: "/login", priority: "0.5", changefreq: "monthly" },
+    { url: "/checkout", priority: "0.5", changefreq: "monthly" },
+    { url: "/admin", priority: "0.3", changefreq: "monthly" },
   ];
 
   const categoryRoutes = categories.map((c) => ({
