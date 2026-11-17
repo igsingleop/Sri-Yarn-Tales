@@ -3,6 +3,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   signInAnonymously
 } from "firebase/auth";
@@ -66,8 +68,8 @@ if (isFirebaseConfigured) {
 }
 
 /**
- * Trigger Google Sign-In with Popup
- * Returns standardized user object
+ * Trigger Google Sign-In with automatic popup-to-redirect fallback
+ * Returns standardized user object or initiates redirect
  */
 export async function signInWithGoogle() {
   if (!isFirebaseConfigured || !auth || !googleProvider) {
@@ -92,13 +94,71 @@ export async function signInWithGoogle() {
       },
     };
   } catch (error) {
-    console.error("Google Sign-In Error:", error);
+    console.warn("Google Sign-In Notice:", error.code, error.message);
+
+    // If popup was blocked by browser or ad blocker, seamlessly redirect
+    if (error.code === "auth/popup-blocked" || error.code === "auth/cancelled-popup-request") {
+      try {
+        await signInWithRedirect(auth, googleProvider);
+        return {
+          success: false,
+          redirecting: true,
+          message: "Popup blocked by browser. Redirecting directly to Google Sign-In...",
+        };
+      } catch (redirectError) {
+        console.error("Redirect Sign-In Error:", redirectError);
+        return {
+          success: false,
+          error: "Browser blocked popup and redirect failed. Please allow popups or add sri-yarn-tales.vercel.app to Firebase Console Authorized Domains.",
+        };
+      }
+    }
+
+    if (error.code === "auth/unauthorized-domain") {
+      return {
+        success: false,
+        error: "Domain not authorized. Please add 'sri-yarn-tales.vercel.app' in Firebase Console > Authentication > Settings > Authorized domains.",
+      };
+    }
+
+    if (error.code === "auth/popup-closed-by-user") {
+      return {
+        success: false,
+        error: "Sign-in was closed before completing. Please try again.",
+      };
+    }
+
     return {
       success: false,
       isConfigured: true,
       error: error.message || "Failed to sign in with Google.",
     };
   }
+}
+
+/**
+ * Handle incoming Google redirect result on page load
+ */
+export async function checkGoogleRedirectResult() {
+  if (!auth) return null;
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      const user = result.user;
+      return {
+        success: true,
+        user: {
+          uid: user.uid,
+          name: user.displayName || user.email?.split("@")[0] || "Google User",
+          email: user.email,
+          avatar: user.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop",
+        },
+      };
+    }
+  } catch (err) {
+    console.warn("Redirect auth check notice:", err.message);
+  }
+  return null;
 }
 
 export async function signOutFromFirebase() {

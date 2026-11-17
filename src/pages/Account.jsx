@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,7 +8,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { formatINR } from "../lib/utils";
 import { useAuthStore } from "../store";
-import { signInWithGoogle, isFirebaseConfigured } from "../config/firebase";
+import { signInWithGoogle, checkGoogleRedirectResult, isFirebaseConfigured } from "../config/firebase";
 
 const MOCK_ORDERS = [
   { id: "SYT-M3X9-P2KF", date: "2026-10-10", status: "Delivered", total: 1298, items: 2 },
@@ -60,6 +60,18 @@ export default function Account() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
+  // Catch incoming Google redirect sign-in results on page load
+  useEffect(() => {
+    checkGoogleRedirectResult().then((res) => {
+      if (res?.success && res.user) {
+        const authRes = loginWithGoogleUser(res.user);
+        if (authRes.role === "admin") {
+          navigate("/admin");
+        }
+      }
+    });
+  }, []);
+
   const handleLoginSubmit = (e) => {
     e?.preventDefault();
     setError("");
@@ -97,6 +109,8 @@ export default function Account() {
         if (authRes.role === "admin") {
           navigate("/admin");
         }
+      } else if (res.redirecting) {
+        setError(res.message);
       } else if (res.error) {
         setError(res.error);
       }
@@ -163,8 +177,20 @@ export default function Account() {
             </div>
 
             {error && (
-              <div className="mb-4 p-3 rounded border border-red-500/30 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-semibold">
-                {error}
+              <div className="mb-4 p-3.5 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-semibold leading-relaxed space-y-2">
+                <p>{error}</p>
+                {error.includes("Authorized domains") && (
+                  <div className="pt-1">
+                    <a
+                      href="https://console.firebase.google.com/project/sri-yarn-tales/authentication/settings"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 font-bold text-xs underline text-red-800 dark:text-red-200 hover:text-black dark:hover:text-white"
+                    >
+                      Open Firebase Console Authorized Domains →
+                    </a>
+                  </div>
+                )}
               </div>
             )}
 
