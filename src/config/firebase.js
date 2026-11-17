@@ -5,8 +5,8 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  signOut as firebaseSignOut,
-  signInAnonymously
+  onAuthStateChanged,
+  signOut as firebaseSignOut
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -54,14 +54,6 @@ if (isFirebaseConfigured) {
     }
     googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
-
-    // Enable anonymous authentication so every mobile device on any cellular network/IP has authorized read/write access
-    if (typeof window !== "undefined" && auth && !auth.currentUser) {
-      signInAnonymously(auth).catch((authErr) => {
-        // Non-blocking notice; Firestore rules can also allow public read
-        console.warn("Anonymous session notice:", authErr.message);
-      });
-    }
   } catch (error) {
     console.warn("Firebase initialization error:", error);
   }
@@ -137,6 +129,26 @@ export async function signInWithGoogle() {
 }
 
 /**
+ * Subscribe to Firebase Auth state changes
+ * Automatically triggers whenever user signs in via redirect, popup, or session restore
+ */
+export function onAuthChange(callback) {
+  if (!auth) return () => {};
+  return onAuthStateChanged(auth, (firebaseUser) => {
+    if (firebaseUser && !firebaseUser.isAnonymous) {
+      callback({
+        uid: firebaseUser.uid,
+        name: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "Valued Customer",
+        email: firebaseUser.email,
+        avatar: firebaseUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop",
+      });
+    } else {
+      callback(null);
+    }
+  });
+}
+
+/**
  * Handle incoming Google redirect result on page load
  */
 export async function checkGoogleRedirectResult() {
@@ -155,8 +167,27 @@ export async function checkGoogleRedirectResult() {
         },
       };
     }
+    // If user is already authenticated in current session
+    if (auth.currentUser && !auth.currentUser.isAnonymous) {
+      const user = auth.currentUser;
+      return {
+        success: true,
+        user: {
+          uid: user.uid,
+          name: user.displayName || user.email?.split("@")[0] || "Google User",
+          email: user.email,
+          avatar: user.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop",
+        },
+      };
+    }
   } catch (err) {
     console.warn("Redirect auth check notice:", err.message);
+    return {
+      success: false,
+      error: err.code === "auth/unauthorized-domain"
+        ? "Domain not authorized. Please add sri-yarn-tales.vercel.app to Firebase Console Authorized Domains."
+        : err.message,
+    };
   }
   return null;
 }

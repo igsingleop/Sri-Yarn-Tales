@@ -167,15 +167,21 @@ export const useAuthStore = create(
         return { success: true, role: "admin", adminUser };
       },
 
-      // Google Sign-In: Only authenticates customer profile
+      // Google Sign-In: Authenticates user, promotes to admin if admin email matches
       loginWithGoogleUser: (googleUser) => {
+        const emailLower = (googleUser.email || "").toLowerCase().trim();
+        const isAdminEmail =
+          ADMIN_IDENTIFIERS.includes(emailLower) ||
+          emailLower.startsWith("admin@") ||
+          emailLower === "deepaksamu77@gmail.com";
+
         const user = {
           name: googleUser.name || "Google User",
           username: googleUser.email
             ? googleUser.email.split("@")[0]
             : "google_user",
           email: googleUser.email || "user@gmail.com",
-          role: "user",
+          role: isAdminEmail ? "admin" : "user",
           avatar:
             googleUser.avatar ||
             "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&h=120&fit=crop",
@@ -183,6 +189,17 @@ export const useAuthStore = create(
           uid: googleUser.uid || `google-${Date.now()}`,
           loggedInAt: Date.now(),
         };
+
+        if (isAdminEmail) {
+          const adminUser = {
+            ...user,
+            role: "admin",
+          };
+          set({ adminUser, user });
+          broadcastSync("SYNC_ADMIN_AUTH", adminUser);
+          broadcastSync("SYNC_AUTH", user);
+          return { success: true, role: "admin", user, adminUser };
+        }
 
         set({ user });
         broadcastSync("SYNC_AUTH", user);

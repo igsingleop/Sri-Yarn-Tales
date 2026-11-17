@@ -8,7 +8,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { formatINR } from "../lib/utils";
 import { useAuthStore } from "../store";
-import { signInWithGoogle, checkGoogleRedirectResult, isFirebaseConfigured } from "../config/firebase";
+import { signInWithGoogle, checkGoogleRedirectResult, onAuthChange, isFirebaseConfigured } from "../config/firebase";
 
 const MOCK_ORDERS = [
   { id: "SYT-M3X9-P2KF", date: "2026-10-10", status: "Delivered", total: 1298, items: 2 },
@@ -57,24 +57,43 @@ export default function Account() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
-  // Catch incoming Google redirect sign-in results on page load
+  // Catch incoming Google redirect sign-in results and listen to auth state changes
   useEffect(() => {
+    // 1. Check if returning from a redirect
     checkGoogleRedirectResult().then((res) => {
       if (res?.success && res.user) {
         const authRes = loginWithGoogleUser(res.user);
+        setSuccessMsg(`Welcome, ${res.user.name}!`);
+        if (authRes.role === "admin") {
+          navigate("/admin");
+        }
+      } else if (res?.success === false && res.error) {
+        setError(res.error);
+      }
+    });
+
+    // 2. Automatically sync if Firebase Auth resolves user session
+    const unsubscribe = onAuthChange((firebaseUser) => {
+      if (firebaseUser && !user) {
+        const authRes = loginWithGoogleUser(firebaseUser);
+        setSuccessMsg(`Welcome, ${firebaseUser.name}!`);
         if (authRes.role === "admin") {
           navigate("/admin");
         }
       }
     });
-  }, []);
+
+    return () => unsubscribe();
+  }, [user, navigate]);
 
   const handleLoginSubmit = (e) => {
     e?.preventDefault();
     setError("");
+    setSuccessMsg("");
 
     if (!identifier.trim()) {
       setError("Please enter a username or email");
@@ -95,6 +114,7 @@ export default function Account() {
 
   const handleGoogleSignIn = async () => {
     setError("");
+    setSuccessMsg("");
 
     if (!isFirebaseConfigured) {
       setShowFirebaseModal(true);
@@ -106,11 +126,12 @@ export default function Account() {
       const res = await signInWithGoogle();
       if (res.success && res.user) {
         const authRes = loginWithGoogleUser(res.user);
+        setSuccessMsg(`Welcome, ${res.user.name}!`);
         if (authRes.role === "admin") {
           navigate("/admin");
         }
       } else if (res.redirecting) {
-        setError(res.message);
+        setSuccessMsg(res.message);
       } else if (res.error) {
         setError(res.error);
       }
@@ -146,7 +167,7 @@ export default function Account() {
           <title>{isLogin ? "Sign In | Sri Yarn & Tales" : "Create Account | Sri Yarn & Tales"}</title>
         </Helmet>
 
-        <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-12 sm:py-20 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 py-12 sm:py-20 flex items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -158,7 +179,7 @@ export default function Account() {
                 if (window.history.length > 1) navigate(-1);
                 else navigate("/");
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors mb-4 active:scale-95 shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 mb-4 active:scale-95 shadow-2xs"
             >
               <ArrowLeft size={13} className="stroke-[2.5]" />
               <span>Back</span>
@@ -175,6 +196,12 @@ export default function Account() {
                 {isLogin ? "Access your saved pieces and tracked shipments" : "Join our community of handcrafted collectors"}
               </p>
             </div>
+
+            {successMsg && (
+              <div className="mb-4 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 text-xs font-semibold leading-relaxed">
+                {successMsg}
+              </div>
+            )}
 
             {error && (
               <div className="mb-4 p-3.5 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-semibold leading-relaxed space-y-2">

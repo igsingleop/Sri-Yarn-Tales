@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="description" content="Sri Yarn & Tales — Minimalist luxury handmade crochet: artisanal amigurumi toys, architectural bags, bespoke home decor & wearables. Shipped across India." />
     
-    <!-- Instant anti-FOUC theme initialization -->
+    <!-- Instant anti-FOUC theme initialization: defaults to clean light mode with ZERO black flash -->
     <script>
       (function() {
         try {
@@ -17,13 +17,15 @@
             if (parsed && parsed.state && parsed.state.theme) {
               isDark = parsed.state.theme === 'dark';
             }
-          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            isDark = true;
           }
           if (isDark) {
             document.documentElement.classList.add('dark');
             var meta = document.querySelector('meta[name="theme-color"]');
             if (meta) meta.setAttribute('content', '#09090b');
+          } else {
+            document.documentElement.classList.remove('dark');
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', '#ffffff');
           }
         } catch (e) {}
       })();
@@ -39,9 +41,21 @@
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />
     <link rel="apple-touch-icon" href="/logo.jpg" />
     
+    <!-- Instant light theme baseline -->
+    <style>
+      html, body {
+        background-color: #ffffff;
+        color: #18181b;
+      }
+      html.dark, html.dark body {
+        background-color: #09090b;
+        color: #fafafa;
+      }
+    </style>
+
     <title>Sri Yarn & Tales — Handmade Crochet, Woven With Love</title>
   </head>
-  <body class="bg-white text-zinc-900 dark:bg-[#09090b] dark:text-zinc-100 transition-colors duration-200">
+  <body class="bg-white text-zinc-900 dark:bg-[#09090b] dark:text-zinc-100">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
