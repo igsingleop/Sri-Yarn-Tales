@@ -232,7 +232,7 @@ export default function AdminDashboard() {
   } = useCategoryStore();
 
   // Admin Credentials Gate State
-  const [adminUsername, setAdminUsername] = useState("admin");
+  const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [adminError, setAdminError] = useState("");
@@ -859,7 +859,7 @@ export default function AdminDashboard() {
                     required
                     value={adminUsername}
                     onChange={(e) => setAdminUsername(e.target.value)}
-                    placeholder="admin or admin@sriyarn.com"
+                    placeholder="Enter admin username or email"
                     className="input pl-10 text-sm bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100"
                     autoFocus
                   />
@@ -867,9 +867,8 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="label text-xs flex items-center justify-between">
+                <label className="label text-xs">
                   <span>Admin Password</span>
-                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">(Demo: admin123)</span>
                 </label>
                 <div className="relative">
                   <Key size={16} className="text-zinc-500 dark:text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -899,31 +898,6 @@ export default function AdminDashboard() {
                 <ShieldCheck size={18} /> Unlock Admin Dashboard
               </button>
             </form>
-
-            {/* Quick Demo Access Box */}
-            <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center">
-              <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-left space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
-                    <Sparkles size={12} /> Default Demo Credentials
-                  </span>
-                  <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 font-bold px-2 py-0.5 rounded-full">
-                    Instant Access
-                  </span>
-                </div>
-                <div className="text-xs text-zinc-950 dark:text-white font-mono bg-white dark:bg-zinc-900/80 p-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800 flex justify-between items-center">
-                  <span>User: <strong>admin</strong></span>
-                  <span>Pass: <strong>admin123</strong></span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleQuickAdminDemo}
-                  className="w-full mt-1 bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs hover:bg-primary py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-                >
-                  <Key size={13} className="text-amber-400" /> Quick One-Click Admin Sign In
-                </button>
-              </div>
-            </div>
           </motion.div>
         </div>
       </>

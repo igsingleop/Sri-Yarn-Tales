@@ -79,7 +79,7 @@ export const useAuthStore = create(
             return {
               success: false,
               role: "unauthorized",
-              error: "Invalid admin password. Default demo password is 'admin123'.",
+              error: "Invalid admin password. Please check your credentials.",
             };
           }
 
