@@ -50,7 +50,7 @@ export default function Navbar() {
     }
   };
 
-  const user = useAuthStore((s) => s.user);
+  const user = useAuthStore((s) => s.user || s.adminUser);
   const topAnnouncement = useBannerStore((s) => s.topAnnouncement);
 
   const cartCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.qty, 0));

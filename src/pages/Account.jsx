@@ -49,7 +49,8 @@ function GoogleIcon({ className = "w-4 h-4" }) {
 export default function Account() {
   const navigate = useNavigate();
 
-  const { user, login, loginWithGoogleUser, logout } = useAuthStore();
+  const { user, adminUser, login, loginWithGoogleUser, logout } = useAuthStore();
+  const currentUser = user || adminUser;
   const [isLogin, setIsLogin] = useState(true);
   const [activeTab, setActiveTab] = useState("orders");
   
@@ -78,7 +79,7 @@ export default function Account() {
 
     // 2. Automatically sync if Firebase Auth resolves user session
     const unsubscribe = onAuthChange((firebaseUser) => {
-      if (firebaseUser && !user) {
+      if (firebaseUser && !currentUser) {
         const authRes = loginWithGoogleUser(firebaseUser);
         setSuccessMsg(`Welcome, ${firebaseUser.name}!`);
         if (authRes.role === "admin") {
@@ -88,7 +89,7 @@ export default function Account() {
     });
 
     return () => unsubscribe();
-  }, [user, navigate]);
+  }, [currentUser, navigate]);
 
   const handleLoginSubmit = (e) => {
     e?.preventDefault();
@@ -109,6 +110,8 @@ export default function Account() {
 
     if (res.role === "admin") {
       navigate("/admin");
+    } else {
+      setSuccessMsg(`Signed in successfully!`);
     }
   };
 
@@ -122,8 +125,16 @@ export default function Account() {
     }
 
     setGoogleLoading(true);
+
+    // Timeout safety net: automatically resets loading state after 10s so button never hangs
+    const timeoutId = setTimeout(() => {
+      setGoogleLoading(false);
+      setError("Google sign-in timed out. Please check if a popup was blocked or try again.");
+    }, 10000);
+
     try {
       const res = await signInWithGoogle();
+      clearTimeout(timeoutId);
       if (res.success && res.user) {
         const authRes = loginWithGoogleUser(res.user);
         setSuccessMsg(`Welcome, ${res.user.name}!`);
@@ -136,8 +147,10 @@ export default function Account() {
         setError(res.error);
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       setError("Google authentication was canceled or failed.");
     } finally {
+      clearTimeout(timeoutId);
       setGoogleLoading(false);
     }
   };
@@ -160,7 +173,7 @@ export default function Account() {
   };
 
   // Not Logged In View
-  if (!user) {
+  if (!currentUser) {
     return (
       <>
         <Helmet>
@@ -173,17 +186,13 @@ export default function Account() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-md border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 sm:p-8 bg-zinc-50/50 dark:bg-zinc-950/50"
           >
-            <button
-              type="button"
-              onClick={() => {
-                if (window.history.length > 1) navigate(-1);
-                else navigate("/");
-              }}
+            <Link
+              to="/"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 mb-4 active:scale-95 shadow-2xs"
             >
               <ArrowLeft size={13} className="stroke-[2.5]" />
-              <span>Back</span>
-            </button>
+              <span>Back to Store</span>
+            </Link>
 
             <div className="text-center mb-6">
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 mb-1">
@@ -346,17 +355,32 @@ export default function Account() {
 
       <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors py-10 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            onClick={() => {
-              if (window.history.length > 1) navigate(-1);
-              else navigate("/");
-            }}
+          <Link
+            to="/"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors mb-6 active:scale-95 shadow-2xs"
           >
             <ArrowLeft size={13} className="stroke-[2.5]" />
-            <span>Back</span>
-          </button>
+            <span>Back to Store</span>
+          </Link>
+
+          {Boolean(currentUser?.role === "admin" || adminUser) && (
+            <div className="mb-6 p-4 rounded-lg border border-amber-500/30 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black">
+                  Admin Active
+                </span>
+                <span className="text-xs font-semibold">
+                  Administrator privileges active for {currentUser?.email}
+                </span>
+              </div>
+              <Link
+                to="/admin"
+                className="btn-primary text-xs py-1.5 px-3.5 whitespace-nowrap"
+              >
+                Open Admin Console →
+              </Link>
+            </div>
+          )}
 
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Sidebar Profile & Nav (4 cols) */}
@@ -364,15 +388,15 @@ export default function Account() {
               {/* Profile Card */}
               <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 bg-zinc-50/50 dark:bg-zinc-950/50 text-center">
                 <img
-                  src={user.avatar}
-                  alt={user.name}
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
                   className="w-16 h-16 rounded-full object-cover mx-auto border-2 border-zinc-300 dark:border-zinc-700 mb-3"
                 />
                 <h2 className="font-heading font-black text-base uppercase tracking-tight text-zinc-950 dark:text-white">
-                  {user.name}
+                  {currentUser.name}
                 </h2>
-                <p className="text-xs text-zinc-400 font-mono mt-0.5">{user.email}</p>
-                {user.provider === "google" && (
+                <p className="text-xs text-zinc-400 font-mono mt-0.5">{currentUser.email}</p>
+                {currentUser.provider === "google" && (
                   <div className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded mt-2">
                     <CheckCircle2 size={10} /> Google Verified
                   </div>
@@ -457,7 +481,7 @@ export default function Account() {
                   </h2>
                   <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 bg-zinc-50/50 dark:bg-zinc-950/50">
                     <span className="badge bg-black text-white dark:bg-white dark:text-black mb-3">Default</span>
-                    <p className="font-bold text-sm text-zinc-950 dark:text-white">{user.name}</p>
+                    <p className="font-bold text-sm text-zinc-950 dark:text-white">{currentUser.name}</p>
                     <p className="text-xs text-zinc-400 mt-1">42, 3rd Cross, Jayanagar 4th Block</p>
                     <p className="text-xs text-zinc-400">Bangalore, Karnataka — 560011</p>
                   </div>
@@ -484,16 +508,16 @@ export default function Account() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="label">Full Name</label>
-                        <input className="input" defaultValue={user.name} />
+                        <input className="input" defaultValue={currentUser.name} />
                       </div>
                       <div>
                         <label className="label">Username</label>
-                        <input className="input" defaultValue={user.username || "collector"} readOnly />
+                        <input className="input" defaultValue={currentUser.username || "collector"} readOnly />
                       </div>
                     </div>
                     <div>
                       <label className="label">Email Address</label>
-                      <input className="input" defaultValue={user.email} type="email" />
+                      <input className="input" defaultValue={currentUser.email} type="email" />
                     </div>
                     <button className="btn-primary mt-2">
                       Save Changes
