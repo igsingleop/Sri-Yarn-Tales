@@ -5,13 +5,18 @@ import { Heart, Leaf, Clock, Award, ArrowRight, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Counter({ to, suffix, label }) {
-  const [count, setCount] = React.useState(0);
+  const prefersReduced =
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
+  const [count, setCount] = React.useState(to); // show final value by default
   const [started, setStarted] = React.useState(false);
   return (
     <motion.div
       whileInView={() => {
-        if (!started) {
+        if (!started && !prefersReduced) {
           setStarted(true);
+          setCount(0);
           let s = 0;
           const step = Math.max(1, Math.floor(to / 50));
           const t = setInterval(() => {

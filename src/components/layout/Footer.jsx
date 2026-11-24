@@ -38,7 +38,6 @@ const footerLinks = {
     { label: "Bespoke Commissions", to: "/custom-orders" },
     { label: "Contact Atelier", to: "/contact" },
     { label: "Collector Account", to: "/account" },
-    { label: "Admin Portal", to: "/admin" },
   ],
   ClientCare: [
     { label: "Shipping Policy", to: "/shipping" },
@@ -82,7 +81,7 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <Logo className="text-white [&_span]:text-white" />
             <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-sm font-normal">
-              Sri Yarn &amp; Tales is an artisanal crochet house based in India. Every creation is hand-knotted with pure combed fibres, redefining slow luxury for modern living.
+              Sri Yarn &amp; Tales is an artisanal crochet house based in India. Every creation is hand-crocheted with pure combed fibres, redefining slow luxury for modern living.
             </p>
 
             {/* Social Channels */}

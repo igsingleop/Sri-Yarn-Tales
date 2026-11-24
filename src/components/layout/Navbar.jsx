@@ -146,7 +146,18 @@ export default function Navbar() {
                     onMouseEnter={() => setActiveDropdown(link.label)}
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
-                    <button className="nav-link flex items-center gap-1.5 py-1.5 focus:outline-none">
+                    <button
+                      className="nav-link flex items-center gap-1.5 py-1.5 focus:outline-none"
+                      aria-haspopup="true"
+                      aria-expanded={activeDropdown === link.label}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveDropdown((d) => d === link.label ? null : link.label);
+                        }
+                        if (e.key === "Escape") setActiveDropdown(null);
+                      }}
+                    >
                       <span>{link.label}</span>
                       <ChevronDown
                         size={13}

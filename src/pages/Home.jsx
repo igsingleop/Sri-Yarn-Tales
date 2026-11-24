@@ -14,16 +14,21 @@ import { formatINR } from "../lib/utils";
 import { useBannerStore, useProductStore, useCategoryStore } from "../store";
 import reviewsData from "../data/reviews.json";
 
-// ---- Counter component ----
+// ---- Counter component (respects prefers-reduced-motion & no-JS) ----
 function Counter({ to, suffix = "", label, whiteText = false }) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
+  const [count, setCount] = React.useState(to); // default to final value (no-JS / SSR safe)
+  const [started, setStarted] = React.useState(false);
+  const prefersReduced =
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
 
   return (
     <motion.div
       whileInView={() => {
-        if (!started) {
+        if (!started && !prefersReduced) {
           setStarted(true);
+          setCount(0);
           let start = 0;
           const step = Math.max(1, Math.floor(to / 50));
           const timer = setInterval(() => {
@@ -264,7 +269,7 @@ function ShopByCategory({ categories }) {
 }
 
 // ---- Product Section Grid ----
-function ProductSection({ title, eyebrow, products, loading, viewAllLink }) {
+function ProductSection({ title, eyebrow, products, loading, viewAllLink, totalCount }) {
   return (
     <section className="py-16 sm:py-24 bg-white dark:bg-black transition-colors border-b border-zinc-200 dark:border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -278,7 +283,7 @@ function ProductSection({ title, eyebrow, products, loading, viewAllLink }) {
             to={viewAllLink}
             className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
           >
-            View All ({products.length}) <ArrowRight size={14} />
+            View All ({totalCount ?? products.length}) <ArrowRight size={14} />
           </Link>
         </div>
 
@@ -319,7 +324,7 @@ function BrandManifesto() {
             <div className="grid grid-cols-3 gap-6 pt-6 border-t border-zinc-800">
               <Counter to={5000} suffix="+" label="Stitches / Creation" whiteText />
               <Counter to={100} suffix="%" label="Hand-Crocheted" whiteText />
-              <Counter to={0} suffix="%" label="Machine Plastic" whiteText />
+              <Counter to={0} suffix="%" label="Synthetic Fibres" whiteText />
             </div>
 
             <div className="pt-4">
@@ -361,11 +366,11 @@ function BrandManifesto() {
 
 // ---- Minimalist Ticker Marquee ----
 function TickerMarquee() {
-  const statement = "SRI YARN & TALES // 100% HANDCRAFTED IN INDIA // ZERO SYNTHETIC PLASTIC // BESPOKE COMMISSIONS // INSURED NATIONWIDE DELIVERY OVER ₹999 // ";
+  const statement = "SRI YARN & TALES // 100% HAND-CROCHETED IN INDIA // BESPOKE COMMISSIONS // INSURED NATIONWIDE DELIVERY OVER ₹999 // ";
   const fullText = statement.repeat(6);
 
   return (
-    <div className="bg-black text-white dark:bg-zinc-950 dark:text-zinc-200 border-b border-zinc-800 py-3 overflow-hidden select-none">
+    <div className="bg-black text-white dark:bg-zinc-950 dark:text-zinc-200 border-b border-zinc-800 py-3 overflow-hidden select-none" aria-hidden="true">
       <div className="ticker-track">
         <span className="font-mono text-xs uppercase tracking-[0.25em] font-bold inline-block pr-8">
           {fullText}
@@ -524,12 +529,12 @@ function Newsletter() {
 export default function Home() {
   const storeProducts = useProductStore((s) => s.products);
   const storeCategories = useCategoryStore((s) => s.categories);
-  const [bestsellers, setBestsellers] = useState(() =>
-    storeProducts.filter((p) => p.isBestseller).slice(0, 4)
-  );
-  const [newArrivals, setNewArrivals] = useState(() =>
-    storeProducts.filter((p) => p.isNew).slice(0, 4)
-  );
+  const allBestsellers = storeProducts.filter((p) => p.isBestseller);
+  const allNew = storeProducts.filter((p) => p.isNew);
+  const [bestsellers, setBestsellers] = useState(() => allBestsellers.slice(0, 4));
+  const [newArrivals, setNewArrivals] = useState(() => allNew.slice(0, 4));
+  const [bestsellersTotal, setBestsellersTotal] = useState(allBestsellers.length);
+  const [newTotal, setNewTotal] = useState(allNew.length);
   const [categories, setCategories] = useState(() =>
     (Array.isArray(storeCategories) ? storeCategories : []).map((cat) => ({
       ...cat,
@@ -542,10 +547,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const bs = storeProducts.filter((p) => p.isBestseller).slice(0, 4);
-    const na = storeProducts.filter((p) => p.isNew).slice(0, 4);
-    setBestsellers(bs);
-    setNewArrivals(na);
+    const bs = storeProducts.filter((p) => p.isBestseller);
+    const na = storeProducts.filter((p) => p.isNew);
+    setBestsellers(bs.slice(0, 4));
+    setNewArrivals(na.slice(0, 4));
+    setBestsellersTotal(bs.length);
+    setNewTotal(na.length);
 
     getCategories().then(setCategories);
     getAllReviews().then(setReviews);
@@ -560,6 +567,10 @@ export default function Home() {
         <meta property="og:title" content={brand.seo.defaultTitle} />
         <meta property="og:description" content={brand.seo.defaultDescription} />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content={`${brand.siteUrl}${brand.seo.ogImage}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content={brand.seo.twitterHandle} />
+        <link rel="canonical" href={brand.siteUrl} />
       </Helmet>
 
       <Hero />
@@ -571,6 +582,7 @@ export default function Home() {
         products={bestsellers}
         loading={loading}
         viewAllLink="/shop?sort=bestsellers"
+        totalCount={bestsellersTotal}
       />
       <BrandManifesto />
       <ProductSection
@@ -579,6 +591,7 @@ export default function Home() {
         products={newArrivals}
         loading={loading}
         viewAllLink="/shop?sort=newest"
+        totalCount={newTotal}
       />
       <TickerMarquee />
       <BespokeCallout />

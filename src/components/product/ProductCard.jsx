@@ -92,7 +92,7 @@ export default function ProductCard({ product, index = 0 }) {
             <div>
               {/* Category */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-1">
-                {product.category.replace("-", " ")}
+                {product.categoryName || product.category.replace(/-/g, " ")}
               </p>
 
               {/* Title — strictly clamped to 2 lines with fixed height */}

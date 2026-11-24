@@ -3,19 +3,20 @@
 // ============================================================
 
 export const brand = {
-  name: "Sri Yarn & Tales",          // Display name (was "Loop & Knot")
+  name: "Sri Yarn & Tales",          // Display name
   tagline: "Handmade Crochet, Woven With Love",
   shortTagline: "Crafted with Love",
   description:
     "India's premium handmade crochet store. Amigurumi toys, bags, home decor, wearables, and custom-made pieces crafted with premium soft yarn.",
-  email: "hello@srigyarnandtales.com",
-  phone: "+91 98765 43210",
-  whatsapp: "+919876543210",
+  // ⬇ Update these with real contact details before going live
+  email: "hello@sriyarnandtales.com",
+  phone: "+91 98765 43210",          // TODO: replace with real number
+  whatsapp: "+919876543210",         // TODO: replace with real number
   address: "Bangalore, Karnataka, India",
-  instagram: "https://instagram.com/srigyarnandtales",
-  facebook: "https://facebook.com/srigyarnandtales",
-  pinterest: "https://pinterest.com/srigyarnandtales",
-  instagramHandle: "@srigyarnandtales",
+  instagram: "https://instagram.com/sriyarnandtales",
+  facebook: "https://facebook.com/sriyarnandtales",
+  pinterest: "https://pinterest.com/sriyarnandtales",
+  instagramHandle: "@sriyarnandtales",
   currency: "INR",
   currencySymbol: "₹",
   freeShippingThreshold: 999,
@@ -32,8 +33,9 @@ export const brand = {
     defaultDescription:
       "Shop handmade crochet products: amigurumi toys, bags, home decor, wearables & baby items. Premium soft yarn. Shipped across India.",
     ogImage: "/og-image.jpg",
-    twitterHandle: "@srigyarnandtales",
+    twitterHandle: "@sriyarnandtales",
   },
+  siteUrl: "https://sri-yarn-tales.vercel.app",
 };
 
 export default brand;

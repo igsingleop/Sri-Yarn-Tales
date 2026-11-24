@@ -43,12 +43,16 @@ async function prerender() {
     { url: "/about", priority: "0.7", changefreq: "monthly" },
     { url: "/contact", priority: "0.7", changefreq: "monthly" },
     { url: "/custom-orders", priority: "0.8", changefreq: "weekly" },
+    { url: "/shipping", priority: "0.6", changefreq: "monthly" },
+    { url: "/returns", priority: "0.6", changefreq: "monthly" },
+    { url: "/privacy", priority: "0.4", changefreq: "yearly" },
+    { url: "/terms", priority: "0.4", changefreq: "yearly" },
+    { url: "/faq", priority: "0.7", changefreq: "monthly" },
     { url: "/cart", priority: "0.5", changefreq: "monthly" },
     { url: "/wishlist", priority: "0.5", changefreq: "monthly" },
     { url: "/account", priority: "0.5", changefreq: "monthly" },
     { url: "/login", priority: "0.5", changefreq: "monthly" },
     { url: "/checkout", priority: "0.5", changefreq: "monthly" },
-    { url: "/admin", priority: "0.3", changefreq: "monthly" },
   ];
 
   const categoryRoutes = categories.map((c) => ({

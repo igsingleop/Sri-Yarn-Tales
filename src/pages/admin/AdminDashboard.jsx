@@ -779,6 +779,7 @@ export default function AdminDashboard() {
       <>
         <Helmet>
           <title>Admin Portal Access — Sri Yarn &amp; Tales</title>
+          <meta name="robots" content="noindex,nofollow" />
         </Helmet>
 
         <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex flex-col justify-center items-center px-4 py-12">
@@ -911,6 +912,7 @@ export default function AdminDashboard() {
     <>
       <Helmet>
         <title>Admin Dashboard — Sri Yarn &amp; Tales</title>
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
       {/* Toast Notification */}

@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowRight, ArrowLeft, Check, Upload, Star, Sparkles, MessageSquare, Package } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Upload, Star, Sparkles, MessageSquare, Package, X } from "lucide-react";
+
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_FILE_SIZE_MB = 5;
 
 const schema = z.object({
   name: z.string().min(2, "Name required"),
@@ -17,6 +20,8 @@ const schema = z.object({
   budget: z.string().min(1, "Please select a budget range"),
   deadline: z.string().optional(),
   notes: z.string().optional(),
+  // honeypot — must stay empty
+  website: z.string().max(0, "Bot detected"),
 });
 
 const steps = [
@@ -40,11 +45,33 @@ const productTypes = [
 export default function CustomOrders() {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageError, setImageError] = useState("");
+  const fileInputRef = useRef(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async () => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setImageError("Only JPG, PNG, WEBP, or GIF files are allowed.");
+      setImageFile(null);
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setImageError(`File must be under ${MAX_FILE_SIZE_MB}MB.`);
+      setImageFile(null);
+      return;
+    }
+    setImageError("");
+    setImageFile(file);
+  };
+
+  const onSubmit = async (data) => {
+    // honeypot check
+    if (data.website) return;
     await new Promise((r) => setTimeout(r, 1000));
     setSubmitted(true);
   };
@@ -215,10 +242,45 @@ export default function CustomOrders() {
                     placeholder="Describe specific details, character inspiration, custom embroidery initials, or requirements..." />
                 </div>
 
-                <div className="p-3 rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-start gap-3 text-xs text-zinc-500">
-                  <Upload size={14} className="text-zinc-900 dark:text-white flex-shrink-0 mt-0.5" />
-                  <p>Inspiration images may be attached in reply to your email confirmation.</p>
+                {/* Image Upload */}
+                <div>
+                  <label className="label" htmlFor="cu-image">Reference / Inspiration Image (optional)</label>
+                  <div className="mt-1">
+                    <input
+                      id="cu-image"
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageChange}
+                      className="sr-only"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg p-5 text-center hover:border-zinc-500 dark:hover:border-zinc-400 transition-colors flex flex-col items-center gap-2"
+                    >
+                      <Upload size={20} className="text-zinc-400" />
+                      {imageFile ? (
+                        <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{imageFile.name}</span>
+                      ) : (
+                        <span className="text-xs text-zinc-500">Click to upload JPG, PNG, WEBP or GIF (max {MAX_FILE_SIZE_MB}MB)</span>
+                      )}
+                    </button>
+                    {imageFile && (
+                      <button
+                        type="button"
+                        onClick={() => { setImageFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                        className="mt-1 text-xs text-red-500 hover:underline flex items-center gap-1"
+                      >
+                        <X size={12} /> Remove image
+                      </button>
+                    )}
+                    {imageError && <p className="text-xs text-red-500 mt-1">{imageError}</p>}
+                  </div>
                 </div>
+
+                {/* Honeypot — hidden from users */}
+                <input type="text" {...register("website")} className="sr-only" tabIndex={-1} autoComplete="off" aria-hidden="true" />
 
                 <button type="submit" disabled={isSubmitting} className="btn-primary w-full btn-lg">
                   {isSubmitting ? "Transmitting..." : "Submit Bespoke Commission"}
