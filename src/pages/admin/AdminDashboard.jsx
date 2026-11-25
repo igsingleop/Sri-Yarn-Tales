@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Package, Image as ImageIcon, Plus, Trash2, Edit3,
   ExternalLink, LogOut, Check, ArrowLeft, Search, Star,
   Sparkles, RefreshCw, Eye, Tag, Layers,
   AlertCircle, Upload, ShieldCheck, Lock,
   Key, EyeOff, User, FileSpreadsheet, Download,
-  Cloud, CheckCheck, Loader2
+  Cloud, CheckCheck, Loader2, Crop, X
 } from "lucide-react";
+import ImageCropModal from "../../components/admin/ImageCropModal";
 import { useProductStore, useBannerStore, useAuthStore, useCategoryStore } from "../../store";
 import { formatINR } from "../../lib/utils";
 import { isFirebaseConfigured } from "../../config/firebase";
@@ -203,6 +204,7 @@ function downloadSampleJSON() {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { user, adminUser, login, loginAdmin, logoutAdmin, logout } = useAuthStore();
   const activeAdmin = adminUser || (user?.role === "admin" ? user : null);
   const {
@@ -241,6 +243,7 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [toast, setToast] = useState(null);
+  const [cropModalSrc, setCropModalSrc] = useState(null);
 
   // Category Edit / Add Modal State
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -347,8 +350,8 @@ export default function AdminDashboard() {
   // Sign out handler
   const handleLogout = () => {
     if (logoutAdmin) logoutAdmin();
-    else logout();
-    showToast("Signed out of administrator console.");
+    else if (logout) logout();
+    navigate("/", { replace: true });
   };
 
   // Open Add Product
@@ -362,7 +365,7 @@ export default function AdminDashboard() {
       stock: "15",
       description: "Handcrafted with premium yarn, made with love and precision.",
       materials: "100% premium soft cotton yarn, hypoallergenic fiberfill",
-      imageUrl: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop",
+      imageUrl: "",
       isBestseller: false,
       isNew: true,
       isCustomizable: true,
@@ -389,24 +392,48 @@ export default function AdminDashboard() {
     setIsProductModalOpen(true);
   };
 
-  // Handle image file upload for product (Firebase Storage CDN or optimized compression)
-  const handleFileUpload = async (e) => {
+  // Handle image file upload for product — opens Crop & Edit modal first
+  const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setIsUploadingPhoto(true);
-      try {
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file (JPG, PNG, WEBP).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setCropModalSrc(ev.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Apply cropped image and upload to Cloud CDN / optimized storage
+  const handleCropApply = async ({ dataUrl, file }) => {
+    setCropModalSrc(null);
+    setIsUploadingPhoto(true);
+    try {
+      if (file) {
         const res = await uploadProductImage(file);
         if (res?.url) {
           setFormData((prev) => ({ ...prev, imageUrl: res.url }));
-          showToast(res.isCloudStorage 
-            ? `Product photo uploaded to ${res.provider === "backblaze" ? "Backblaze B2" : "Cloud CDN"}!` 
-            : "Product photo optimized and ready for live display!");
+          showToast(
+            res.isCloudStorage
+              ? `Cropped photo uploaded to ${res.provider === "backblaze" ? "Backblaze B2" : "Cloud CDN"}!`
+              : "Cropped photo optimized and ready for live display!"
+          );
+          return;
         }
-      } catch (err) {
-        alert(err.message || "Failed to process photo");
-      } finally {
-        setIsUploadingPhoto(false);
       }
+      setFormData((prev) => ({ ...prev, imageUrl: dataUrl }));
+      showToast("Cropped photo applied!");
+    } catch (err) {
+      setFormData((prev) => ({ ...prev, imageUrl: dataUrl }));
+      showToast("Cropped photo applied locally.");
+    } finally {
+      setIsUploadingPhoto(false);
     }
   };
 
@@ -504,6 +531,13 @@ export default function AdminDashboard() {
       return;
     }
 
+    const trimmedImageUrl = formData.imageUrl?.trim() || "";
+    const remainingImages = editingProduct?.images?.slice(1) || [];
+    if (!trimmedImageUrl && remainingImages.length === 0) {
+      alert("Please upload a product image or paste an image URL.");
+      return;
+    }
+
     const payload = {
       ...(editingProduct || {}),
       name: formData.name.trim(),
@@ -513,9 +547,7 @@ export default function AdminDashboard() {
       stock: Number(formData.stock) || 1,
       description: formData.description?.trim() || "Handcrafted with premium soft yarn, made with love and precision.",
       materials: formData.materials?.trim() || "100% premium cotton yarn, hypoallergenic fiberfill",
-      images: formData.imageUrl
-        ? [formData.imageUrl, ...(editingProduct?.images?.slice(1) || [])]
-        : (editingProduct?.images?.length ? editingProduct.images : ["https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&h=600&fit=crop"]),
+      images: trimmedImageUrl ? [trimmedImageUrl, ...remainingImages] : remainingImages,
       isBestseller: Boolean(formData.isBestseller),
       isNew: Boolean(formData.isNew),
       isCustomizable: Boolean(formData.isCustomizable),
@@ -850,19 +882,22 @@ export default function AdminDashboard() {
             )}
 
             {/* Credentials Login Form */}
-            <form onSubmit={handleAdminLoginSubmit} className="space-y-4">
+            <form onSubmit={handleAdminLoginSubmit} autoComplete="off" className="space-y-4">
               <div>
                 <label className="label text-xs">Admin Username or Email</label>
                 <div className="relative">
                   <User size={16} className="text-zinc-500 dark:text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
+                    name="syt-admin-identifier"
+                    autoComplete="off"
+                    readOnly
+                    onFocus={(e) => e.currentTarget.removeAttribute("readOnly")}
                     required
                     value={adminUsername}
                     onChange={(e) => setAdminUsername(e.target.value)}
                     placeholder="Enter admin username or email"
                     className="input pl-10 text-sm bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100"
-                    autoFocus
                   />
                 </div>
               </div>
@@ -875,6 +910,10 @@ export default function AdminDashboard() {
                   <Key size={16} className="text-zinc-500 dark:text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="syt-admin-password"
+                    autoComplete="new-password"
+                    readOnly
+                    onFocus={(e) => e.currentTarget.removeAttribute("readOnly")}
                     required
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
@@ -2088,8 +2127,8 @@ export default function AdminDashboard() {
                           onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                         />
 
-                        {/* Local file upload with auto-compression */}
-                        <div className="flex items-center gap-2">
+                        {/* Local file upload with crop & auto-compression */}
+                        <div className="flex flex-wrap items-center gap-2">
                           <label className={`btn-secondary text-xs py-1.5 px-3 rounded-xl cursor-pointer flex items-center gap-1.5 font-medium ${isUploadingPhoto ? "opacity-60 pointer-events-none" : ""}`}>
                             {isUploadingPhoto ? (
                               <Loader2 size={13} className="animate-spin text-primary" />
@@ -2105,6 +2144,24 @@ export default function AdminDashboard() {
                               className="hidden"
                             />
                           </label>
+                          {formData.imageUrl && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => setCropModalSrc(formData.imageUrl)}
+                                className="btn-secondary text-xs py-1.5 px-3 rounded-xl flex items-center gap-1.5 font-medium"
+                              >
+                                <Crop size={13} /> Crop / Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setFormData((prev) => ({ ...prev, imageUrl: "" }))}
+                                className="text-xs py-1.5 px-2.5 rounded-xl border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1 font-medium"
+                              >
+                                <X size={13} /> Remove
+                              </button>
+                            </>
+                          )}
                           <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
                             {isUploadingPhoto ? "Processing & uploading..." : "Cloud CDN / auto-optimized JPG, PNG, WEBP"}
                           </span>
@@ -2572,6 +2629,13 @@ export default function AdminDashboard() {
           )}
         </AnimatePresence>
       </div>
+      {/* Image Crop & Edit Modal */}
+      <ImageCropModal
+        isOpen={Boolean(cropModalSrc)}
+        imageSrc={cropModalSrc}
+        onCancel={() => setCropModalSrc(null)}
+        onApply={handleCropApply}
+      />
     </>
   );
 }

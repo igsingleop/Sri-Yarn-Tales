@@ -159,8 +159,14 @@ export const useAuthStore = create(
       },
 
       logoutAdmin: () => {
-        set({ adminUser: null });
+        try {
+          signOutFromFirebase();
+        } catch (_e) {
+          // ignore offline/uninitialized signOut
+        }
+        set({ adminUser: null, user: null });
         broadcastSync("SYNC_ADMIN_AUTH", null);
+        broadcastSync("SYNC_AUTH", null);
       },
 
       loginAsAdminDemo: () => {
@@ -226,8 +232,9 @@ export const useAuthStore = create(
         } catch (_e) {
           // ignore offline/uninitialized signOut
         }
-        set({ user: null });
+        set({ user: null, adminUser: null });
         broadcastSync("SYNC_AUTH", null);
+        broadcastSync("SYNC_ADMIN_AUTH", null);
       },
 
       isAdmin: () => Boolean(get().adminUser || get().user?.role === "admin"),

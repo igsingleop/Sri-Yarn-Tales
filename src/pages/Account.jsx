@@ -5,7 +5,7 @@ import {
   Package, MapPin, Heart, LogOut, Settings, ChevronRight,
   ArrowRight, Info, CheckCircle2, ArrowLeft
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { formatINR } from "../lib/utils";
 import { useAuthStore } from "../store";
 import { signInWithGoogle, checkGoogleRedirectResult, onAuthChange, isFirebaseConfigured } from "../config/firebase";
@@ -48,11 +48,14 @@ function GoogleIcon({ className = "w-4 h-4" }) {
 
 export default function Account() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { user, adminUser, login, loginWithGoogleUser, logout } = useAuthStore();
   const currentUser = user || adminUser;
   const [isLogin, setIsLogin] = useState(true);
-  const [activeTab, setActiveTab] = useState("orders");
+  const [activeTab, setActiveTab] = useState(() =>
+    location.pathname === "/profile" ? "profile" : "orders"
+  );
   
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -62,16 +65,42 @@ export default function Account() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
+  // Sync activeTab when navigating to /profile
+  useEffect(() => {
+    if (location.pathname === "/profile") {
+      setActiveTab("profile");
+    }
+  }, [location.pathname]);
+
+  // Redirect already-authenticated customers away from /login to /profile
+  useEffect(() => {
+    if (currentUser && location.pathname === "/login") {
+      if (currentUser.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        setActiveTab("profile");
+        navigate("/profile", { replace: true });
+      }
+    }
+  }, [currentUser, location.pathname, navigate]);
+
   // Catch incoming Google redirect sign-in results and listen to auth state changes
   useEffect(() => {
+    const redirectAfterAuth = (authRes, userName) => {
+      setSuccessMsg(`Welcome, ${userName}!`);
+      if (authRes.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        setActiveTab("profile");
+        navigate("/profile", { replace: true });
+      }
+    };
+
     // 1. Check if returning from a redirect
     checkGoogleRedirectResult().then((res) => {
       if (res?.success && res.user) {
         const authRes = loginWithGoogleUser(res.user);
-        setSuccessMsg(`Welcome, ${res.user.name}!`);
-        if (authRes.role === "admin") {
-          navigate("/admin");
-        }
+        redirectAfterAuth(authRes, res.user.name);
       } else if (res?.success === false && res.error) {
         setError(res.error);
       }
@@ -79,17 +108,16 @@ export default function Account() {
 
     // 2. Automatically sync if Firebase Auth resolves user session
     const unsubscribe = onAuthChange((firebaseUser) => {
-      if (firebaseUser && !currentUser) {
+      const state = useAuthStore.getState();
+      const existingUser = state.user || state.adminUser;
+      if (firebaseUser && !existingUser) {
         const authRes = loginWithGoogleUser(firebaseUser);
-        setSuccessMsg(`Welcome, ${firebaseUser.name}!`);
-        if (authRes.role === "admin") {
-          navigate("/admin");
-        }
+        redirectAfterAuth(authRes, firebaseUser.name);
       }
     });
 
     return () => unsubscribe();
-  }, [currentUser, navigate]);
+  }, [loginWithGoogleUser, navigate]);
 
   const handleLoginSubmit = (e) => {
     e?.preventDefault();
@@ -109,9 +137,11 @@ export default function Account() {
     }
 
     if (res.role === "admin") {
-      navigate("/admin");
+      navigate("/admin", { replace: true });
     } else {
       setSuccessMsg(`Signed in successfully!`);
+      setActiveTab("profile");
+      navigate("/profile", { replace: true });
     }
   };
 
@@ -139,7 +169,10 @@ export default function Account() {
         const authRes = loginWithGoogleUser(res.user);
         setSuccessMsg(`Welcome, ${res.user.name}!`);
         if (authRes.role === "admin") {
-          navigate("/admin");
+          navigate("/admin", { replace: true });
+        } else {
+          setActiveTab("profile");
+          navigate("/profile", { replace: true });
         }
       } else if (res.redirecting) {
         setSuccessMsg(res.message);
@@ -165,10 +198,13 @@ export default function Account() {
         : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
       emailVerified: true,
     };
-    loginWithGoogleUser(mockUser);
+    const authRes = loginWithGoogleUser(mockUser);
     setShowFirebaseModal(false);
-    if (isAdmin) {
-      navigate("/admin");
+    if (isAdmin || authRes.role === "admin") {
+      navigate("/admin", { replace: true });
+    } else {
+      setActiveTab("profile");
+      navigate("/profile", { replace: true });
     }
   };
 
@@ -250,13 +286,15 @@ export default function Account() {
                 <div className="border-t border-zinc-200 dark:border-zinc-800 w-full" />
               </div>
 
-              <form onSubmit={handleLoginSubmit} className="space-y-3.5">
+              <form onSubmit={handleLoginSubmit} autoComplete="off" className="space-y-3.5">
                 {!isLogin && (
                   <div>
                     <label className="label" htmlFor="acc-name">Full Name</label>
                     <input
                       id="acc-name"
+                      name="syt-register-name"
                       type="text"
+                      autoComplete="off"
                       className="input"
                       placeholder="e.g. Deepak Kumar"
                       value={name}
@@ -271,7 +309,11 @@ export default function Account() {
                   </label>
                   <input
                     id="acc-email"
+                    name="syt-login-identifier"
                     type="text"
+                    autoComplete="off"
+                    readOnly
+                    onFocus={(e) => e.currentTarget.removeAttribute("readOnly")}
                     className="input"
                     placeholder="Enter username or email"
                     value={identifier}
@@ -283,7 +325,11 @@ export default function Account() {
                   <label className="label" htmlFor="acc-pass">Password</label>
                   <input
                     id="acc-pass"
+                    name="syt-login-password"
                     type="password"
+                    autoComplete="new-password"
+                    readOnly
+                    onFocus={(e) => e.currentTarget.removeAttribute("readOnly")}
                     className="input"
                     placeholder="••••••••"
                     value={password}

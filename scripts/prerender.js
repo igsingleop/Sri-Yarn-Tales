@@ -51,6 +51,7 @@ async function prerender() {
     { url: "/cart", priority: "0.5", changefreq: "monthly" },
     { url: "/wishlist", priority: "0.5", changefreq: "monthly" },
     { url: "/account", priority: "0.5", changefreq: "monthly" },
+    { url: "/profile", priority: "0.5", changefreq: "monthly" },
     { url: "/login", priority: "0.5", changefreq: "monthly" },
     { url: "/checkout", priority: "0.5", changefreq: "monthly" },
   ];

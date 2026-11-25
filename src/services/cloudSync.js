@@ -1,9 +1,19 @@
-import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  collection,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 
 // In-memory record of the latest known catalog update timestamp
 let lastCloudCatalogTimestamp = 0;
+let lastLocalMutationTimestamp = 0;
+let isSyncingProducts = false;
 
 /**
  * Validates, deduplicates, and sanitizes product objects.
@@ -216,12 +226,15 @@ export async function uploadProductImage(file) {
 
 /**
  * Sync all products to Universal Cloud Storage & Firestore
- * Works across ALL mobile networks, cellular carriers, and IP addresses with ZERO configuration.
+ * Stores each product in its own Firestore document under `products/{id}`
+ * so N number of products can be saved without hitting the 1 MB single-doc limit.
  */
 export async function syncProductsToCloud(products) {
   const cleanProducts = sanitizeProducts(products);
   const now = Date.now();
   lastCloudCatalogTimestamp = now;
+  lastLocalMutationTimestamp = now;
+  isSyncingProducts = true;
 
   const payload = {
     products: cleanProducts,
@@ -231,7 +244,7 @@ export async function syncProductsToCloud(products) {
     isLive: true,
   };
 
-  // 1. Immediately update device local storage cache
+  // 1. Immediately update device local storage cache (ignore QuotaExceededError if many base64 images)
   try {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
@@ -244,11 +257,44 @@ export async function syncProductsToCloud(products) {
   let synced = false;
   let cloudError = null;
 
-  // Sync to Firebase Firestore (if configured)
+  // 2. Sync to Firebase Firestore (per-product collection `products/{id}`)
   if (db && typeof window !== "undefined") {
     try {
-      const docRef = doc(db, "store", "catalog");
-      await setDoc(docRef, payload, { merge: true });
+      const productsCol = collection(db, "products");
+      const existingSnap = await getDocs(productsCol);
+      const keepIds = new Set(cleanProducts.map((p) => String(p.id)));
+
+      // Batch writes in chunks of 400 operations (Firestore batch limit is 500)
+      const ops = [];
+      for (const product of cleanProducts) {
+        ops.push({ type: "set", ref: doc(db, "products", String(product.id)), data: { ...product, updatedAt: now } });
+      }
+      existingSnap.forEach((docSnap) => {
+        if (!keepIds.has(docSnap.id)) {
+          ops.push({ type: "delete", ref: docSnap.ref });
+        }
+      });
+
+      for (let i = 0; i < ops.length; i += 400) {
+        const batch = writeBatch(db);
+        const chunk = ops.slice(i, i + 400);
+        for (const op of chunk) {
+          if (op.type === "set") batch.set(op.ref, op.data);
+          else batch.delete(op.ref);
+        }
+        await batch.commit();
+      }
+
+      // Also update legacy `store/catalog` doc only if payload stays safely below Firestore's 1 MB limit
+      try {
+        const approxBytes = new Blob([JSON.stringify(payload)]).size;
+        if (approxBytes < 850000) {
+          await setDoc(doc(db, "store", "catalog"), payload, { merge: true });
+        }
+      } catch (_legacyErr) {
+        // Legacy mirror is optional; `products` collection is authoritative
+      }
+
       synced = true;
     } catch (error) {
       cloudError = error;
@@ -256,6 +302,7 @@ export async function syncProductsToCloud(products) {
     }
   }
 
+  isSyncingProducts = false;
   return { success: synced, count: cleanProducts.length, updatedAt: now, error: cloudError?.message };
 }
 
@@ -294,13 +341,40 @@ export async function syncCategoriesToCloud(categories) {
 
 /**
  * Manually fetch the live catalog from Cloud
+ * Reads from per-product `products` collection (supports unlimited N products),
+ * with automatic fallback/migration from legacy `store/catalog`.
  */
 export async function fetchLiveCatalogFromCloud() {
   if (typeof window === "undefined") return null;
 
-  // Fetch from Firebase Firestore (if configured)
   if (db) {
     try {
+      // 1. Prefer unlimited `products` collection
+      const snapCol = await getDocs(collection(db, "products"));
+      if (!snapCol.empty) {
+        const list = [];
+        let maxUpdatedAt = 0;
+        snapCol.forEach((d) => {
+          const data = d.data();
+          if (data) {
+            list.push(data);
+            if ((data.updatedAt || 0) > maxUpdatedAt) {
+              maxUpdatedAt = data.updatedAt;
+            }
+          }
+        });
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        const cleaned = sanitizeProducts(list);
+        if (cleaned.length > 0) {
+          lastCloudCatalogTimestamp = maxUpdatedAt || Date.now();
+          return {
+            products: cleaned,
+            updatedAt: lastCloudCatalogTimestamp,
+          };
+        }
+      }
+
+      // 2. Fallback to legacy `store/catalog`
       const docRef = doc(db, "store", "catalog");
       const snap = await getDoc(docRef);
       if (snap.exists()) {
@@ -321,7 +395,7 @@ export async function fetchLiveCatalogFromCloud() {
 
 /**
  * Initialize real-time Cloud Synchronization
- * Connects both Universal Cloud KV and Firestore snapshot listeners on all devices with ZERO DELAY!
+ * Connects Firestore `products` collection snapshot listeners on all devices with ZERO DELAY!
  */
 export function initLiveCloudSync({ setProducts, setBanners, setCategories, onStatusChange }) {
   if (typeof window === "undefined") return () => {};
@@ -330,9 +404,19 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
 
   // Function to pull latest products and immediately update device state
   const refreshCatalogActive = async () => {
+    // Do not overwrite in-flight local edits
+    if (isSyncingProducts || Date.now() - lastLocalMutationTimestamp < 4000) {
+      return;
+    }
     try {
       const result = await fetchLiveCatalogFromCloud();
-      if (result && Array.isArray(result.products) && result.products.length > 0) {
+      if (
+        result &&
+        Array.isArray(result.products) &&
+        result.products.length > 0 &&
+        !isSyncingProducts &&
+        Date.now() - lastLocalMutationTimestamp >= 4000
+      ) {
         setProducts?.(result.products);
 
         // Overwrite mobile device local storage so offline/refreshed view stays updated
@@ -356,14 +440,59 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
   // 1. Immediately trigger an active fetch on startup
   refreshCatalogActive();
 
-  // 2. Setup Firebase Firestore listener if initialized
+  // 2. Setup Firebase Firestore listeners if initialized
+  let unsubProductsCol = () => {};
   let unsubCatalog = () => {};
   let unsubBanners = () => {};
   let unsubCategories = () => {};
 
   if (db) {
     try {
-      unsubCatalog = onSnapshot(doc(db, "store", "catalog"), (snapshot) => {
+      unsubProductsCol = onSnapshot(collection(db, "products"), (snapCol) => {
+        if (isSyncingProducts || Date.now() - lastLocalMutationTimestamp < 2500) {
+          return;
+        }
+        if (!snapCol.empty) {
+          const list = [];
+          let maxUpdatedAt = 0;
+          snapCol.forEach((d) => {
+            const data = d.data();
+            if (data) {
+              list.push(data);
+              if ((data.updatedAt || 0) > maxUpdatedAt) {
+                maxUpdatedAt = data.updatedAt;
+              }
+            }
+          });
+          list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          const cleaned = sanitizeProducts(list);
+          if (cleaned.length > 0) {
+            lastCloudCatalogTimestamp = maxUpdatedAt || Date.now();
+            setProducts?.(cleaned);
+            try {
+              window.localStorage.setItem(
+                "syt-custom-products",
+                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: 0 })
+              );
+            } catch (_e) {}
+            onStatusChange?.({
+              status: "synced",
+              message: "Live cloud connected — All devices in sync",
+              updatedAt: lastCloudCatalogTimestamp,
+              count: cleaned.length,
+            });
+          }
+        }
+      }, () => {});
+
+      unsubCatalog = onSnapshot(doc(db, "store", "catalog"), async (snapshot) => {
+        if (isSyncingProducts || Date.now() - lastLocalMutationTimestamp < 2500) {
+          return;
+        }
+        // Only apply legacy `store/catalog` if `products` collection is empty
+        const colCheck = await getDocs(collection(db, "products")).catch(() => null);
+        if (colCheck && !colCheck.empty) return;
+
         if (snapshot.exists()) {
           const data = snapshot.data();
           if (Array.isArray(data?.products) && data.products.length > 0) {
@@ -415,6 +544,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
   const heartbeatTimer = setInterval(refreshCatalogActive, 10000);
 
   return () => {
+    unsubProductsCol();
     unsubCatalog();
     unsubBanners();
     unsubCategories();
