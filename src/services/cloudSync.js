@@ -14,6 +14,14 @@ import { db, storage } from "../config/firebase";
 let lastCloudCatalogTimestamp = 0;
 let lastLocalMutationTimestamp = 0;
 let isSyncingProducts = false;
+let lastAppliedCatalogSignature = "";
+
+function getCatalogSignature(products) {
+  if (!Array.isArray(products)) return "";
+  return products
+    .map((p) => `${p.id}:${p.updatedAt || p.createdAt || 0}:${p.price}:${p.stock}:${p.name}:${p.images?.[0] || ""}`)
+    .join("|");
+}
 
 /**
  * Validates, deduplicates, and sanitizes product objects.
@@ -402,7 +410,31 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
 
   onStatusChange?.({ status: "connecting", message: "Connecting to live cloud..." });
 
-  // Function to pull latest products and immediately update device state
+  // Function to pull latest products and immediately update device state ONLY if changed
+  const applyCatalogIfChanged = (nextProducts, updatedAt) => {
+    const nextSig = getCatalogSignature(nextProducts);
+    if (nextSig === lastAppliedCatalogSignature) {
+      return;
+    }
+    lastAppliedCatalogSignature = nextSig;
+    setProducts?.(nextProducts);
+
+    // Overwrite mobile device local storage so offline/refreshed view stays updated
+    try {
+      window.localStorage.setItem(
+        "syt-custom-products",
+        JSON.stringify({ state: { products: nextProducts, updatedAt }, version: 0 })
+      );
+    } catch (_e) {}
+
+    onStatusChange?.({
+      status: "synced",
+      message: "Live cloud connected — All devices in sync",
+      updatedAt,
+      count: nextProducts.length,
+    });
+  };
+
   const refreshCatalogActive = async () => {
     // Do not overwrite in-flight local edits
     if (isSyncingProducts || Date.now() - lastLocalMutationTimestamp < 4000) {
@@ -417,22 +449,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
         !isSyncingProducts &&
         Date.now() - lastLocalMutationTimestamp >= 4000
       ) {
-        setProducts?.(result.products);
-
-        // Overwrite mobile device local storage so offline/refreshed view stays updated
-        try {
-          window.localStorage.setItem(
-            "syt-custom-products",
-            JSON.stringify({ state: { products: result.products, updatedAt: result.updatedAt }, version: 0 })
-          );
-        } catch (_e) {}
-
-        onStatusChange?.({
-          status: "synced",
-          message: "Live cloud connected — All devices in sync",
-          updatedAt: result.updatedAt,
-          count: result.products.length,
-        });
+        applyCatalogIfChanged(result.products, result.updatedAt);
       }
     } catch (_e) {}
   };
@@ -468,19 +485,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
           const cleaned = sanitizeProducts(list);
           if (cleaned.length > 0) {
             lastCloudCatalogTimestamp = maxUpdatedAt || Date.now();
-            setProducts?.(cleaned);
-            try {
-              window.localStorage.setItem(
-                "syt-custom-products",
-                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: 0 })
-              );
-            } catch (_e) {}
-            onStatusChange?.({
-              status: "synced",
-              message: "Live cloud connected — All devices in sync",
-              updatedAt: lastCloudCatalogTimestamp,
-              count: cleaned.length,
-            });
+            applyCatalogIfChanged(cleaned, lastCloudCatalogTimestamp);
           }
         }
       }, () => {});
@@ -498,19 +503,7 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
           if (Array.isArray(data?.products) && data.products.length > 0) {
             const cleaned = sanitizeProducts(data.products);
             lastCloudCatalogTimestamp = data.updatedAt || Date.now();
-            setProducts?.(cleaned);
-            try {
-              window.localStorage.setItem(
-                "syt-custom-products",
-                JSON.stringify({ state: { products: cleaned, updatedAt: lastCloudCatalogTimestamp }, version: 0 })
-              );
-            } catch (_e) {}
-            onStatusChange?.({
-              status: "synced",
-              message: "Live cloud connected — All devices in sync",
-              updatedAt: lastCloudCatalogTimestamp,
-              count: cleaned.length,
-            });
+            applyCatalogIfChanged(cleaned, lastCloudCatalogTimestamp);
           }
         }
       }, () => {});
@@ -540,8 +533,8 @@ export function initLiveCloudSync({ setProducts, setBanners, setCategories, onSt
   window.addEventListener("focus", handleWakeOrFocus);
   window.addEventListener("online", handleWakeOrFocus);
 
-  // 4. Background Heartbeat: polls every 10 seconds to keep all users and devices 100% updated
-  const heartbeatTimer = setInterval(refreshCatalogActive, 10000);
+  // 4. Background Heartbeat: gentle 60-second fallback check (no-op unless signature changed)
+  const heartbeatTimer = setInterval(refreshCatalogActive, 60000);
 
   return () => {
     unsubProductsCol();

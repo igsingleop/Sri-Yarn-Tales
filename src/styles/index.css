@@ -76,6 +76,15 @@
   }
 }
 
+/* Hide scrollbars cleanly for horizontal product carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ================================================
    Top-Brand Minimalist Component Primitives
    ================================================ */

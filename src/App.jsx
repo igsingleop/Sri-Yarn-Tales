@@ -72,11 +72,10 @@ class ErrorBoundary extends Component {
   }
 }
 
-// Page transition variants
+// Smooth fade transition without mode="wait" blocking
 const pageVariants = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } },
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.2, ease: "easeOut" } },
 };
 
 function ScrollToTop() {
@@ -92,15 +91,13 @@ function ScrollToTop() {
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        <Routes location={location}>
+    <motion.div
+      key={location.pathname}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+    >
+      <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:category" element={<Shop />} />
@@ -122,8 +119,7 @@ function AnimatedRoutes() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </motion.div>
-    </AnimatePresence>
+    </motion.div>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -200,6 +200,17 @@ function ValuePillars() {
 
 // ---- Shop by Category (Nike / Adidas Style Clean Grid) ----
 function ShopByCategory({ categories }) {
+  const desktopCols =
+    categories.length <= 2
+      ? "lg:grid-cols-2"
+      : categories.length === 3
+      ? "lg:grid-cols-3"
+      : categories.length === 4
+      ? "lg:grid-cols-4"
+      : categories.length === 5
+      ? "lg:grid-cols-5"
+      : "lg:grid-cols-6";
+
   return (
     <section className="py-16 sm:py-24 bg-white dark:bg-black transition-colors border-b border-zinc-200 dark:border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -217,8 +228,8 @@ function ShopByCategory({ categories }) {
           </Link>
         </div>
 
-        {/* 6 Category Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        {/* Dynamic Category Cards Grid — fits full width cleanly */}
+        <div className={`grid grid-cols-2 sm:grid-cols-3 ${desktopCols} gap-3 sm:gap-4`}>
           {categories.map((cat, i) => (
             <motion.div
               key={cat.id}
@@ -248,16 +259,13 @@ function ShopByCategory({ categories }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-3 sm:p-4 text-left" />
 
                 {/* Overlaid category info */}
-                <div className="absolute bottom-0 inset-x-0 p-3 sm:p-4 text-left z-10">
+                <div className="absolute bottom-0 inset-x-0 p-3 sm:p-4 text-left z-10 flex items-end justify-between gap-2">
                   <p className="font-heading font-black text-xs sm:text-sm text-white uppercase tracking-wider leading-tight">
                     {cat.name}
                   </p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-zinc-300 font-medium">
-                    <span>{cat.count} items</span>
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white font-bold">
-                      →
-                    </span>
-                  </div>
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white font-bold text-xs flex-shrink-0">
+                    →
+                  </span>
                 </div>
               </Link>
             </motion.div>
@@ -268,8 +276,32 @@ function ShopByCategory({ categories }) {
   );
 }
 
-// ---- Product Section Grid ----
+// ---- Product Section Carousel with Smooth Scroll & Left/Right Buttons ----
 function ProductSection({ title, eyebrow, products, loading, viewAllLink, totalCount }) {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollButtons = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    updateScrollButtons();
+    window.addEventListener("resize", updateScrollButtons);
+    return () => window.removeEventListener("resize", updateScrollButtons);
+  }, [products.length, updateScrollButtons]);
+
+  const scrollByDirection = (dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const step = Math.max(280, Math.round(el.clientWidth * 0.8));
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
   return (
     <section className="py-16 sm:py-24 bg-white dark:bg-black transition-colors border-b border-zinc-200 dark:border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -287,12 +319,57 @@ function ProductSection({ title, eyebrow, products, loading, viewAllLink, totalC
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 items-stretch">
-          {loading
-            ? Array(4).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)
-            : products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)
-          }
+        {/* Horizontal Smooth-Scroll Carousel with Non-Overlapping Left/Right Arrow Symbols */}
+        <div className="flex items-center gap-1 sm:gap-3">
+          {products.length > 1 && (
+            <button
+              type="button"
+              onClick={() => scrollByDirection(-1)}
+              disabled={!canScrollLeft}
+              aria-label={`Scroll ${title} left`}
+              className="flex-shrink-0 p-1 text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-90"
+            >
+              <ChevronLeft size={24} className="stroke-[2.25]" />
+            </button>
+          )}
+
+          <div
+            ref={scrollRef}
+            onScroll={updateScrollButtons}
+            className="flex-1 min-w-0 flex gap-3 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar pb-2 items-stretch"
+          >
+            {loading
+              ? Array(4)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-shrink-0 w-[calc(50%-6px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] snap-start"
+                    >
+                      <ProductCardSkeleton />
+                    </div>
+                  ))
+              : products.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="flex-shrink-0 w-[calc(50%-6px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] snap-start"
+                  >
+                    <ProductCard product={p} index={i} />
+                  </div>
+                ))}
+          </div>
+
+          {products.length > 1 && (
+            <button
+              type="button"
+              onClick={() => scrollByDirection(1)}
+              disabled={!canScrollRight}
+              aria-label={`Scroll ${title} right`}
+              className="flex-shrink-0 p-1 text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-90"
+            >
+              <ChevronRight size={24} className="stroke-[2.25]" />
+            </button>
+          )}
         </div>
       </div>
     </section>
@@ -529,35 +606,33 @@ function Newsletter() {
 export default function Home() {
   const storeProducts = useProductStore((s) => s.products);
   const storeCategories = useCategoryStore((s) => s.categories);
-  const allBestsellers = storeProducts.filter((p) => p.isBestseller);
-  const allNew = storeProducts.filter((p) => p.isNew);
-  const [bestsellers, setBestsellers] = useState(() => allBestsellers.slice(0, 4));
-  const [newArrivals, setNewArrivals] = useState(() => allNew.slice(0, 4));
-  const [bestsellersTotal, setBestsellersTotal] = useState(allBestsellers.length);
-  const [newTotal, setNewTotal] = useState(allNew.length);
-  const [categories, setCategories] = useState(() =>
-    (Array.isArray(storeCategories) ? storeCategories : []).map((cat) => ({
-      ...cat,
-      count: (Array.isArray(storeProducts) ? storeProducts : []).filter(
-        (p) => p.category === cat.slug
-      ).length,
-    }))
+
+  const bestsellers = useMemo(
+    () => (Array.isArray(storeProducts) ? storeProducts.filter((p) => p.isBestseller) : []),
+    [storeProducts]
   );
+
+  const newArrivals = useMemo(
+    () => (Array.isArray(storeProducts) ? storeProducts.filter((p) => p.isNew) : []),
+    [storeProducts]
+  );
+
+  const categories = useMemo(
+    () =>
+      (Array.isArray(storeCategories) ? storeCategories : []).map((cat) => ({
+        ...cat,
+        count: (Array.isArray(storeProducts) ? storeProducts : []).filter(
+          (p) => p.category === cat.slug
+        ).length,
+      })),
+    [storeCategories, storeProducts]
+  );
+
   const [reviews, setReviews] = useState(() => reviewsData || []);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const bs = storeProducts.filter((p) => p.isBestseller);
-    const na = storeProducts.filter((p) => p.isNew);
-    setBestsellers(bs.slice(0, 4));
-    setNewArrivals(na.slice(0, 4));
-    setBestsellersTotal(bs.length);
-    setNewTotal(na.length);
-
-    getCategories().then(setCategories);
     getAllReviews().then(setReviews);
-    setLoading(false);
-  }, [storeProducts, storeCategories]);
+  }, []);
 
   return (
     <>
@@ -580,18 +655,18 @@ export default function Home() {
         title="Bestsellers"
         eyebrow="Community Staples"
         products={bestsellers}
-        loading={loading}
+        loading={false}
         viewAllLink="/shop?sort=bestsellers"
-        totalCount={bestsellersTotal}
+        totalCount={bestsellers.length}
       />
       <BrandManifesto />
       <ProductSection
         title="Latest Drops"
         eyebrow="Season 2026 Releases"
         products={newArrivals}
-        loading={loading}
+        loading={false}
         viewAllLink="/shop?sort=newest"
-        totalCount={newTotal}
+        totalCount={newArrivals.length}
       />
       <TickerMarquee />
       <BespokeCallout />
